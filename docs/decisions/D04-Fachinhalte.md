@@ -18,7 +18,7 @@ bestaetigt_am:
    - Warnzeichen-Stichworte mit festem Notfallhinweis 112 / 116117 und allgemeine Zuständigkeiten (U001)
    - Fachfremde Frage → freundliche Abweisung (U004)
 3. **Quellen nur aus anerkannten deutschen Stellen**, z. B. gesund.bund.de (Bundesgesundheitsministerium), gesundheitsinformation.de (IQWiG), DGE für Ernährung, 116117.de für Versorgungswege. Jede Regel nennt ihre Quelle.
-4. **Format:** Jeder Inhalt ist eine Datei in `knowledge/` mit Kopfdaten (Quelle, Status, Reviewer, Datum). Der Code lädt nur `status: geprueft`. Der Strukturcheck erzwingt die Kopfdaten.
+4. **Format:** Jeder Inhalt ist eine Datei in `knowledge/` mit Kopfdaten (Quelle, Status, Reviewer, Datum). Der Code lädt nur `status: geprueft`. Der Strukturcheck erzwingt die Kopfdaten. Ausnahme im Testlauf siehe [D10](D10-Testlauf.md).
 5. **Ablauf:** Research-Task schreibt Entwurf → Reviewer prüft und setzt `geprueft` → erst dann Code-Task, der den Inhalt nutzt.
 
 ## Rahmen

@@ -11,20 +11,25 @@ Ein Repository, zwei Anwendungen: `apps/web` (Website) und `apps/api` (Server). 
 ```mermaid
 flowchart LR
   W[apps/web] -->|HTTP| R[api/ Routen]
-  R --> S[security/ Sitzung + Consent]
+  R --> S[security/ Sitzung + Consent-Prüfung]
+  R --> CO[features/consent]
   R --> C[features/chat]
   C --> REC[features/recognition]
   C --> G[features/guidance]
   C --> H[features/health_data]
+  C --> A[features/analysis]
   REC --> LLM[adapters/llm]
   G --> K[(knowledge/ geprüft)]
   H --> F[adapters/fhir]
   H --> DB[adapters/db]
+  A --> H
+  S --> DB
+  CO --> DB
   C --> LLM
 ```
 
 1. Website sendet Nachricht an die API.
-2. Route prüft Sitzung und Einwilligung (`security/`), ruft `features/chat` auf.
+2. Route prüft Sitzung und Einwilligung (`security/`, nur lesend), ruft `features/chat` auf. Das Erteilen, Widerrufen und Löschen von Einwilligungen liegt in `features/consent` und läuft über eigene Routen, nicht über den Chat.
 3. `recognition` lässt das LLM die Anfrage klassifizieren; Ausgabe wird gegen `contracts/llm/` validiert.
 4. Enthält die Nachricht ein Warnzeichen-Stichwort, setzt `guidance` den festen Notfallhinweis an den Anfang.
 5. Fragt der Nutzer nach eigenen Daten und ist das freigegeben: `health_data` liefert Werte, `analysis` rechnet ohne Bewertung.

@@ -2,11 +2,21 @@
 
 | Datei / Ordner | Zweck |
 | --- | --- |
-| `VitaSync_Coding_Backlog.xlsx` | Plan: Stories, Tasks, Briefings, DoD. **Nicht** für Status verwenden. |
+| `VitaSync_Coding_Backlog.xlsx` | Plan **und Statusquelle**: Stories, Tasks, Briefings, DoD. |
 | `work-orders/` | Ausformulierte Aufträge für Claude/Codex, wenn das Issue nicht reicht. |
 | `handoffs/` | Übergaben bei Unterbrechung, eine Datei pro Task-ID. |
 
-Status und Zuweisung laufen über GitHub Issues (siehe [docs/Arbeitsablauf.md](../docs/Arbeitsablauf.md)). Die Excel-Spalten „Status“, „Verantwortlich“, „Bearbeiter“ nicht parallel pflegen.
+## Statusquelle
+
+Der Status eines Tasks steht in der Spalte **Status** im Blatt **Tasks**. Es gibt keine zweite Quelle.
+
+- Wer umsetzt, setzt die eigene Zeile im selben PR auf **„Im Review“**.
+- Nach der Freigabe durch die reviewende Person folgt im selben PR ein **letzter Commit** mit Status
+  **„Erledigt“** und der PR-Nummer in der Spalte „Änderung“. Danach wird gemergt.
+- Ein eigener PR nur für eine Statusänderung ist nicht vorgesehen.
+- GitHub Issues sind optional. Werden sie genutzt, sind sie Diskussionsort, nicht Statusquelle.
+
+Ablauf und Rollen: [docs/Arbeitsablauf.md](../docs/Arbeitsablauf.md).
 
 ## Auftrag an Claude/Codex (Kopiervorlage)
 

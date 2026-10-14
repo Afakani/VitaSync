@@ -195,6 +195,19 @@ components:
         ein freigegebener Text vorliegt. Dafuer tragen `notice` und `sources`
         ein eigenes Feld `content_language`.
 
+    ReviewStatus:
+      type: string
+      enum: [geprueft, testfreigabe]
+      description: >-
+        Pruefstand des verwendeten Eintrags aus `knowledge/`, gespiegelt aus
+        dessen Kopfdatum `status`.
+
+        `geprueft`: fachlich freigegeben (D04).
+        `testfreigabe`: formal vollstaendig, **nicht fachlich geprueft**;
+        nur bei `APP_ENV=development` geladen und in der Antwort als
+        Testinhalt gekennzeichnet (D10). Der Status `entwurf` erscheint hier
+        nie, weil solche Eintraege nicht geladen werden.
+
     ContentLanguage:
       type: string
       enum: [de, en]
@@ -249,7 +262,7 @@ components:
     Answer:
       type: object
       additionalProperties: false
-      required: [message_id, created_at, origin, ai_generated, ai_disclosure, content, sources]
+      required: [message_id, created_at, origin, ai_generated, ai_disclosure, content, sources, contains_test_content]
       description: >-
         Bewusst nicht enthalten, weil VitaSync keine individuelle Bewertung
         abgibt (D08, harte Regel 7): `assessment`, `severity`, `urgency`,
@@ -315,8 +328,19 @@ components:
             $ref: '#/components/schemas/Source'
           description: >-
             Verwendete Eintraege aus `knowledge/`, nur mit
-            `status: geprueft` (D04). Leere Liste ist erlaubt und bedeutet
-            nicht, dass keine Quelle noetig waere.
+            `status: geprueft` (D04) oder, im Testlauf, `testfreigabe`
+            (D10). Leere Liste ist erlaubt und bedeutet nicht, dass keine
+            Quelle noetig waere.
+        contains_test_content:
+          type: boolean
+          description: >-
+            `true`, wenn mindestens ein verwendeter Eintrag den
+            `review_status` `testfreigabe` hat. Die Oberflaeche zeigt dann
+            einmal den Hinweis "Testinhalt, nicht fachlich geprueft"
+            (D10), ohne jede Quelle einzeln pruefen zu muessen.
+
+            Ausserhalb von `APP_ENV=development` ist das Feld immer
+            `false`, weil dort keine Testinhalte geladen werden.
 
     AiDisclosure:
       type: object
@@ -369,7 +393,7 @@ components:
     Notice:
       type: object
       additionalProperties: false
-      required: [type, knowledge_id, version, content_language]
+      required: [type, knowledge_id, version, content_language, review_status]
       description: >-
         Fester, fuer alle Nutzer gleicher Hinweis. Enthaelt bewusst keine
         Stufe, keinen Zeitrahmen und keine Bewertung der Situation (D08).
@@ -393,11 +417,13 @@ components:
             `version` in `knowledge/` (DOC-001).
         content_language:
           $ref: '#/components/schemas/ContentLanguage'
+        review_status:
+          $ref: '#/components/schemas/ReviewStatus'
 
     Source:
       type: object
       additionalProperties: false
-      required: [knowledge_id, title, publisher, url, review_date, content_language]
+      required: [knowledge_id, title, publisher, url, review_date, content_language, review_status]
       description: >-
         Felder spiegeln die Kopfdaten in `knowledge/`: `knowledge_id` aus
         `id`, `title` aus `titel`, `publisher` aus `herausgeber`, `url` aus
@@ -410,19 +436,29 @@ components:
         title:
           type: string
         publisher:
-          type: string
+          type: [string, 'null']
           description: >-
             Herausgebende Stelle, z. B. IQWiG oder BMG (D04). Kopfdatum
-            `herausgeber`.
+            `herausgeber`. `null` nur bei `review_status: testfreigabe` -
+            ein Testinhalt hat noch keinen Herausgeber. Bei
+            `review_status: geprueft` immer gesetzt.
         url:
-          type: string
+          type: [string, 'null']
           format: uri
+          description: >-
+            Kopfdatum `quelle`. `null` nur bei
+            `review_status: testfreigabe`, aus demselben Grund wie
+            `publisher`.
         review_date:
-          type: string
+          type: [string, 'null']
           format: date
-          description: Datum der fachlichen Freigabe (`review_datum`).
+          description: >-
+            Datum der fachlichen Freigabe (`review_datum`). `null` bei
+            `review_status: testfreigabe`, weil es keine Freigabe gab.
         content_language:
           $ref: '#/components/schemas/ContentLanguage'
+        review_status:
+          $ref: '#/components/schemas/ReviewStatus'
 
     ErrorResponse:
       type: object
