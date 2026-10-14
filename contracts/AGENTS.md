@@ -9,8 +9,10 @@ Zuständig: <GitHub-Handle eintragen>
 
 ## Verträge
 - `api/openapi.json` wird aus `apps/api` erzeugt, nicht von Hand geändert.
-- `api/draft/` enthält handgepflegte Vertragsentwürfe mit Status `Vorschlag` (Research-Tasks). Sie gelten
-  erst nach Bestätigung durch das Team und werden vom Code nicht gelesen. Siehe `api/draft/README.md`.
+- `api/draft/` enthält handgepflegte Vertragsentwürfe aus Research-Tasks. Jeder trägt seinen Status
+  (`Vorschlag` | `bestätigt vorbehaltlich Review` | `bestätigt`) in `info.x-vitasync-status` und in der
+  Tabelle in `api/draft/README.md`. Der Code liest sie nicht; verbindlich ist das generierte
+  `api/openapi.json`.
 - `llm/*.schema.json` sind die Quelle; der Code lädt oder generiert daraus.
 - `fhir/examples/` nur synthetisch.
 

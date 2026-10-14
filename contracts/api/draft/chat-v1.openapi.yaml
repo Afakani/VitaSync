@@ -7,15 +7,17 @@
 openapi: 3.1.0
 
 info:
-  title: VitaSync Chat API (Vertragsvorschlag)
-  version: 0.1.0-draft
+  title: VitaSync Chat API
+  version: 0.1.0
   summary: >-
     Eine Nutzernachricht hinein, eine vollstaendige Antwort heraus.
     Kein Medizinprodukt: keine Diagnose, keine Bewertung eigener Werte,
     keine Dringlichkeitseinstufung (D08).
-  x-vitasync-status: Vorschlag
+  x-vitasync-status: Bestaetigt vorbehaltlich Review
   x-vitasync-task: F003
   x-vitasync-stand: 2026-10-14
+  x-vitasync-entschieden-am: 2026-10-14
+  x-vitasync-entschieden-von: Atakan (Teamentscheidung)
 
 servers:
   - url: http://127.0.0.1:8000
@@ -33,7 +35,8 @@ paths:
       summary: Nachricht senden und Antwort erhalten
       description: >-
         Nimmt eine Nutzernachricht an und liefert genau eine vollstaendige
-        Antwort. Kein Streaming in v1.
+        Antwort. Kein Streaming in v1; Neubewertung nach der Latenzmessung
+        zu D03.
 
         Der Server leitet die Identitaet ausschliesslich aus der
         serverseitigen Sitzung ab (D05). Vor jedem Datenzugriff und vor jedem
@@ -55,6 +58,9 @@ paths:
               neuer_chat:
                 summary: Erste Nachricht in einem neuen Chat
                 externalValue: ./examples/chat-request.json
+              englische_oberflaeche:
+                summary: Nutzer hat in der Oberflaeche Englisch gewaehlt
+                externalValue: ./examples/chat-request-en.json
       responses:
         '201':
           description: Antwort erzeugt.
@@ -72,6 +78,11 @@ paths:
                 notfallhinweis:
                   summary: Fester allgemeiner Notfallhinweis
                   externalValue: ./examples/chat-response-emergency.json
+                englische_antwort_deutsche_quelle:
+                  summary: >-
+                    Antwort auf Englisch, gepruefte Quelle nur auf Deutsch
+                    (`content_language: de`)
+                  externalValue: ./examples/chat-response-general-en.json
         '400':
           $ref: '#/components/responses/InvalidRequest'
         '401':
@@ -164,9 +175,9 @@ components:
           format: uuid
           description: >-
             Optionale, vom Client vergebene ID der Nachricht. Wird dieselbe ID
-            erneut gesendet, liefert der Server die bereits erzeugte Antwort
-            zurueck und ruft das Modell nicht zweimal (Wiederholen ohne
-            Doppelversand).
+            erneut gesendet, liefert der Server dieselbe Antwort erneut,
+            einschliesslich Status 201, und ruft das Modell nicht zweimal
+            (Wiederholen ohne Doppelversand).
 
     Language:
       type: string
@@ -175,6 +186,26 @@ components:
       description: >-
         Sprache der Antworttexte. Standard `de`. Ein nicht unterstuetzter Wert
         ergibt `language_unsupported`.
+
+        Der Nutzer waehlt die Sprache in der Oberflaeche (U017); der Client
+        schickt sie bei jeder Anfrage mit. Der Server erkennt die Sprache
+        nicht selbst und leitet sie auch nicht aus dem Nachrichtentext ab.
+
+        Die gewuenschte Sprache sagt nichts darueber aus, in welcher Sprache
+        ein freigegebener Text vorliegt. Dafuer tragen `notice` und `sources`
+        ein eigenes Feld `content_language`.
+
+    ContentLanguage:
+      type: string
+      enum: [de, en]
+      description: >-
+        Sprache, in der dieser freigegebene Inhalt tatsaechlich vorliegt.
+
+        Weicht sie von der angefragten `language` ab, liegt der gepruefte
+        Text nur in dieser Sprache vor. Die Oberflaeche weist darauf hin
+        (z. B. "Nur auf Deutsch verfuegbar"). Der Inhalt wird nicht
+        maschinell uebersetzt: eine Uebersetzung waere nicht mehr der
+        fachlich freigegebene Wortlaut (D04).
 
     ChatMessageResponse:
       type: object
@@ -294,17 +325,20 @@ components:
       description: >-
         Verweis auf den freigegebenen Transparenzhinweis ("Du sprichst mit
         einer KI"). Versioniert, damit nachweisbar ist, welcher Wortlaut
-        angezeigt wurde (AI Act Art. 50, D09). Wortlaut und Versionsschema
-        kommen aus T-U028-01.
+        angezeigt wurde (AI Act Art. 50, D09). Der Wortlaut kommt aus
+        T-U028-01.
       properties:
         text_id:
           type: string
           pattern: '^[a-z0-9-]+$'
-          description: ID des Eintrags in `knowledge/`.
+          description: ID des Eintrags in `knowledge/` (Kopfdatum `id`).
         version:
-          type: string
-          pattern: '^[0-9]+\.[0-9]+$'
-          description: Version des angezeigten Wortlauts.
+          type: integer
+          minimum: 1
+          description: >-
+            Version des angezeigten Wortlauts. Ganzzahl, verweist auf das
+            Kopfdatum `version` in `knowledge/` (wird dort mit DOC-001
+            eingefuehrt).
 
     ModelInfo:
       type: object
@@ -335,7 +369,7 @@ components:
     Notice:
       type: object
       additionalProperties: false
-      required: [type, knowledge_id, version]
+      required: [type, knowledge_id, version, content_language]
       description: >-
         Fester, fuer alle Nutzer gleicher Hinweis. Enthaelt bewusst keine
         Stufe, keinen Zeitrahmen und keine Bewertung der Situation (D08).
@@ -350,18 +384,25 @@ components:
         knowledge_id:
           type: string
           pattern: '^[a-z0-9-]+$'
+          description: ID des Eintrags in `knowledge/` (Kopfdatum `id`).
         version:
-          type: string
-          pattern: '^[0-9]+\.[0-9]+$'
+          type: integer
+          minimum: 1
+          description: >-
+            Version des Hinweistexts. Ganzzahl, verweist auf das Kopfdatum
+            `version` in `knowledge/` (DOC-001).
+        content_language:
+          $ref: '#/components/schemas/ContentLanguage'
 
     Source:
       type: object
       additionalProperties: false
-      required: [knowledge_id, title, publisher, url, review_date]
+      required: [knowledge_id, title, publisher, url, review_date, content_language]
       description: >-
-        Felder spiegeln die Kopfdaten in `knowledge/` (`id`, `titel`,
-        `quelle`, `review_datum`). `publisher` wird dort noch nicht gefuehrt,
-        siehe offene Punkte im README.
+        Felder spiegeln die Kopfdaten in `knowledge/`: `knowledge_id` aus
+        `id`, `title` aus `titel`, `publisher` aus `herausgeber`, `url` aus
+        `quelle`, `review_date` aus `review_datum`. Das Kopfdatum
+        `herausgeber` wird mit DOC-001 eingefuehrt.
       properties:
         knowledge_id:
           type: string
@@ -370,7 +411,9 @@ components:
           type: string
         publisher:
           type: string
-          description: Herausgebende Stelle, z. B. IQWiG oder BMG (D04).
+          description: >-
+            Herausgebende Stelle, z. B. IQWiG oder BMG (D04). Kopfdatum
+            `herausgeber`.
         url:
           type: string
           format: uri
@@ -378,6 +421,8 @@ components:
           type: string
           format: date
           description: Datum der fachlichen Freigabe (`review_datum`).
+        content_language:
+          $ref: '#/components/schemas/ContentLanguage'
 
     ErrorResponse:
       type: object

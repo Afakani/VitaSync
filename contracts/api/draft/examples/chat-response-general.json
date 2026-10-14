@@ -14,7 +14,7 @@
     "ai_generated": true,
     "ai_disclosure": {
       "text_id": "notice-ki-hinweis",
-      "version": "1.0"
+      "version": 1
     },
     "model": {
       "name": "beispielmodell",
@@ -30,7 +30,8 @@
         "title": "Eisenmangel - allgemeine Information",
         "publisher": "IQWiG (gesundheitsinformation.de)",
         "url": "https://www.gesundheitsinformation.de/",
-        "review_date": "2026-10-10"
+        "review_date": "2026-10-10",
+        "content_language": "de"
       }
     ]
   }

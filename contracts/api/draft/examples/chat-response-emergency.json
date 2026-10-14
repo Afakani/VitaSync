@@ -14,14 +14,15 @@
     "ai_generated": false,
     "ai_disclosure": {
       "text_id": "notice-ki-hinweis",
-      "version": "1.0"
+      "version": 1
     },
     "model": null,
     "content": "Du hast Beschwerden genannt, bei denen allgemein empfohlen wird, sofort die Notrufnummer 112 anzurufen.\n\nVitaSync ist eine KI und kann deine Situation nicht beurteilen.\n\nWenn es kein Notfall ist: Der aerztliche Bereitschaftsdienst ist unter 116117 erreichbar.",
     "notice": {
       "type": "emergency_general",
       "knowledge_id": "rule-warnzeichen-allgemein",
-      "version": "1.0"
+      "version": 1,
+      "content_language": "de"
     },
     "sources": []
   }
