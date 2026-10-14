@@ -46,7 +46,9 @@ flowchart LR
 | `security` | `core`, DB-Port |
 | `core` | nichts aus dem Projekt |
 
-Keine Zyklen. Wird mit import-linter automatisch geprüft, sobald F004 umgesetzt ist.
+Keine Zyklen. Wird mit import-linter geprüft: `apps/api/.importlinter`, bei jedem Pull Request (F004).
+
+Geprüft werden Modulgrenzen. Dass ein Fachbereich einen anderen **nur über dessen `__init__.py`** anspricht, lässt sich damit nicht prüfen und bleibt Sache des Reviews. Dass niemand `adapters/*` importieren darf, ist bewusst streng umgesetzt: Braucht ein späterer Task die Verdrahtung der Adapter, wird die CI rot und erzwingt eine Änderung dieser Tabelle statt eines stillen Durchgriffs.
 
 ## Warum so
 
