@@ -24,4 +24,18 @@ Chat-Prototyp für allgemeine Gesundheitsinformationen und allgemeine Zuständig
 | `planning/` | Backlog, Arbeitsaufträge, Übergaben |
 | `scripts/` | Werkzeuge |
 
-Start- und Testbefehle folgen mit Task F002/F004.
+## Starten
+
+Voraussetzungen: Python 3.12 und Docker. Vollständige Anleitung: [apps/api/README.md](apps/api/README.md).
+
+```bash
+cp .env.example .env                                                   # POSTGRES_PASSWORD setzen
+docker compose --env-file .env -f infra/docker-compose.yml up -d db
+cd apps/api && python -m venv .venv
+.venv/Scripts/python.exe -m pip install -r requirements.lock -e ".[dev]"
+.venv/Scripts/python.exe -m uvicorn vitasync.api.app:app --reload --host 127.0.0.1 --port 8000
+```
+
+Prüfen: `curl http://127.0.0.1:8000/healthz`. Tests: `cd apps/api && .venv/Scripts/python.exe -m pytest`.
+
+Die Website (`apps/web`) folgt mit Task F006, CI und weitere Tests mit F004.

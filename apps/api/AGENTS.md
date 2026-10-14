@@ -14,7 +14,8 @@ Zuständig: <GitHub-Handle eintragen>
 - `tests/` spiegelt `src/vitasync/` (z. B. `tests/features/chat/`).
 - Unit-Tests nutzen den Fake-LLM-Adapter, nie das echte Modell.
 - Integrationstests gegen Test-Datenbank aus `infra/`.
-- Befehl nach F004 hier eintragen. Bis dahin keinen erfinden.
+- Befehl: `cd apps/api && .venv/Scripts/python.exe -m pytest` (Windows; sonst `.venv/bin/python`). Konfiguration in `pyproject.toml` unter `[tool.pytest.ini_options]`.
+- Stand F002 nur ein Rauchtest für `/healthz`. Abdeckung, CI und import-linter kommen mit F004.
 
 ## Aufbau
 | Ordner | Inhalt |
@@ -26,6 +27,8 @@ Zuständig: <GitHub-Handle eintragen>
 | `src/vitasync/adapters/` | LLM, FHIR, Datenbank |
 | `migrations/` | Datenbankmigrationen |
 | `tests/` | Tests, gespiegelt zu `src/vitasync/` |
+
+Einstiegspunkt: `vitasync.api.app:app`. Projektdatei: `pyproject.toml`, aufgelöste Versionen in `requirements.lock`.
 
 ## Fallen
 - Konfiguration nur über Umgebungsvariablen (`.env`), Vorlage `.env.example` im Root.
