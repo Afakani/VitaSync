@@ -5,8 +5,11 @@ on:
   push:
     branches: [main]
 
+# Vier eigenstaendige Jobs statt einem: am Pull Request soll sichtbar sein,
+# welche Pruefung rot ist, nicht nur dass etwas rot ist.
 jobs:
   structure:
+    name: Struktur, Regeln, Kopfdaten
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -14,4 +17,64 @@ jobs:
         with:
           python-version: "3.12"
       - run: python scripts/check_structure.py
-  # Tests für apps/api und apps/web werden mit Task F004 ergänzt.
+
+  api-tests:
+    name: Tests apps/api
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: apps/api/requirements.lock
+      - name: Abhaengigkeiten installieren
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.lock -e .
+      - run: python -m pytest
+
+  contracts:
+    name: Vertragsbeispiele
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: scripts/requirements.lock
+      - name: Werkzeuge installieren
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r scripts/requirements.lock
+      - name: Beispiele gegen das Schema pruefen
+        run: python scripts/validate_contracts.py
+      - name: Selbsttest des Pruefers
+        run: python -m pytest scripts/tests/test_validate_contracts.py
+
+  import-rules:
+    name: Abhaengigkeitsregeln
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: apps/api/requirements.lock
+      - name: Abhaengigkeiten installieren
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r apps/api/requirements.lock -e apps/api
+      - name: Regeln aus docs/Architektur.md pruefen
+        run: lint-imports --config .importlinter
+        working-directory: apps/api
+      - name: Selbsttest der Regelpruefung
+        # Laeuft hier und nicht im Job contracts, weil der Test die Umgebung
+        # von apps/api braucht; sonst wuerde er sich stillschweigend
+        # ueberspringen und nichts pruefen.
+        run: python -m pytest scripts/tests/test_import_rules.py
