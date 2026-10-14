@@ -92,9 +92,21 @@ Entwarnung; das gehört in den UI-Text, nicht in ein Feld.
 `version` in `knowledge/`. Eine Ganzzahl genügt: Für den Nachweis zählt, welcher Wortlaut angezeigt wurde,
 nicht wie groß die Änderung war.
 
-**Abhängigkeit zu DOC-001.** Die Kopfdaten `herausgeber` und `version` gibt es in `knowledge/` noch nicht;
-sie werden mit DOC-001 eingeführt. Bis dahin kann F007 diese Felder nicht aus `knowledge/` befüllen. Der
-Vertrag steht trotzdem schon so, damit er später nicht erweitert werden muss.
+**Kopfdaten in `knowledge/` (erledigt mit DOC-001).** `herausgeber`, `version` und `sprache` sind seit
+DOC-001 Pflichtkopfdaten; `sprache` ist die Quelle für `content_language`. F007 kann die Felder also
+befüllen.
+
+**Testinhalte kennzeichnen (D10).** Solange kein fachlicher Reviewer benannt ist, dürfen Einträge mit
+`status: testfreigabe` verwendet werden – nur bei `APP_ENV=development` und nur gekennzeichnet
+([D10](../../../docs/decisions/D10-Testlauf.md)). Der Vertrag bildet das mit drei Stellen ab:
+
+- `review_status` (`geprueft` | `testfreigabe`) an `notice` und an jeder Quelle – sagt, woher der einzelne
+  Text kommt. `entwurf` erscheint nie, weil solche Einträge nicht geladen werden.
+- `contains_test_content` an der Antwort – `true`, sobald mindestens ein verwendeter Eintrag
+  `testfreigabe` ist. Damit zeigt die Oberfläche **einmal** „Testinhalt, nicht fachlich geprüft“, statt
+  jede Quelle einzeln prüfen zu müssen. Außerhalb von `APP_ENV=development` immer `false`.
+- `publisher`, `url` und `review_date` sind nullable geworden: Ein Testinhalt hat weder Herausgeber noch
+  Freigabedatum. Bei `review_status: geprueft` sind alle drei gesetzt.
 
 **Ungültige Modellausgabe ist kein HTTP-Fehler.** Harte Regel 5 verlangt einen kontrollierten Fallback:
 `201` mit `origin: fixed_text`. `model_unavailable` gilt nur, wenn das Modell gar nicht erreichbar ist.
@@ -134,10 +146,21 @@ echte Wortlaut kommt aus D04-Tasks.
 | 7 | Wiederholte `client_message_id` | identische Antwort einschließlich Status `201` | Beschreibung von `client_message_id` präzisiert |
 | 8 | `rate_limited` | Fehlercode bleibt, keine Grenze festgelegt | unverändert, Grenze in eigenem Task |
 
-Umsetzung der Punkte 2 und 3 in `knowledge/` läuft unter **DOC-001**, nicht in F003.
+Die Punkte 2 und 3 sind mit **DOC-001** in `knowledge/` umgesetzt.
+
+## Nachtrag DOC-001 (14.10.2026)
+
+- Neue Felder für den Testlauf: `review_status`, `contains_test_content`; `publisher`, `url` und
+  `review_date` nullable (siehe oben).
+- `knowledge_id` in den Beispielen zeigt jetzt auf die tatsächlich angelegten Entwürfe
+  (`topic-eisenmangel`, `rule-notfallhinweis`).
+- **`notice-ki-hinweis` bleibt eine erfundene Platzhalter-ID.** Der Transparenzhinweis aus T-U028-01
+  existiert noch nicht in `knowledge/`; sobald er angelegt ist, wird die ID in den Beispielen angeglichen.
 
 ## Noch offen
 
 - PR-Review dieses Vertrags.
 - Grenze für `rate_limited` (eigener Task).
-- Fachliche Freigabe aller Inhalte, auf die der Vertrag verweist (D04).
+- Fachliche Freigabe aller Inhalte, auf die der Vertrag verweist (D04). Bis dahin tragen alle Beispiele
+  `review_status: testfreigabe`.
+- `ai_disclosure` verweist noch auf keinen existierenden Eintrag (T-U028-01).

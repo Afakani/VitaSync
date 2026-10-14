@@ -28,11 +28,13 @@
       {
         "knowledge_id": "topic-eisenmangel",
         "title": "Eisenmangel - allgemeine Information",
-        "publisher": "IQWiG (gesundheitsinformation.de)",
-        "url": "https://www.gesundheitsinformation.de/",
-        "review_date": "2026-10-10",
-        "content_language": "de"
+        "publisher": null,
+        "url": null,
+        "review_date": null,
+        "content_language": "de",
+        "review_status": "testfreigabe"
       }
-    ]
+    ],
+    "contains_test_content": true
   }
 }
