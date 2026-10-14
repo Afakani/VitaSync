@@ -5,7 +5,7 @@ Zuständig: <GitHub-Handle eintragen>
 
 ## Grenzen
 - Darf nutzen: Loader für `knowledge/`, `core/`.
-- Darf nicht: Inhalte im Code festschreiben; Einträge mit Status `entwurf` verwenden; Antworten an Werte, Profil oder Vorerkrankungen der Person anpassen; Dringlichkeitsstufen bilden; Diagnosen, Ursachen oder Medikamente nennen ([D08](../../../../../../docs/decisions/D08-Zweckbestimmung.md)).
+- Darf nicht: Inhalte im Code festschreiben; Einträge mit anderem Status als `geprueft` verwenden (im Testlauf zusätzlich `testfreigabe`, nur bei `APP_ENV=development` und gekennzeichnet, siehe [D10](../../../../../../docs/decisions/D10-Testlauf.md)); Antworten an Werte, Profil oder Vorerkrankungen der Person anpassen; Dringlichkeitsstufen bilden; Diagnosen, Ursachen oder Medikamente nennen ([D08](../../../../../../docs/decisions/D08-Zweckbestimmung.md)).
 
 ## Verträge
 - Öffentliche Funktionen nur über `__init__.py`.
@@ -19,4 +19,4 @@ Zuständig: <GitHub-Handle eintragen>
 - Notfallhinweis ist ein fester Text, für alle gleich. Keine Variante „wahrscheinlich nicht dringend“.
 - Verneintes Stichwort („keine Atemnot“) löst keinen Hinweis aus.
 - Kein Treffer ist keine Entwarnung.
-- Kein passender geprüfter Eintrag → ehrlich sagen und allgemein auf Hausarzt oder 116117 verweisen.
+- Kein passender Eintrag → fester Fallback-Text aus `knowledge/care_paths/kein-treffer`. Keine Zuständigkeit, keine Telefonnummer und keinen Hinweistext im Code festschreiben. Fehlt auch dieser Eintrag: blockieren und nachfragen (harte Regel 6).

@@ -20,7 +20,8 @@ Zuständig: <GitHub-Handle eintragen>
 - `src/shared/api/`: generierter Client. Nicht von Hand bearbeiten.
 
 ## Design
-- Verbindliche Vorlage: `design/vitasync-ui-v1.5.html` (Änderungen in `design/README.md`). Farben, Abstände, Rundungen, Layout und Texte übernehmen.
+- Verbindliche Vorlage: `design/vitasync-ui-v1.5.html` (Änderungen in `design/README.md`). Verbindlich sind **Layout, Farben, Abstände, Rundungen und UI-Rahmentexte** (Schaltflächen, Beschriftungen, Menüpunkte, Platzhalter, Fehlermeldungen der Oberfläche).
+- **Nicht verbindlich sind die fachlichen Texte der Vorlage.** Gesundheits-, Notfall-, Zuständigkeits- und Datenschutztexte stehen dort nur als Platzhalter für die Darstellung. Im Produkt kommen sie zur Laufzeit aus `knowledge/` (Gesundheit, Notfall, Zuständigkeiten) bzw. `docs/compliance/` (Datenschutz) und werden nie aus der Vorlage abgeschrieben (harte Regel 6, [D08](../../docs/decisions/D08-Zweckbestimmung.md)).
 - Design nicht eigenmächtig ändern. Abweichung nur mit Task und Freigabe; dann neue Version der Vorlage anlegen (v1.6 …), alte bleibt.
 - Keine externen CDNs, Fonts oder Skripte (D09). Alles lokal ausliefern.
 

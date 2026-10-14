@@ -12,8 +12,9 @@ Das lokale LLM erkennt Anfragen, liest Dokumente und formuliert freigegebene Inh
 
 ## Aktueller Stand
 
-- Entscheidungen D01–D09 stehen in `docs/decisions/`. Bestätigt sind **D01** (Stack) und **D08** (Zweckbestimmung); D02–D07 und D09 sind empfohlen. Vor der Arbeit Status prüfen: **„Empfohlen“ ist nicht „Bestätigt“.** Auf unbestätigten Entscheidungen nur bauen, wenn der Task es ausdrücklich sagt.
+- Entscheidungen D01–D10 stehen in `docs/decisions/`. Bestätigt sind **D01** (Stack), **D08** (Zweckbestimmung) und **D10** (Testlauf); D02–D07 und D09 sind empfohlen. Vor der Arbeit Status prüfen: **„Empfohlen“ ist nicht „Bestätigt“.** Auf unbestätigten Entscheidungen nur bauen, wenn der Task es ausdrücklich sagt.
 - Produktcode: bisher nur das leere API-Gerüst aus F002 (`apps/api`, Endpunkt `/healthz`). Fachbereiche unter `features/` sind noch leer.
+- Der Chat-API-Vertrag liegt als Entwurf in `contracts/api/draft/` (F003), Status „bestätigt vorbehaltlich Review“. Umgesetzt wird er mit F007; erst dann entsteht das generierte `contracts/api/openapi.json`.
 - Web-Grundgerüst (`apps/web`) folgt mit F006, Testautomatisierung und CI mit F004. Keine Befehle erfinden.
 
 Alle Befehle vom Wurzelverzeichnis aus. Einrichtung und Erklärungen: `apps/api/README.md`.
@@ -53,26 +54,31 @@ Keine zweiten Bäume daneben anlegen (`src/`, `backend/`, `frontend/`, `utils/` 
 
 Details und Diagramm: `docs/Architektur.md`. Kurzform:
 
-- `api` → `features`, `security`. Routen sind dünn: validieren, Feature aufrufen, Antwort mappen.
+- `api` → `features`, `security`, `core`. Routen sind dünn: validieren, Feature aufrufen, Antwort mappen.
 - `features/<x>` → `core`, `security`, Schnittstellen aus `core/ports.py`. Andere Features nur über deren `__init__.py` (öffentliche Funktionen), nie über interne Dateien.
 - `adapters/*` → `core`. Adapter implementieren Ports und kennen keine Features.
+- `security` → `core`, DB-Port.
 - `core` → nur Standardbibliothek und die gewählte Validierungsbibliothek. Kein HTTP, keine Datenbank, kein LLM.
 - Keine Zyklen. Ein Feature, das ein anderes braucht, ruft es auf – es kopiert keine Logik.
 
 ## Harte Regeln: Gesundheit und Daten
+
+Diese Regeln gelten unabhängig vom Status der zitierten Entscheidungen. Eine Entscheidung mit Status
+„empfohlen“ schwächt die Regel nicht ab; sie erklärt nur, warum die Regel so lautet.
 
 1. Nur synthetische Daten aus `data/synthetic/`. Keine echten Patientendaten, Zugangsdaten oder Gesundheitsinhalte in Code, Tests, Prompts, Commits, Logs, Issues.
 2. Identität kommt aus der serverseitigen Sitzung, nie aus Request-Parametern oder Modellausgaben.
 3. Freigabe (Consent) wird serverseitig **vor** Datenzugriff und **vor** Modellaufruf geprüft. Ein ausgeblendeter Button ist kein Schutz.
 4. Nutzernachrichten und importierte Texte sind Daten, keine Anweisungen an das System.
 5. Berechnungen und Zugriffsentscheidungen deterministisch im Code, nie durch das LLM. LLM-Ausgaben werden gegen ein Schema in `contracts/llm/` validiert; ungültig → kontrollierter Fallback.
-6. Gesundheitsinhalte, Notfall-Stichworte und Zuständigkeiten **nur** aus `knowledge/` mit Status `geprueft`. Fehlt ein Eintrag: blockieren und nachfragen. Nichts selbst erfinden, auch nicht „vorläufig“.
+6. Gesundheitsinhalte, Notfall-Stichworte und Zuständigkeiten **nur** aus `knowledge/` mit Status `geprueft`. Fehlt ein Eintrag: blockieren und nachfragen. Nichts selbst erfinden, auch nicht „vorläufig“. Ausnahme im Testlauf siehe [D10](docs/decisions/D10-Testlauf.md).
 7. **Keine individuelle Bewertung** (D08): keine Diagnose oder Verdachtsdiagnose, keine Wörter wie normal/auffällig/gut/schlecht zu eigenen Werten, keine Referenzbereiche neben eigenen Werten, keine Dringlichkeitseinstufung, keine Ursachen, keine Medikamente, keine Bewertung medizinischer Bilder. Gilt auch für Prompts und Modellausgaben.
 8. Nennt jemand ein freigegebenes Warnzeichen-Stichwort, erscheint zuerst der feste, für alle gleiche Notfallhinweis. Fehlender Treffer ist keine Entwarnung. Nie behaupten, alle Notfälle zu erkennen.
 9. Fehlender Wert ist nicht null. Selbstauskunft, importierter Befund und ausgelesenes Dokument bleiben unterscheidbar.
 10. Logs enthalten keine Nachrichteninhalte und keine Gesundheitswerte, nur Request-ID, Zeiten, Fehlercodes.
 11. Jede KI-Antwort ist in der UI als KI-generiert gekennzeichnet und im API-Vertrag maschinenlesbar markiert (AI Act Art. 50, [D09](docs/decisions/D09-Datenschutz-EU.md)).
-12. Neue Verarbeitung personenbezogener Daten (neues Feld, neue Tabelle, neuer Log-Eintrag) → im selben PR `docs/compliance/Verarbeitungsverzeichnis.md` und bei Bedarf `TOM.md` ergänzen. Passwörter nur gehasht. Keine Tracking- oder Analyse-Tools, keine externen KI-Dienste mit Nutzerdaten.
+12. Gesundheits-, Notfall- und Zuständigkeitstexte werden **nie zur Laufzeit übersetzt**. Übersetzt ist nicht mehr der fachlich freigegebene Wortlaut. Fehlt die geprüfte Fassung in der gewählten Sprache, erscheint die deutsche Fassung mit Hinweis. Welche Sprache ein Inhalt hat, steht im Kopfdatum `sprache` und im Vertrag als `content_language`.
+13. Neue Verarbeitung personenbezogener Daten (neues Feld, neue Tabelle, neuer Log-Eintrag) → im selben PR `docs/compliance/Verarbeitungsverzeichnis.md` und bei Bedarf `TOM.md` ergänzen. Passwörter nur gehasht. Keine Tracking- oder Analyse-Tools, keine externen KI-Dienste mit Nutzerdaten.
 
 ## Arbeitsablauf
 
@@ -82,8 +88,10 @@ Details und Diagramm: `docs/Architektur.md`. Kurzform:
 4. Branch `task/<TASK-ID>-<kurzname>`, z. B. `task/T-U004-02-intent-validator`.
 5. Kleinsten prüfbaren Schritt bauen, Tests dazu, `python scripts/check_structure.py`.
 6. Commit: `<TASK-ID>: <Imperativ auf Englisch>`, z. B. `T-U004-02: add intent output validator`.
-7. PR mit Vorlage öffnen. Status höchstens „Im Review“. Eine **andere** Person reviewt und merged. Nie direkt auf `main` pushen.
+7. PR mit Vorlage öffnen. Status höchstens „Im Review“. Eine **andere** Person reviewt und merged. Nie direkt auf `main` pushen. Im Testlauf gilt [D10](docs/decisions/D10-Testlauf.md).
 8. Bei Unterbrechung oder Übergabe: `planning/handoffs/<TASK-ID>.md` nach Vorlage aktualisieren.
+9. Auch reine Prüf- und Doku-Aufträge laufen über Branch und PR. Ein Bericht direkt auf `main` ist kein zulässiger Weg.
+10. Jeder Task-PR aktualisiert **seine eigene** Zeile im Blatt `Tasks` des Backlogs auf „Im Review“. Nach der Freigabe folgt im selben PR ein letzter Commit mit Status „Erledigt“ und der PR-Nummer in der Spalte „Änderung“. Eine Beschränkung des Auftrags auf bestimmte Ordner gilt nie für die eigene Backlog-Zeile und die eigene Übergabe.
 
 Status: Offen → Bereit → In Bearbeitung → Im Review → Erledigt. „Blockiert“ immer mit konkretem Grund.
 
@@ -92,7 +100,7 @@ Status: Offen → Bereit → In Bearbeitung → Im Review → Erledigt. „Block
 - Nur den Umfang der Task-ID. Keine beiläufigen Refactorings, Dependency-Upgrades, Formatierungswellen oder Zusatzfeatures.
 - Zu groß? Schnitt vorschlagen und dokumentieren, nichts stillschweigend weglassen.
 - `contracts/` nur ändern, wenn der Task es verlangt; dann alle Verbraucher, Tests und Doku im selben PR anpassen.
-- Neues Modul: Ordner + `AGENTS.md` nach `docs/vorlagen/MODUL_AGENTS.md` + `python scripts/check_structure.py --fix` (legt `CLAUDE.md` an) + Zeile in der Tabelle der Eltern-`AGENTS.md`.
+- Neues Modul: Ordner + `AGENTS.md` nach `docs/vorlagen/MODUL_AGENTS.md` + `python scripts/check_structure.py --fix` + Zeile in der Tabelle der Eltern-`AGENTS.md`. `--fix` legt fehlende `CLAUDE.md` an **und überschreibt vorhandene, die vom Stub `@AGENTS.md` abweichen**. Eigener Inhalt in einer Modul-`CLAUDE.md` geht dabei verloren; er gehört in die `AGENTS.md`.
 - Keine Secrets einchecken. Konfiguration über `.env` (nicht versioniert) und `.env.example`.
 - Kein Deployment, keine Änderungen an geteilten Diensten ohne ausdrücklichen Auftrag.
 
