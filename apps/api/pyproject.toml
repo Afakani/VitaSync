@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vitasync"
+version = "0.1.0"
+description = "VitaSync API - Chat-Prototyp fuer allgemeine Gesundheitsinformationen. Kein Medizinprodukt (D08)."
+requires-python = ">=3.12"
+
+# Exakte Versionen nach D01. Aufgeloest am 14.10.2026, Task F002.
+# Transitive Abhaengigkeiten stehen in requirements.lock.
+dependencies = [
+    "fastapi==0.143.1",
+    "uvicorn[standard]==0.54.0",
+    "pydantic==2.14.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.1.1",
+    # Starlettes TestClient verlangt httpx2; httpx 0.x loest eine
+    # StarletteDeprecationWarning aus.
+    "httpx2==2.13.1",
+]
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

@@ -1,0 +1,1 @@
+"""Adapter fuer FHIR-Zugriffe."""
