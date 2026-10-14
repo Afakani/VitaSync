@@ -34,7 +34,6 @@
         "content_language": "de",
         "review_status": "testfreigabe"
       }
-    ],
-    "contains_test_content": true
+    ]
   }
 }
