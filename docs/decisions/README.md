@@ -14,5 +14,6 @@ Bestätigen = `status: bestaetigt`, `bestaetigt_von`, `bestaetigt_am` ausfüllen
 | [D07](D07-Optionaler-Umfang.md) | Optionaler Umfang | empfohlen |
 | [D08](D08-Zweckbestimmung.md) | Zweckbestimmung: kein Medizinprodukt | bestaetigt |
 | [D09](D09-Datenschutz-EU.md) | Datenschutz und EU-Recht | empfohlen |
+| [D10](D10-Testlauf.md) | Testlauf: eine Person, alle Rollen | bestaetigt |
 
-Neue Entscheidung: `docs/vorlagen/ENTSCHEIDUNG.md` kopieren, nächste freie ID (D10 …).
+Neue Entscheidung: `docs/vorlagen/ENTSCHEIDUNG.md` kopieren, nächste freie ID (D11 …).
