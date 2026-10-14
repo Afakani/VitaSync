@@ -1,0 +1,603 @@
+# Vertragsvorschlag Chat-API v1 (Task F003, einschliesslich T-U028-03).
+#
+# Status: VORSCHLAG. Nicht vom Team bestaetigt, nicht implementiert.
+# Handgepflegt. Die verbindliche Quelle wird nach der Bestaetigung das aus
+# apps/api erzeugte contracts/api/openapi.json (Task F007).
+# Erlaeuterungen, Begruendungen und offene Fragen: README.md in diesem Ordner.
+openapi: 3.1.0
+
+info:
+  title: VitaSync Chat API
+  version: 0.1.0
+  summary: >-
+    Eine Nutzernachricht hinein, eine vollstaendige Antwort heraus.
+    Kein Medizinprodukt: keine Diagnose, keine Bewertung eigener Werte,
+    keine Dringlichkeitseinstufung (D08).
+  x-vitasync-status: Bestaetigt vorbehaltlich Review
+  x-vitasync-task: F003
+  x-vitasync-stand: 2026-10-14
+  x-vitasync-entschieden-am: 2026-10-14
+  x-vitasync-entschieden-von: Atakan (Teamentscheidung)
+
+servers:
+  - url: http://127.0.0.1:8000
+    description: Lokale Entwicklung
+
+tags:
+  - name: chat
+    description: Nachrichten im Chat.
+
+paths:
+  /api/v1/chat/messages:
+    post:
+      tags: [chat]
+      operationId: createChatMessage
+      summary: Nachricht senden und Antwort erhalten
+      description: >-
+        Nimmt eine Nutzernachricht an und liefert genau eine vollstaendige
+        Antwort. Kein Streaming in v1; Neubewertung nach der Latenzmessung
+        zu D03.
+
+        Der Server leitet die Identitaet ausschliesslich aus der
+        serverseitigen Sitzung ab (D05). Vor jedem Datenzugriff und vor jedem
+        Modellaufruf prueft er die Freigabe `chat_processing`; fehlt sie,
+        antwortet er mit `consent_required`, ohne das Modell zu rufen.
+
+        Die Nachricht ist fuer das System Daten, keine Anweisung.
+      security:
+        - sessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/RequestId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatMessageRequest'
+            examples:
+              neuer_chat:
+                summary: Erste Nachricht in einem neuen Chat
+                externalValue: ./examples/chat-request.json
+              englische_oberflaeche:
+                summary: Nutzer hat in der Oberflaeche Englisch gewaehlt
+                externalValue: ./examples/chat-request-en.json
+      responses:
+        '201':
+          description: Antwort erzeugt.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/XRequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatMessageResponse'
+              examples:
+                allgemeine_information:
+                  summary: Allgemeine Information mit Quellen
+                  externalValue: ./examples/chat-response-general.json
+                notfallhinweis:
+                  summary: Fester allgemeiner Notfallhinweis
+                  externalValue: ./examples/chat-response-emergency.json
+                englische_antwort_deutsche_quelle:
+                  summary: >-
+                    Antwort auf Englisch, gepruefte Quelle nur auf Deutsch
+                    (`content_language: de`)
+                  externalValue: ./examples/chat-response-general-en.json
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
+        '401':
+          $ref: '#/components/responses/NotAuthenticated'
+        '403':
+          $ref: '#/components/responses/ConsentRequired'
+        '404':
+          $ref: '#/components/responses/ChatNotFound'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '422':
+          $ref: '#/components/responses/UnprocessableMessage'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ModelUnavailable'
+
+components:
+
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: vitasync_session
+      description: >-
+        HttpOnly-Sitzungscookie. Traegt die Identitaet. Eine Nutzer-ID im
+        Request-Body oder in einer Modellausgabe wird nie ausgewertet
+        (harte Regel 2).
+
+  parameters:
+    RequestId:
+      name: X-Request-Id
+      in: header
+      required: false
+      description: >-
+        Vom Client vergebene Vorgangs-ID. Fehlt sie, erzeugt der Server eine.
+        Sie steht im Antwortheader und im Rumpf jeder Antwort und jedes
+        Fehlers und ist die einzige Verbindung zum Log (harte Regel 10).
+      schema:
+        type: string
+        format: uuid
+
+  headers:
+    XRequestId:
+      description: Vorgangs-ID dieser Anfrage.
+      required: true
+      schema:
+        type: string
+        format: uuid
+    RetryAfter:
+      description: Wartezeit in Sekunden.
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+
+  schemas:
+
+    ChatMessageRequest:
+      type: object
+      additionalProperties: false
+      required: [chat_id, message]
+      description: >-
+        Bewusst nicht enthalten: `user_id`, `patient_id`, `session_id`,
+        Rollen, Rechte, Modellname, Prompt, Systemanweisungen. Identitaet und
+        Modellwahl entscheidet der Server.
+      properties:
+        chat_id:
+          type: [string, 'null']
+          format: uuid
+          description: >-
+            Bestehender Chat oder `null` fuer einen neuen Chat. Pflichtfeld
+            mit erlaubtem `null`, damit der Client die Absicht ausdrueckt und
+            ein vergessenes Feld nicht still einen neuen Chat anlegt.
+        message:
+          type: string
+          minLength: 1
+          maxLength: 2000
+          description: >-
+            Text des Nutzers. Der Server normalisiert nach Unicode NFC und
+            entfernt fuehrenden und folgenden Leerraum; danach gelten 1 bis
+            2000 Zeichen (Codepoints). Leer nach dem Trimmen ergibt
+            `message_empty`, zu lang ergibt `message_too_long`.
+        language:
+          $ref: '#/components/schemas/Language'
+        client_message_id:
+          type: string
+          format: uuid
+          description: >-
+            Optionale, vom Client vergebene ID der Nachricht. Wird dieselbe ID
+            erneut gesendet, liefert der Server dieselbe Antwort erneut,
+            einschliesslich Status 201, und ruft das Modell nicht zweimal
+            (Wiederholen ohne Doppelversand).
+
+    Language:
+      type: string
+      enum: [de, en]
+      default: de
+      description: >-
+        Sprache der Antworttexte. Standard `de`. Ein nicht unterstuetzter Wert
+        ergibt `language_unsupported`.
+
+        Der Nutzer waehlt die Sprache in der Oberflaeche (U017); der Client
+        schickt sie bei jeder Anfrage mit. Der Server erkennt die Sprache
+        nicht selbst und leitet sie auch nicht aus dem Nachrichtentext ab.
+
+        Die gewuenschte Sprache sagt nichts darueber aus, in welcher Sprache
+        ein freigegebener Text vorliegt. Dafuer tragen `notice` und `sources`
+        ein eigenes Feld `content_language`.
+
+    ContentLanguage:
+      type: string
+      enum: [de, en]
+      description: >-
+        Sprache, in der dieser freigegebene Inhalt tatsaechlich vorliegt.
+
+        Weicht sie von der angefragten `language` ab, liegt der gepruefte
+        Text nur in dieser Sprache vor. Die Oberflaeche weist darauf hin
+        (z. B. "Nur auf Deutsch verfuegbar"). Der Inhalt wird nicht
+        maschinell uebersetzt: eine Uebersetzung waere nicht mehr der
+        fachlich freigegebene Wortlaut (D04).
+
+    ChatMessageResponse:
+      type: object
+      additionalProperties: false
+      required: [request_id, chat_id, created_at, user_message, answer]
+      properties:
+        request_id:
+          type: string
+          format: uuid
+        chat_id:
+          type: string
+          format: uuid
+          description: Bei neuem Chat die neu erzeugte ID.
+        created_at:
+          type: string
+          format: date-time
+          description: Serverzeit nach RFC 3339 in UTC.
+        user_message:
+          $ref: '#/components/schemas/UserMessageRef'
+        answer:
+          $ref: '#/components/schemas/Answer'
+
+    UserMessageRef:
+      type: object
+      additionalProperties: false
+      required: [message_id, created_at]
+      description: >-
+        Nur Kennungen und Zeit. Der Nachrichtentext wird nicht zurueck
+        gespiegelt; der Client hat ihn bereits.
+      properties:
+        message_id:
+          type: string
+          format: uuid
+        client_message_id:
+          type: [string, 'null']
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+
+    Answer:
+      type: object
+      additionalProperties: false
+      required: [message_id, created_at, origin, ai_generated, ai_disclosure, content, sources]
+      description: >-
+        Bewusst nicht enthalten, weil VitaSync keine individuelle Bewertung
+        abgibt (D08, harte Regel 7): `assessment`, `severity`, `urgency`,
+        `triage_level`, `risk_score`, `diagnosis`, `suspected_condition`,
+        `reference_range`, `recommended_action`, `confidence`.
+
+        Fuer spaetere Tasks reserviert und hier absichtlich nicht
+        spezifiziert: Darstellung eigener Werte und rein rechnerischer
+        Auswertungen (U010, U013), Anhaenge (U032), Endpunkte fuer Verlauf
+        und Einwilligung. Diese kommen als zusaetzliche, optionale Felder
+        oder eigene Endpunkte hinzu, ohne die hier definierten zu aendern.
+      properties:
+        message_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        origin:
+          type: string
+          enum: [model, fixed_text]
+          description: >-
+            `model`: vom lokalen Sprachmodell formuliert.
+            `fixed_text`: wortgleich ausgelieferter, fuer alle Nutzer
+            identischer Text aus `knowledge/` (Notfallhinweis, Abweisung
+            fachfremder Fragen, Fallback bei ungueltiger Modellausgabe).
+            Damit sind feste Systemtexte maschinell unterscheidbar
+            (T-U028-03).
+        ai_generated:
+          type: boolean
+          description: >-
+            Maschinenlesbare Kennzeichnung nach AI Act Art. 50 und D09.
+            `true` genau dann, wenn `origin` den Wert `model` hat, also der
+            Wortlaut vom Modell stammt. Bei `fixed_text` ist der Wortlaut
+            fachlich freigegeben und daher `false`. Die dauerhafte
+            Kennzeichnung in der Oberflaeche haengt nicht an diesem Feld,
+            sondern ist immer sichtbar (U028).
+        ai_disclosure:
+          $ref: '#/components/schemas/AiDisclosure'
+        model:
+          oneOf:
+            - $ref: '#/components/schemas/ModelInfo'
+            - type: 'null'
+          description: "Bei `origin: fixed_text` immer `null`."
+        content:
+          type: string
+          minLength: 1
+          description: >-
+            Antworttext in der angefragten Sprache. Eingeschraenktes Markdown
+            (Absaetze, Listen, Fettdruck, Links). Der Client rendert als Text
+            oder bereinigtes Markdown, nie als rohes HTML.
+        notice:
+          oneOf:
+            - $ref: '#/components/schemas/Notice'
+            - type: 'null'
+          description: >-
+            Fester Hinweis, der der Antwort vorangestellt wird. `null`, wenn
+            keiner gilt. Ein fehlender Hinweis ist keine Entwarnung
+            (harte Regel 8).
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/Source'
+          description: >-
+            Verwendete Eintraege aus `knowledge/`, nur mit
+            `status: geprueft` (D04). Leere Liste ist erlaubt und bedeutet
+            nicht, dass keine Quelle noetig waere.
+
+    AiDisclosure:
+      type: object
+      additionalProperties: false
+      required: [text_id, version]
+      description: >-
+        Verweis auf den freigegebenen Transparenzhinweis ("Du sprichst mit
+        einer KI"). Versioniert, damit nachweisbar ist, welcher Wortlaut
+        angezeigt wurde (AI Act Art. 50, D09). Der Wortlaut kommt aus
+        T-U028-01.
+      properties:
+        text_id:
+          type: string
+          pattern: '^[a-z0-9-]+$'
+          description: ID des Eintrags in `knowledge/` (Kopfdatum `id`).
+        version:
+          type: integer
+          minimum: 1
+          description: >-
+            Version des angezeigten Wortlauts. Ganzzahl, verweist auf das
+            Kopfdatum `version` in `knowledge/` (wird dort mit DOC-001
+            eingefuehrt).
+
+    ModelInfo:
+      type: object
+      additionalProperties: false
+      required: [name, version, runtime, local]
+      description: >-
+        Herkunft der Formulierung. Enthaelt keine Prompts und keine
+        Parameter, damit die Antwort keine Rueckschluesse auf interne
+        Anweisungen erlaubt.
+      properties:
+        name:
+          type: string
+          description: Modellname, z. B. der in D03 gewaehlte.
+        version:
+          type: string
+          description: Version oder Tag des Modells.
+        runtime:
+          type: string
+          enum: [ollama]
+          description: Laufzeitumgebung nach D01.
+        local:
+          type: boolean
+          const: true
+          description: >-
+            Immer `true`. Es werden keine Nutzerdaten an externe KI-Dienste
+            gegeben (D09, harte Regel 12).
+
+    Notice:
+      type: object
+      additionalProperties: false
+      required: [type, knowledge_id, version, content_language]
+      description: >-
+        Fester, fuer alle Nutzer gleicher Hinweis. Enthaelt bewusst keine
+        Stufe, keinen Zeitrahmen und keine Bewertung der Situation (D08).
+      properties:
+        type:
+          type: string
+          enum: [emergency_general, out_of_scope]
+          description: >-
+            `emergency_general`: ein freigegebenes Warnzeichen-Stichwort wurde
+            genannt, der feste Notfallhinweis gilt (harte Regel 8).
+            `out_of_scope`: fachfremde Frage, freundliche Abweisung (U004).
+        knowledge_id:
+          type: string
+          pattern: '^[a-z0-9-]+$'
+          description: ID des Eintrags in `knowledge/` (Kopfdatum `id`).
+        version:
+          type: integer
+          minimum: 1
+          description: >-
+            Version des Hinweistexts. Ganzzahl, verweist auf das Kopfdatum
+            `version` in `knowledge/` (DOC-001).
+        content_language:
+          $ref: '#/components/schemas/ContentLanguage'
+
+    Source:
+      type: object
+      additionalProperties: false
+      required: [knowledge_id, title, publisher, url, review_date, content_language]
+      description: >-
+        Felder spiegeln die Kopfdaten in `knowledge/`: `knowledge_id` aus
+        `id`, `title` aus `titel`, `publisher` aus `herausgeber`, `url` aus
+        `quelle`, `review_date` aus `review_datum`. Das Kopfdatum
+        `herausgeber` wird mit DOC-001 eingefuehrt.
+      properties:
+        knowledge_id:
+          type: string
+          pattern: '^[a-z0-9-]+$'
+        title:
+          type: string
+        publisher:
+          type: string
+          description: >-
+            Herausgebende Stelle, z. B. IQWiG oder BMG (D04). Kopfdatum
+            `herausgeber`.
+        url:
+          type: string
+          format: uri
+        review_date:
+          type: string
+          format: date
+          description: Datum der fachlichen Freigabe (`review_datum`).
+        content_language:
+          $ref: '#/components/schemas/ContentLanguage'
+
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [error]
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorBody'
+
+    ErrorBody:
+      type: object
+      additionalProperties: false
+      required: [code, message, request_id]
+      description: >-
+        Einheitliches Fehlerformat fuer alle Routen. `message` ist ein
+        allgemeiner Text fuer Entwickler und enthaelt nie Nachrichteninhalt,
+        Gesundheitswerte, Prompts oder Stacktraces (harte Regel 10).
+      properties:
+        code:
+          $ref: '#/components/schemas/ErrorCode'
+        message:
+          type: string
+        request_id:
+          type: string
+          format: uuid
+        field_errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/FieldError'
+
+    FieldError:
+      type: object
+      additionalProperties: false
+      required: [field, code]
+      properties:
+        field:
+          type: string
+          description: Feldname im Request, z. B. `message`.
+        code:
+          type: string
+          enum: [required, empty, too_long, invalid_format, unsupported_value]
+        limit:
+          type: integer
+          description: Geltende Grenze, falls eine verletzt wurde, z. B. 2000.
+
+    ErrorCode:
+      type: string
+      description: >-
+        Abgeschlossene Liste. Der Client reagiert auf diese Werte, nicht auf
+        `message`.
+      enum:
+        - invalid_request
+        - not_authenticated
+        - consent_required
+        - chat_not_found
+        - payload_too_large
+        - message_empty
+        - message_too_long
+        - language_unsupported
+        - rate_limited
+        - model_unavailable
+        - internal_error
+
+  responses:
+
+    InvalidRequest:
+      description: >-
+        Ungueltiges JSON, falscher Typ oder unbekanntes Feld
+        (`invalid_request`).
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/XRequestId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotAuthenticated:
+      description: Keine gueltige Sitzung (`not_authenticated`).
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/XRequestId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    ConsentRequired:
+      description: >-
+        Freigabe `chat_processing` fehlt oder ist widerrufen
+        (`consent_required`). Geprueft vor Datenzugriff und vor Modellaufruf
+        (harte Regel 3).
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/XRequestId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    ChatNotFound:
+      description: >-
+        Chat unbekannt oder gehoert einem anderen Konto (`chat_not_found`).
+        Beide Faelle sehen nach aussen gleich aus.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/XRequestId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    PayloadTooLarge:
+      description: >-
+        Rumpf ueber der Serverobergrenze (`payload_too_large`). Greift, bevor
+        der Text geprueft wird.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/XRequestId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    UnprocessableMessage:
+      description: >-
+        Form stimmt, Inhalt nicht: `message_empty` (leer oder nur Leerraum),
+        `message_too_long` (mehr als 2000 Zeichen),
+        `language_unsupported`.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/XRequestId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            leerer_text:
+              summary: Leerer Text
+              externalValue: ./examples/chat-error-message-empty.json
+            zu_lang:
+              summary: Ueberlange Eingabe
+              externalValue: ./examples/chat-error-message-too-long.json
+
+    RateLimited:
+      description: Zu viele Anfragen (`rate_limited`).
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/XRequestId'
+        Retry-After:
+          $ref: '#/components/headers/RetryAfter'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    ModelUnavailable:
+      description: >-
+        Lokales Modell nicht erreichbar (`model_unavailable`). Gilt nicht fuer
+        ungueltige Modellausgaben: dort antwortet der Server mit 201 und
+        `origin: fixed_text` als kontrollierter Fallback (harte Regel 5).
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/XRequestId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    InternalError:
+      description: Unerwarteter Fehler (`internal_error`).
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/XRequestId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

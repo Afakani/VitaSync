@@ -1,0 +1,38 @@
+{
+  "request_id": "5e4d3c2b-1a09-4f8e-8d7c-6b5a49382716",
+  "chat_id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+  "created_at": "2026-10-14T09:31:48Z",
+  "user_message": {
+    "message_id": "33333333-4444-4555-8666-777777777777",
+    "client_message_id": "c4a81f52-6d70-4e3b-9a21-0b5c8e7d6f10",
+    "created_at": "2026-10-14T09:31:47Z"
+  },
+  "answer": {
+    "message_id": "88888888-9999-4aaa-8bbb-cccccccccccc",
+    "created_at": "2026-10-14T09:31:48Z",
+    "origin": "model",
+    "ai_generated": true,
+    "ai_disclosure": {
+      "text_id": "notice-ki-hinweis",
+      "version": 1
+    },
+    "model": {
+      "name": "beispielmodell",
+      "version": "2026-09",
+      "runtime": "ollama",
+      "local": true
+    },
+    "content": "Iron is found in legumes, oats, wholegrain products and green leafy vegetables, for example. Having some vitamin C with them helps your body absorb iron from plant sources.\n\nThis is general information that is the same for everyone. VitaSync does not assess your personal situation. For questions about your own values, your GP practice is the right place.",
+    "notice": null,
+    "sources": [
+      {
+        "knowledge_id": "topic-eisenmangel",
+        "title": "Eisenmangel - allgemeine Information",
+        "publisher": "IQWiG (gesundheitsinformation.de)",
+        "url": "https://www.gesundheitsinformation.de/",
+        "review_date": "2026-10-10",
+        "content_language": "de"
+      }
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "error": {
+    "code": "message_empty",
+    "message": "Field 'message' is empty after trimming whitespace.",
+    "request_id": "9f0e1d2c-3b4a-4958-8677-5a4b3c2d1e0f",
+    "field_errors": [
+      {
+        "field": "message",
+        "code": "empty"
+      }
+    ]
+  }
+}
