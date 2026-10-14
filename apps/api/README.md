@@ -53,6 +53,38 @@ docker compose --env-file .env -f infra/docker-compose.yml down
 
 Daten bleiben im Volume `vitasync-db-data`. Mit `down -v` wird es gelöscht.
 
+## Fehlerbehebung: Port belegt
+
+Startet die Datenbank nicht oder bricht Compose mit einem Bind-Fehler ab, ist der Port auf dem Host schon belegt. Häufigste Ursache ist eine lokal installierte PostgreSQL auf `5432`. Deshalb ist die Vorgabe in `.env.example` bereits `5433`.
+
+Belegung prüfen (Windows, PowerShell oder cmd):
+
+```
+netstat -ano | findstr :5432
+```
+
+Die letzte Spalte ist die PID. Dazu den Prozess finden:
+
+```
+tasklist /FI "PID eq <PID>"
+```
+
+Ist der Port belegt, in `.env` einen freien Port setzen, **beide** Stellen angleichen und neu starten:
+
+```
+POSTGRES_PORT=5434
+DATABASE_URL=postgresql://vitasync:<passwort>@127.0.0.1:5434/vitasync
+```
+
+```bash
+docker compose --env-file .env -f infra/docker-compose.yml up -d db
+docker compose --env-file .env -f infra/docker-compose.yml port db 5432
+```
+
+Der letzte Befehl muss `127.0.0.1:<dein Port>` zeigen. Steht dort `0.0.0.0`, fehlt das Loopback-Präfix in `infra/docker-compose.yml`.
+
+Die lokale PostgreSQL-Installation nicht beenden, um den Port freizumachen. Ein anderer Port im Container-Setup ist der harmlosere Weg.
+
 ## Hinweise
 
 - `--env-file .env` ist nötig, weil Compose seine Env-Datei sonst neben `infra/docker-compose.yml` sucht.
