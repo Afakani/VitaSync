@@ -15,7 +15,9 @@ Zuständig: <GitHub-Handle eintragen>
 - Unit-Tests nutzen den Fake-LLM-Adapter, nie das echte Modell.
 - Integrationstests gegen Test-Datenbank aus `infra/`.
 - Befehl: `cd apps/api && .venv/Scripts/python.exe -m pytest` (Windows; sonst `.venv/bin/python`). Konfiguration in `pyproject.toml` unter `[tool.pytest.ini_options]`.
-- Stand F002 nur ein Rauchtest für `/healthz`. Abdeckung, CI und import-linter kommen mit F004.
+- Jeder Pull Request laeuft automatisch: Tests, Vertragsbeispiele, Importregeln und Strukturcheck (`.github/workflows/checks.yml`, F004).
+- Importregeln: `cd apps/api && .venv/Scripts/lint-imports.exe --config .importlinter` prueft die Tabelle aus `docs/Architektur.md`. Nicht pruefbar ist damit, ob ein Fachbereich einen anderen nur ueber dessen `__init__.py` anspricht - das bleibt Sache des Reviews.
+- Abdeckungsmessung gibt es bewusst noch nicht; sie kommt erst, wenn es Fachlogik zu messen gibt.
 
 ## Aufbau
 | Ordner | Inhalt |

@@ -20,13 +20,19 @@ Das lokale LLM erkennt Anfragen, liest Dokumente und formuliert freigegebene Inh
 Alle Befehle vom Wurzelverzeichnis aus. Einrichtung und Erklärungen: `apps/api/README.md`.
 
 ```
-# Befehle (Stand F002; Web-Befehle folgen mit F006, CI mit F004)
-# Datenbank:   docker compose --env-file .env -f infra/docker-compose.yml up -d db
-# Start API:   cd apps/api && .venv/Scripts/python.exe -m uvicorn vitasync.api.app:app --reload --host 127.0.0.1 --port 8000
-# Tests API:   cd apps/api && .venv/Scripts/python.exe -m pytest
-# Tests Web:   -
+# Befehle (Stand F004; Web-Befehle folgen mit F006)
+# Datenbank:     docker compose --env-file .env -f infra/docker-compose.yml up -d db
+# Start API:     cd apps/api && .venv/Scripts/python.exe -m uvicorn vitasync.api.app:app --reload --host 127.0.0.1 --port 8000
+# Tests API:     cd apps/api && .venv/Scripts/python.exe -m pytest
+# Tests Web:     -
 # Strukturcheck: python scripts/check_structure.py
+# Vertraege:     python scripts/validate_contracts.py
+# Importregeln:  cd apps/api && .venv/Scripts/lint-imports.exe --config .importlinter
+# Werkzeugtests: python -m pytest scripts/tests
 ```
+
+Die vier Pruefungen laufen bei jedem Pull Request als eigene Jobs (`.github/workflows/checks.yml`).
+Werkzeuge fuer `scripts/` kommen aus `scripts/requirements.lock`, die der API aus `apps/api/requirements.lock`.
 
 Pfade mit `.venv/Scripts/` gelten für Windows; unter Linux und macOS `.venv/bin/` nutzen.
 
@@ -46,7 +52,7 @@ Pfade mit `.venv/Scripts/` gelten für Windows; unter Linux und macOS `.venv/bin
 | `docs/compliance/` | Datenschutz-Dokumente (Verzeichnis, TOM, Hinweis, Pannenablauf). |
 | `docs/nachweise/` | Nachweise zur Definition of Done je Meilenstein. |
 | `planning/` | Backlog (Excel), Arbeitsaufträge, Übergaben. |
-| `scripts/` | Entwicklungswerkzeuge, u. a. Strukturcheck. |
+| `scripts/` | Entwicklungswerkzeuge: Strukturcheck, Vertragspruefung, eigene Abhaengigkeiten und Selbsttests. |
 
 Keine zweiten Bäume daneben anlegen (`src/`, `backend/`, `frontend/`, `utils/` im Root).
 

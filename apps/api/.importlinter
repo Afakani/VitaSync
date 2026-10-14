@@ -1,0 +1,54 @@
+; Abhaengigkeitsregeln aus docs/Architektur.md, Tabelle "Abhaengigkeitsregeln".
+; Aufruf: cd apps/api && .venv/Scripts/python.exe -m importlinter.cli lint --config .importlinter
+;
+; Geprueft werden Modulgrenzen. Die Regel "andere Features nur ueber deren
+; __init__.py" laesst sich damit nicht pruefen und bleibt eine Regel fuer
+; Menschen; siehe apps/api/AGENTS.md.
+
+[importlinter]
+root_package = vitasync
+include_external_packages = False
+
+[importlinter:contract:core-ist-unabhaengig]
+name = core importiert nichts aus dem Projekt
+type = forbidden
+source_modules =
+    vitasync.core
+forbidden_modules =
+    vitasync.api
+    vitasync.features
+    vitasync.security
+    vitasync.adapters
+
+[importlinter:contract:adapters-kennen-nur-core]
+name = adapters kennen keine Features, keine Routen, keine Sicherheit
+type = forbidden
+source_modules =
+    vitasync.adapters
+forbidden_modules =
+    vitasync.api
+    vitasync.features
+    vitasync.security
+
+[importlinter:contract:adapters-nicht-direkt-ansprechen]
+name = api und features sprechen Adapter nicht direkt an
+type = forbidden
+source_modules =
+    vitasync.api
+    vitasync.features
+forbidden_modules =
+    vitasync.adapters
+
+[importlinter:contract:security-kennt-keine-features]
+name = security kennt weder Routen noch Fachbereiche
+type = forbidden
+source_modules =
+    vitasync.security
+forbidden_modules =
+    vitasync.api
+    vitasync.features
+
+; Bewusst keine independence-Regel fuer die Fachbereiche: docs/Architektur.md
+; erlaubt Aufrufe zwischen ihnen ("andere features/* nur oeffentlich"), und das
+; Ablaufdiagramm zeigt features/chat -> recognition, guidance, health_data.
+; Dass der Zugriff nur ueber __init__.py laeuft, pruefen Menschen im Review.

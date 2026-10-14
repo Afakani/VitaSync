@@ -17,7 +17,9 @@ Zuständig: <GitHub-Handle eintragen>
 - `fhir/examples/` nur synthetisch.
 
 ## Tests
-- Beispiele müssen gegen ihr Schema valide sein (Check folgt mit F004).
+- Beispiele müssen gegen ihr Schema valide sein: `python scripts/validate_contracts.py`, läuft bei jedem Pull Request.
+- Jedes Beispiel muss im Vertrag unter `examples:` mit `externalValue` eingetragen sein. Eine Datei in `examples/` ohne Eintrag lässt die Prüfung scheitern, damit nichts ungeprüft liegen bleibt.
 
 ## Fallen
 - Vertragsänderung bricht Verbraucher: alle im selben PR anpassen und im PR auflisten.
+- Ändert sich ein Schema, müssen die absichtlich kaputten Beispiele in `scripts/tests/fixtures/invalid/` mitwachsen. Sonst prüfen sie eine Form, die es nicht mehr gibt, und der Selbsttest wird wertlos.

@@ -22,6 +22,9 @@ dev = [
     # Starlettes TestClient verlangt httpx2; httpx 0.x loest eine
     # StarletteDeprecationWarning aus.
     "httpx2==2.13.1",
+    # Prueft die Abhaengigkeitsregeln aus docs/Architektur.md (F004).
+    # Gehoert hierher, weil es das Paket vitasync importiert.
+    "import-linter==2.15",
 ]
 
 [tool.setuptools]
