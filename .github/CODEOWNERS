@@ -1,0 +1,14 @@
+# Pro Modul den verantwortlichen Menschen eintragen (GitHub-Handle).
+# GitHub fordert dann automatisch dessen Review an.
+# Beispielzeilen – "#" entfernen und Handles ersetzen:
+#
+# /AGENTS.md                                  @teamlead
+# /docs/decisions/                            @teamlead
+# /contracts/                                 @teamlead
+# /apps/web/                                  @person-web
+# /apps/api/src/vitasync/features/chat/       @person-a
+# /apps/api/src/vitasync/features/recognition/ @person-b
+# /apps/api/src/vitasync/features/guidance/   @person-c
+# /apps/api/src/vitasync/security/            @person-d
+# /apps/api/src/vitasync/adapters/llm/        @person-b
+# /knowledge/                                 @fachlicher-reviewer

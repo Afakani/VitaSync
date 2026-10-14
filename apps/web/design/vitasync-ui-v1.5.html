@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="de" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VitaSync — Dein KI-Begleiter</title>
+  <!-- v1.5: Keine externen CDNs (DSGVO, D09). Tailwind ist vorkompiliert, Icons lokal. -->
+  <link rel="stylesheet" href="vendor/tailwind.css">
+  <link rel="stylesheet" href="vendor/phosphor/regular/style.css">
+  <style>
+    /* Minimal scrollbars */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(8, 142, 101, 0.2);
+      border-radius: 9999px;
+    }
+    /* Print Styles */
+    @media print {
+      body * { visibility: hidden; }
+      #summaryPanel, #summaryPanel * { visibility: visible; }
+      #summaryPanel {
+        position: absolute; left: 20px; top: 20px;
+        width: 90%; display: block !important;
+        box-shadow: none !important; border: none !important;
+      }
+      #summaryPanel .summary-export { display: none !important; }
+    }
+    /* Smooth transitions between desktop and phone layouts */
+    #appContainer {
+      width: 100%; height: 100%; max-width: 100%;
+      border-radius: 0; border-width: 0;
+      transition: all 380ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #appContainer.phone-mode {
+      max-width: 390px !important;
+      height: min(810px, calc(100vh - 32px)) !important;
+      border-radius: 42px !important;
+      border-width: 1px !important;
+      border-color: rgba(212, 212, 216, 0.8) !important;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.06) !important;
+    }
+    /* DESKTOP SIDEBAR COLLAPSE */
+    #appContainer:not(.phone-mode) #sidebar.desktop-collapsed {
+      width: 0 !important; border-right-width: 0 !important;
+      padding: 0 !important; overflow: hidden !important;
+      opacity: 0 !important; pointer-events: none !important;
+    }
+    /* ROBUSTER DRAWER IN DER HANDY-ANSICHT */
+    .phone-mode #sidebar {
+      position: absolute !important; top: 0 !important; bottom: 0 !important; left: 0 !important;
+      width: 270px !important; z-index: 50 !important;
+      box-shadow: 14px 0 35px -10px rgba(0, 0, 0, 0.15) !important;
+      transition: transform 0.25s ease-in-out !important;
+    }
+    .phone-mode #sidebar.is-open { transform: translateX(0) !important; }
+    .phone-mode #sidebar:not(.is-open) { transform: translateX(-100%) !important; }
+    .phone-mode #sidebarBackdrop.is-open {
+      display: block !important; position: absolute !important; inset: 0 !important; z-index: 45 !important;
+    }
+    .phone-mode #summaryPanel { display: none !important; }
+    .phone-mode .mobile-only-btn { display: inline-flex !important; }
+    .phone-mode .ai-badge-long { display: none !important; }
+    .phone-mode .ai-badge-short { display: inline !important; }
+    /* =========================================================
+       VITASYNC DESIGN SYSTEM: LIGHT THEME & ROUNDED SHAPES
+       ========================================================= */
+    body { background-color: #f4f7f5; }
+    #appContainer { background-color: #f4f7f5 !important; }
+    #appContainer main { background-color: #f4f7f5 !important; }
+    /* HEADER - Markantes Original-Grün */
+    #appContainer > header {
+      min-height: 64px;
+      background-color: #088e65 !important;
+      border-bottom: none !important;
+      color: #ffffff;
+      box-shadow: 0 4px 20px rgba(8, 142, 101, 0.15);
+    }
+    #appContainer > header button { color: rgba(255, 255, 255, 0.85); }
+    #appContainer > header button:hover { background-color: rgba(255, 255, 255, 0.2); color: #ffffff; }
+    .brand-logo { display: block; width: 104px; height: 32px; object-fit: contain; }
+    .brand-tagline { font-size: 11px; font-weight: 600; line-height: 1.3; color: #a7f3d0; }
+    /* v1.5: Dauerhafte KI-Kennzeichnung im Header (U028, AI Act Art. 50) */
+    .ai-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 650; color: #ffffff;
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 9999px; padding: 4px 10px; white-space: nowrap;
+    }
+    .ai-badge-short { display: none; }
+    @media (max-width: 640px) {
+      .ai-badge-long { display: none; }
+      .ai-badge-short { display: inline; }
+    }
+    /* =========================================================
+       SIDEBARS: OPTISCH GEHIGHLIGHTED
+       ========================================================= */
+    #sidebar, #summaryPanel {
+      background-color: #ffffff !important;
+      color: #1f2937 !important;
+      z-index: 20;
+    }
+    #sidebar {
+      border-right: 2px solid rgba(8, 142, 101, 0.25) !important;
+      box-shadow: 6px 0 24px -4px rgba(8, 142, 101, 0.08);
+    }
+    #summaryPanel {
+      width: 310px;
+      border-left: 2px solid rgba(8, 142, 101, 0.25) !important;
+      box-shadow: -6px 0 24px -4px rgba(8, 142, 101, 0.08);
+    }
+    /* Left Sidebar: Titles and Buttons */
+    #sidebar .sidebar-heading {
+      color: #6b7280; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    #sidebar .sidebar-new-btn {
+      color: #088e65; background: #e3f4ee;
+      border: 1px solid rgba(8, 142, 101, 0.2);
+      border-radius: 9999px; /* Pill shape */
+      padding: 0.25rem 0.65rem; font-weight: 600; font-size: 11px;
+      transition: all 0.15s ease;
+    }
+    #sidebar .sidebar-new-btn:hover { background: #088e65; color: #ffffff; }
+    /* Chat Items in Left Sidebar */
+    .chat-history-btn {
+      width: 100%; text-align: left; padding: 0.65rem 0.85rem;
+      border-radius: 16px; /* Starke Rundung */
+      color: #4b5563 !important; background: #f9fafb;
+      border: 1px solid #f4f7f5; font-size: 12.5px; font-weight: 500;
+      transition: all 0.15s ease; display: flex; align-items: center; justify-content: space-between;
+    }
+    .chat-history-btn:hover { background: #f4f7f5 !important; color: #1f2937 !important; }
+    .chat-history-btn.active-chat {
+      background: #e3f4ee !important; border-color: rgba(8, 142, 101, 0.3) !important;
+      color: #088e65 !important; font-weight: 650;
+    }
+    /* Sidebar Footer Profile */
+    #sidebar .patient-profile-card {
+      background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 20px;
+      padding: 0.625rem 0.75rem; cursor: pointer; transition: all 0.15s ease;
+      width: 100%; text-align: left;
+    }
+    #sidebar .patient-profile-card:hover { background: #f4f7f5; border-color: #d1d5db; }
+    /* Right Summary Panel Elements */
+    #summaryPanel .summary-heading { font-size: 14px; font-weight: 750; color: #1f2937 !important; letter-spacing: -0.01em; }
+    #summaryPanel .summary-section-title {
+      font-size: 11px; font-weight: 750; text-transform: uppercase; letter-spacing: 0.06em;
+      color: #088e65 !important; margin-bottom: 0.5rem;
+    }
+    #summaryPanel .personal-context-box {
+      background: #f9fafb; border: 1px solid #e5e7eb;
+      border-radius: 24px; padding: 1rem;
+    }
+    #summaryPanel .personal-context dt { font-size: 11px; font-weight: 600; color: #6b7280 !important; }
+    #summaryPanel .personal-context dd { font-size: 12.5px; font-weight: 600; line-height: 1.4; color: #1f2937 !important; margin-top: 1px; }
+    .self-report-tag {
+      display: inline-block; font-size: 10px; font-weight: 650; color: #6b7280;
+      background: #f1f5f9; border-radius: 9999px; padding: 1px 8px; margin-left: 4px;
+      text-transform: none; letter-spacing: 0;
+    }
+    /* Dynamic Summary List in Right Panel */
+    #summaryPanel #summaryContent { font-size: 12.5px; line-height: 1.55; }
+    #summaryPanel #summaryContent > div {
+      background: #ffffff; border: 1px solid #e5e7eb;
+      border-radius: 20px; padding: 0.75rem 0.85rem; margin-bottom: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    #summaryPanel #summaryContent p { color: #374151 !important; }
+    #summaryPanel #summaryContent p.font-medium { color: #111827 !important; font-weight: 650; }
+    #summaryPanel .summary-extra-label {
+      display: block; margin-bottom: 4px; font-size: 11px; font-weight: 750;
+      color: #088e65 !important; text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    #summaryPanel .border-t { border-color: #e5e7eb !important; }
+    /* PDF Export Button */
+    #summaryPanel .summary-export button {
+      background: #088e65 !important; border: none !important; color: #ffffff !important;
+      font-weight: 650; border-radius: 9999px; padding: 0.75rem 1rem;
+      box-shadow: 0 4px 14px rgba(8, 142, 101, 0.25); transition: all 0.2s ease;
+    }
+    #summaryPanel .summary-export button:hover {
+      background: #067653 !important; box-shadow: 0 6px 20px rgba(8, 142, 101, 0.35); transform: translateY(-1px);
+    }
+    /* Welcome topic cards: consistent, professional borders and spacing */
+    #welcomeState h2 { color: #111827 !important; }
+    #welcomeState p { color: #64748b !important; }
+    #welcomeState .grid > button {
+      box-sizing: border-box;
+      min-height: 148px;
+      padding: 16px !important;
+      background: #ffffff !important;
+      border: 1px solid #dbe5e1 !important;
+      border-radius: 18px !important;
+      box-shadow: 0 2px 5px rgba(15, 23, 42, 0.035);
+      text-align: left;
+      gap: 10px;
+      transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+    }
+    #welcomeState .grid > button:hover {
+      border-color: #0b9b72 !important;
+      box-shadow: 0 7px 18px rgba(8, 142, 101, 0.10);
+      transform: translateY(-2px);
+    }
+    #welcomeState .grid > button:focus-visible {
+      outline: 3px solid rgba(8, 142, 101, 0.25);
+      outline-offset: 2px;
+    }
+    #welcomeState .grid > button:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+    #welcomeState .grid > button h3 {
+      color: #111827 !important;
+      font-size: 15px;
+      line-height: 1.35;
+      font-weight: 700;
+      margin: 0;
+    }
+    #welcomeState .grid > button p {
+      color: #64748b !important;
+      font-size: 12px;
+      line-height: 1.55;
+      margin-top: 6px;
+    }
+    #welcomeState .grid > button .bg-brand-light {
+      border: 1px solid #d4eee5;
+      border-radius: 12px !important;
+      background: #e8f6f1 !important;
+    }
+    #welcomeState .grid > button .ph-arrow-up-right { color: #94a3b8 !important; }
+    @media (max-width: 640px) {
+      #welcomeState .grid > button { min-height: 132px; border-radius: 16px !important; }
+    }
+    /* Center Bottom Input Bar */
+    #inputArea {
+      background-color: #f4f7f5 !important; border-top: none !important;
+      padding-bottom: 1rem;
+    }
+    #inputArea form {
+      background-color: #ffffff !important;
+      border: 1.5px solid #cbd5e1 !important;
+      border-radius: 22px !important;
+      min-height: 76px;
+      padding: 8px 10px 8px 14px !important;
+      box-shadow: 0 5px 18px rgba(15, 23, 42, 0.07);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    #inputArea form > div {
+      min-height: 56px;
+      gap: 10px;
+    }
+    #inputArea form:focus-within {
+      border-color: #088e65 !important;
+      box-shadow: 0 0 0 3px rgba(8, 142, 101, 0.15), 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+    #inputArea.is-locked form { opacity: 0.6; }
+    #messageInput {
+      color: #1f2937 !important;
+      padding: 12px 10px !important;
+      min-width: 0;
+      font-size: 15px !important;
+      line-height: 1.5;
+      outline: none !important;
+      border: 0 !important;
+      background: transparent !important;
+    }
+    #messageInput::placeholder { color: #64748b !important; opacity: 1; }
+    #messageInput:focus::placeholder { color: #94a3b8 !important; }
+    .ai-footer-note { font-size: 11px; color: #64748b; text-align: center; margin-top: 8px; }
+    @media (max-width: 640px) {
+      #inputArea form { min-height: 64px; padding: 6px 8px !important; }
+      #inputArea form > div { min-height: 48px; }
+      #sendButton { width: 42px; height: 42px; }
+    }
+    /* Prominenter runder Senden-Button */
+    #sendButton {
+      background-color: #088e65 !important; color: #ffffff !important;
+      border-radius: 50%; width: 44px; height: 44px;
+      box-shadow: 0 4px 14px rgba(8, 142, 101, 0.3) !important;
+    }
+    #sendButton:hover {
+      background-color: #067653 !important;
+      box-shadow: 0 6px 18px rgba(8, 142, 101, 0.4) !important;
+    }
+    #sendButton:disabled { cursor: not-allowed; }
+    /* Chat Bubbles - Stark gerundet */
+    .user-chat-bubble {
+      background-color: #088e65; color: #ffffff;
+      border-radius: 24px; border-top-right-radius: 4px; /* Tropfenform */
+      padding: 0.875rem 1.125rem; font-size: 13.5px; line-height: 1.55;
+      box-shadow: 0 2px 6px rgba(8, 142, 101, 0.15);
+    }
+    .user-avatar-badge {
+      width: 2.25rem; height: 2.25rem; border-radius: 50%;
+      background-color: #e3f4ee; color: #088e65; font-weight: 700; font-size: 12px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .bot-chat-bubble {
+      background-color: #ffffff; border: 1px solid #e5e7eb;
+      border-radius: 24px; border-top-left-radius: 4px; /* Tropfenform */
+      padding: 1rem 1.125rem; font-size: 13.5px; line-height: 1.6; color: #1f2937;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    .bot-avatar-badge {
+      width: 2.25rem; height: 2.25rem; border-radius: 50%;
+      background-color: #088e65; color: #ffffff; font-weight: 700; font-size: 12px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(8, 142, 101, 0.2);
+    }
+    .emergency-card {
+      background-color: #fff1f2 !important; border: 1px solid #fecdd3 !important;
+      color: #881337 !important; border-radius: 24px; border-top-left-radius: 4px;
+      padding: 1rem 1.125rem; box-shadow: 0 4px 12px rgba(225, 29, 72, 0.08);
+    }
+    .ai-meta { font-size: 10.5px; color: #94a3b8; margin-top: 6px; }
+    .emergency-card .ai-meta { color: #be123c; opacity: 0.75; }
+    .values-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 6px; }
+    .values-table th { text-align: left; font-size: 11px; color: #6b7280; font-weight: 650; padding: 4px 6px; border-bottom: 1px solid #e5e7eb; }
+    .values-table td { padding: 5px 6px; border-bottom: 1px solid #f1f5f9; color: #1f2937; }
+    button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid #088e65; outline-offset: 3px; }
+  </style>
+</head>
+<body class="h-full text-zinc-900 font-sans antialiased flex flex-col justify-center items-center overflow-hidden">
+  <!-- APP CONTAINER -->
+  <div id="appContainer" class="w-full h-full flex flex-col relative overflow-hidden">
+    <!-- HEADER (Solid Green) -->
+    <header class="h-14 px-3 sm:px-5 flex items-center justify-between shrink-0 z-30 relative">
+      <!-- Left: Sidebar Toggle & Brand -->
+      <div class="flex items-center gap-2 shrink-0">
+        <button id="sidebarToggleBtn" onclick="toggleSidebar()" title="Toggle sidebar" aria-label="Toggle sidebar" class="w-8 h-8 flex items-center justify-center rounded-full transition-colors duration-200 shrink-0">
+          <i class="ph ph-sidebar text-lg"></i>
+        </button>
+        <button type="button" onclick="goHome()" title="Go to home page" aria-label="VitaSync home page" class="flex flex-col items-start gap-0.5 rounded-md text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-white">
+          <span class="font-bold text-lg tracking-tight leading-none text-white">VitaSync</span>
+          <span class="brand-tagline text-white/80 font-medium">Your AI Companion</span>
+        </button>
+      </div>
+      <!-- Center/Right: persistent AI label (U028, AI Act Art. 50) -->
+      <span class="ai-badge mx-2" role="note" title="AI assistant, not a doctor. No diagnoses.">
+        <i class="ph ph-robot text-sm"></i>
+        <span class="ai-badge-long">AI assistant · not a substitute for medical advice</span>
+        <span class="ai-badge-short">AI · not a doctor</span>
+      </span>
+      <!-- Right: Minimalist Controls Row -->
+      <div class="flex items-center gap-0.5 sm:gap-1 shrink-0">
+        <button onclick="toggleSummaryModal()" title="Current summary" aria-label="Current summary" class="mobile-only-btn w-8 h-8 flex items-center justify-center rounded-full transition-colors duration-200 lg:hidden shrink-0">
+          <i class="ph ph-list-dashes text-lg"></i>
+        </button>
+        <button onclick="toggleLanguageModal()" title="Change language" aria-label="Change language" class="w-8 h-8 flex items-center justify-center rounded-full transition-colors duration-200 shrink-0">
+          <i class="ph ph-globe text-lg"></i>
+        </button>
+        <button onclick="toggleSettingsModal()" title="Settings and privacy" aria-label="Settings and privacy" class="w-8 h-8 flex items-center justify-center rounded-full transition-colors duration-200 shrink-0">
+          <i class="ph ph-gear text-lg"></i>
+        </button>
+        <button id="phoneToggleBtn" onclick="togglePhoneView()" title="Toggle phone preview" aria-label="Toggle phone preview" class="w-8 h-8 flex items-center justify-center rounded-full transition-colors duration-200 shrink-0">
+          <i id="phoneToggleIcon" class="ph ph-device-mobile text-lg"></i>
+        </button>
+      </div>
+    </header>
+    <!-- MAIN BODY -->
+    <div class="flex-1 flex min-h-0 relative overflow-hidden">
+      <!-- Mobile Backdrop -->
+      <div id="sidebarBackdrop" onclick="closeSidebar()" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-40 hidden"></div>
+      <!-- 1. SIDEBAR -->
+      <aside id="sidebar" class="w-64 flex flex-col justify-between shrink-0 transition-all duration-300 ease-in-out z-40 fixed md:relative inset-y-0 left-0 -translate-x-full md:translate-x-0 overflow-hidden">
+        <div class="p-4 flex flex-col gap-4 overflow-y-auto w-64 flex-1">
+          <div class="flex items-center justify-between pb-1">
+            <span class="sidebar-heading">Chat history</span>
+            <button onclick="resetToWelcomeState(); closeSidebarIfMobile();" title="Start a new conversation" class="sidebar-new-btn flex items-center gap-1">
+              <span>New</span>
+              <i class="ph ph-plus text-[10px] font-bold"></i>
+            </button>
+          </div>
+          <!-- v1.5: no urgency dots; titles use the user's own words, never diagnoses (D08) -->
+          <nav id="chatHistoryList" class="space-y-2 text-xs">
+            <button id="chatItem-chestpain" onclick="loadHistoryChat('chestpain')" class="chat-history-btn group">
+              <span class="truncate">Chest pressure</span>
+            </button>
+            <button id="chatItem-headache" onclick="loadHistoryChat('headache')" class="chat-history-btn group">
+              <span class="truncate">Headache</span>
+            </button>
+            <button id="chatItem-bloodpressure" onclick="loadHistoryChat('bloodpressure')" class="chat-history-btn group">
+              <span class="truncate">Blood pressure readings</span>
+            </button>
+            <button id="chatItem-iron" onclick="loadHistoryChat('iron')" class="chat-history-btn group">
+              <span class="truncate">Iron-rich foods</span>
+            </button>
+          </nav>
+        </div>
+        <div class="p-3 border-t border-slate-100 w-64 space-y-2">
+          <button type="button" onclick="toggleContextModal()" title="Open profile and context" class="patient-profile-card flex items-center justify-between group">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center text-[11px] font-bold shrink-0">
+                MM
+              </div>
+              <div class="min-w-0">
+                <p class="text-xs font-bold text-slate-800 group-hover:text-brand transition-colors truncate">Max Mustermann</p>
+                <p class="text-[10px] text-slate-500 truncate">Test account • Age 38</p>
+              </div>
+            </div>
+            <i class="ph ph-caret-right text-sm text-slate-400 group-hover:text-brand transition-colors"></i>
+          </button>
+        </div>
+      </aside>
+      <!-- 2. MAIN CHAT AREA -->
+      <main class="flex-1 flex flex-col min-w-0 relative overflow-hidden">
+        <div id="centerScrollArea" class="flex-1 overflow-y-auto px-4 sm:px-8 py-8 flex flex-col">
+          <!-- A. INITIAL STATE (Welcome and topic cards) -->
+          <div id="welcomeState" class="my-auto max-w-xl mx-auto w-full py-6 flex flex-col items-center text-center transition-all duration-300">
+            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-800">
+              Hello, how can I help you today?
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-500 mt-2 max-w-md">
+              Choose a topic or describe your concern in the text field below.
+            </p>
+            <!-- v1.5: topics limited to what VitaSync may do (D08) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 w-full mt-8">
+              <button onclick="handleTileClick('I have strong pressure in my chest and feel unwell.')" class="topic-tile group text-left p-4 bg-white rounded-[28px] shadow-sm border border-slate-100 transition-all duration-200 flex flex-col justify-between hover:-translate-y-1 hover:shadow-md">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="w-10 h-10 rounded-[16px] bg-brand-light text-brand flex items-center justify-center">
+                    <i class="ph ph-notebook text-xl"></i>
+                  </div>
+                  <i class="ph ph-arrow-up-right text-sm text-slate-300 group-hover:text-brand transition-colors"></i>
+                </div>
+                <div>
+                  <h3 class="text-sm font-bold text-slate-800">Record symptoms</h3>
+                  <p class="text-[11.5px] text-slate-500 mt-1 leading-relaxed">Note symptoms with onset and duration, e.g. for a doctor's appointment</p>
+                </div>
+              </button>
+              <button onclick="handleTileClick('Which foods contain a lot of iron?')" class="topic-tile group text-left p-4 bg-white rounded-[28px] shadow-sm border border-slate-100 transition-all duration-200 flex flex-col justify-between hover:-translate-y-1 hover:shadow-md">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="w-10 h-10 rounded-[16px] bg-brand-light text-brand flex items-center justify-center">
+                    <i class="ph ph-book-open text-xl"></i>
+                  </div>
+                  <i class="ph ph-arrow-up-right text-sm text-slate-300 group-hover:text-brand transition-colors"></i>
+                </div>
+                <div>
+                  <h3 class="text-sm font-bold text-slate-800">General health question</h3>
+                  <p class="text-[11.5px] text-slate-500 mt-1 leading-relaxed">Clear information from reviewed sources</p>
+                </div>
+              </button>
+              <button onclick="handleTileClick('Show me my blood pressure readings.')" class="topic-tile group text-left p-4 bg-white rounded-[28px] shadow-sm border border-slate-100 transition-all duration-200 flex flex-col justify-between hover:-translate-y-1 hover:shadow-md">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="w-10 h-10 rounded-[16px] bg-brand-light text-brand flex items-center justify-center">
+                    <i class="ph ph-chart-line-up text-xl"></i>
+                  </div>
+                  <i class="ph ph-arrow-up-right text-sm text-slate-300 group-hover:text-brand transition-colors"></i>
+                </div>
+                <div>
+                  <h3 class="text-sm font-bold text-slate-800">View my values</h3>
+                  <p class="text-[11.5px] text-slate-500 mt-1 leading-relaxed">Show values, trends and sources</p>
+                </div>
+              </button>
+              <button onclick="handleTileClick('Which doctor is responsible for skin problems?')" class="topic-tile group text-left p-4 bg-white rounded-[28px] shadow-sm border border-slate-100 transition-all duration-200 flex flex-col justify-between hover:-translate-y-1 hover:shadow-md">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="w-10 h-10 rounded-[16px] bg-brand-light text-brand flex items-center justify-center">
+                    <i class="ph ph-signpost text-xl"></i>
+                  </div>
+                  <i class="ph ph-arrow-up-right text-sm text-slate-300 group-hover:text-brand transition-colors"></i>
+                </div>
+                <div>
+                  <h3 class="text-sm font-bold text-slate-800">Who is responsible?</h3>
+                  <p class="text-[11.5px] text-slate-500 mt-1 leading-relaxed">Which place for which concern: GP, specialist, 116117</p>
+                </div>
+              </button>
+            </div>
+          </div>
+          <!-- B. ACTIVE CHAT HISTORY -->
+          <div id="chatMessagesContainer" class="space-y-6 hidden max-w-2xl mx-auto w-full pb-6">
+            <div id="dynamicMessages" class="space-y-5"></div>
+            <div id="typingIndicator" class="flex items-start gap-3 max-w-xl hidden">
+              <div class="w-9 h-9 rounded-full bg-brand text-white flex items-center justify-center text-[12px] font-bold shrink-0 shadow-sm">
+                AI
+              </div>
+              <div class="py-3 px-4 rounded-[24px] rounded-tl-sm bg-white border border-slate-100 text-[12px] text-slate-400 flex items-center gap-1.5 shadow-sm">
+                <span>Thinking</span>
+                <span class="inline-flex gap-1 ml-1">
+                  <span class="w-1.5 h-1.5 bg-brand/50 rounded-full animate-pulse"></span>
+                  <span class="w-1.5 h-1.5 bg-brand/50 rounded-full animate-pulse [animation-delay:200ms]"></span>
+                  <span class="w-1.5 h-1.5 bg-brand/50 rounded-full animate-pulse [animation-delay:400ms]"></span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 3. EINGABEBEREICH (Pill Shape) -->
+        <div id="inputArea" class="px-4 pb-4 pt-2 sm:px-8 sm:pb-6 relative z-10">
+          <!-- v1.5: shown when consent was declined or revoked (U027) -->
+          <div id="consentBlockedNote" class="hidden max-w-2xl mx-auto mb-2 px-4 py-3 rounded-[18px] bg-white border border-slate-200 text-[12.5px] text-slate-600 flex items-center justify-between gap-3">
+            <span>Without your consent, VitaSync cannot process messages.</span>
+            <button type="button" onclick="showConsentModal()" class="shrink-0 px-3 py-1.5 rounded-full bg-brand-light text-brand font-semibold text-[12px] hover:bg-brand hover:text-white transition-colors">Review consent</button>
+          </div>
+          <form onsubmit="handleSend(event)" class="max-w-2xl mx-auto flex flex-col p-1.5 sm:p-2 relative">
+            <div id="attachedFileBadge" class="hidden flex items-center gap-1.5 px-3 py-1.5 mb-2 rounded-xl bg-brand-light border border-brand/20 text-[11.5px] font-medium text-brand w-fit ml-4 shadow-sm">
+              <i class="ph ph-file-text text-sm"></i>
+              <span id="attachedFileName" class="truncate max-w-[200px]">Report.pdf</span>
+              <button type="button" onclick="removeAttachment()" title="Remove attachment" aria-label="Remove attachment" class="hover:text-brand-hover ml-1">
+                <i class="ph ph-x text-sm"></i>
+              </button>
+            </div>
+            <div class="flex items-center gap-2">
+              <!-- v1.5: only own lab documents as PDF or image (U032), max. 10 MB -->
+              <input type="file" id="fileInput" class="hidden" onchange="handleFileChange(event)" accept=".pdf,.png,.jpg,.jpeg">
+              <button
+                type="button"
+                id="attachButton"
+                onclick="document.getElementById('fileInput').click()"
+                title="Attach a document"
+                aria-label="Attach a document"
+                class="w-10 h-10 sm:w-11 sm:h-11 rounded-full text-slate-400 hover:text-brand hover:bg-slate-100 transition-colors duration-150 flex items-center justify-center shrink-0 ml-1"
+              >
+                <i class="ph ph-paperclip text-xl"></i>
+              </button>
+              <input
+                type="text"
+                id="messageInput"
+                placeholder="Type a message..."
+                aria-label="Message"
+                autocomplete="off"
+                maxlength="2000"
+                class="flex-1 bg-transparent text-[15px] text-slate-800 placeholder-slate-400 focus:outline-none py-2"
+              />
+              <button
+                type="submit"
+                id="sendButton"
+                title="Send"
+                aria-label="Send"
+                class="flex items-center justify-center shrink-0 hover:scale-105 active:scale-95 transition-all duration-150"
+              >
+                <i class="ph ph-arrow-up text-xl"></i>
+              </button>
+            </div>
+          </form>
+          <p id="fileError" class="hidden max-w-2xl mx-auto mt-2 text-[12px] text-rose-700 text-center"></p>
+          <p class="ai-footer-note">VitaSync is an AI, not a doctor. No diagnoses. In an emergency call 112.</p>
+        </div>
+      </main>
+      <!-- 4. SUMMARY PANEL -->
+      <aside id="summaryPanel" class="w-64 flex flex-col justify-between shrink-0 hidden lg:flex overflow-y-auto">
+        <div class="space-y-4 p-4">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <span class="summary-heading flex items-center gap-2">
+              <i class="ph ph-clipboard-text text-brand text-lg"></i>
+              <span>Summary</span>
+            </span>
+          </div>
+          <!-- v1.5: profile is self-reported and only displayed, never used for assessment (D08, U019) -->
+          <section class="personal-context space-y-2.5">
+            <div class="personal-context-box">
+              <h3 class="summary-section-title flex items-center gap-1.5">
+                <i class="ph ph-user text-sm"></i> Profile <span class="self-report-tag">Self-reported</span>
+              </h3>
+              <dl class="space-y-2 mt-2">
+                <div><dt>Age &amp; sex</dt><dd>38 years · Male</dd></div>
+                <div><dt>Pre-existing conditions</dt><dd>Arterial hypertension</dd></div>
+                <div><dt>Allergies</dt><dd>None known</dd></div>
+              </dl>
+            </div>
+          </section>
+          <div>
+            <h3 class="summary-section-title flex items-center gap-1.5 pt-2">
+              <i class="ph ph-activity text-sm"></i> Your information
+            </h3>
+            <div id="summaryContent" class="space-y-2.5 text-slate-600">
+              <p class="text-[11.5px] text-slate-400 italic bg-white p-3 rounded-[20px] border border-slate-100">No data recorded yet. Start a conversation.</p>
+            </div>
+          </div>
+        </div>
+        <div class="summary-export p-4 border-t border-slate-100 bg-white">
+          <button onclick="exportPdf()" class="w-full flex items-center justify-center gap-2">
+            <i class="ph ph-file-pdf text-lg"></i>
+            <span>Export PDF</span>
+          </button>
+        </div>
+      </aside>
+    </div>
+  </div>
+  <!-- MODALS -->
+  <!-- v1.5: consent before any processing (U027, F016, DSGVO Art. 9/13) -->
+  <div id="consentModal" class="fixed inset-0 bg-slate-900/30 backdrop-blur-sm z-[60] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="consentTitle">
+    <div class="bg-white rounded-[32px] w-full max-w-md p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center gap-2 pb-3 border-b border-slate-100">
+        <i class="ph ph-shield-check text-brand text-xl"></i>
+        <span id="consentTitle" class="font-bold text-base text-slate-800">Before you start</span>
+      </div>
+      <div class="space-y-3 text-[13px] text-slate-600 leading-relaxed">
+        <p class="font-semibold text-slate-800">VitaSync is a university prototype and not a medical device.</p>
+        <p>You are talking to an AI, not a doctor. VitaSync gives general health information. It does not make diagnoses and does not assess your values or your situation.</p>
+        <p>In an emergency, call 112. For non-urgent medical help outside office hours, call 116117.</p>
+        <p>Your messages are processed on a project computer. No transfer to third parties or outside the EU. Chats are deleted automatically after 30 days. Please use test data only, no real health data.</p>
+        <p>You can withdraw your consent at any time in the settings and export or delete your data.</p>
+        <p class="text-[11.5px] text-slate-400">Privacy notice version 0.1 (draft)</p>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-2 pt-2">
+        <button onclick="declineConsent()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-sm text-slate-800 rounded-[24px] font-bold transition-colors">Decline</button>
+        <button onclick="giveConsent()" class="flex-1 py-3 bg-brand hover:bg-brand-hover text-sm text-white rounded-[24px] font-bold transition-colors shadow-md shadow-brand/20">I agree</button>
+      </div>
+    </div>
+  </div>
+  <div id="languageModal" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-[32px] w-full max-w-xs p-6 space-y-5 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center gap-2">
+          <i class="ph ph-globe text-brand text-lg"></i>
+          <span class="font-bold text-sm text-slate-800">Language</span>
+        </div>
+        <button onclick="toggleLanguageModal()" aria-label="Close" class="text-slate-400 hover:text-slate-800 bg-slate-50 hover:bg-slate-100 rounded-full w-8 h-8 flex items-center justify-center transition-colors">
+          <i class="ph ph-x text-sm"></i>
+        </button>
+      </div>
+      <div class="space-y-2 text-sm font-medium">
+        <button id="languageGermanBtn" onclick="selectLanguage('German')" class="w-full text-left px-4 py-3 rounded-[20px] bg-brand text-white flex items-center justify-between shadow-md shadow-brand/20"><span>Deutsch (German)</span><i id="germanCheck" class="ph ph-check text-sm"></i></button>
+        <button id="languageEnglishBtn" onclick="selectLanguage('English')" class="w-full text-left px-4 py-3 rounded-[20px] bg-slate-50 text-slate-800 flex items-center justify-between"><span>English</span><i id="englishCheck" class="ph ph-check text-sm hidden"></i></button>
+        <p id="languageHelpText" class="px-4 py-2 text-xs text-slate-500">Choose the language for the entire interface.</p>
+      </div>
+    </div>
+  </div>
+  <!-- v1.5: settings without "cardiac alert"; privacy actions instead (D08, D09) -->
+  <div id="settingsModal" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-[32px] w-full max-w-sm p-6 space-y-5 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center gap-2">
+          <i class="ph ph-gear text-brand text-lg"></i>
+          <span class="font-bold text-sm text-slate-800">Settings</span>
+        </div>
+        <button onclick="toggleSettingsModal()" aria-label="Close" class="text-slate-400 hover:text-slate-800 bg-slate-50 hover:bg-slate-100 rounded-full w-8 h-8 flex items-center justify-center transition-colors">
+          <i class="ph ph-x text-sm"></i>
+        </button>
+      </div>
+      <div class="space-y-2 text-sm text-slate-600">
+        <label class="text-[11.5px] font-bold text-slate-400 block mb-1.5 uppercase tracking-wide">Privacy</label>
+        <button onclick="openPrivacyNotice()" class="w-full p-3.5 rounded-[20px] bg-slate-50 border border-slate-100 flex items-center justify-between hover:bg-slate-100 transition-colors">
+          <span class="font-medium text-slate-800">Privacy notice</span><i class="ph ph-info text-brand"></i>
+        </button>
+        <button onclick="demoAction('export')" class="w-full p-3.5 rounded-[20px] bg-slate-50 border border-slate-100 flex items-center justify-between hover:bg-slate-100 transition-colors">
+          <span class="font-medium text-slate-800">Export my data</span><i class="ph ph-download-simple text-brand"></i>
+        </button>
+        <button onclick="demoAction('delete')" class="w-full p-3.5 rounded-[20px] bg-slate-50 border border-slate-100 flex items-center justify-between hover:bg-slate-100 transition-colors">
+          <span class="font-medium text-slate-800">Delete my data</span><i class="ph ph-trash text-rose-600"></i>
+        </button>
+        <button onclick="revokeConsent()" class="w-full p-3.5 rounded-[20px] bg-slate-50 border border-slate-100 flex items-center justify-between hover:bg-slate-100 transition-colors">
+          <span class="font-medium text-slate-800">Withdraw consent</span><i class="ph ph-x-circle text-rose-600"></i>
+        </button>
+        <p id="settingsNote" class="hidden px-2 pt-1 text-[12px] text-slate-500">Not connected in the prototype yet (U024, U033).</p>
+      </div>
+      <div class="pt-1">
+        <button onclick="toggleSettingsModal()" class="w-full py-3.5 bg-slate-100 hover:bg-slate-200 text-sm text-slate-800 rounded-[24px] font-bold transition-colors">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+  <div id="mobileSummaryModal" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-[32px] w-full max-w-sm p-6 space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <span class="font-bold text-lg text-slate-800">Summary</span>
+        <button onclick="toggleSummaryModal()" aria-label="Close" class="text-slate-400 hover:text-slate-800 bg-slate-50 hover:bg-slate-100 rounded-full w-8 h-8 flex items-center justify-center transition-colors">
+          <i class="ph ph-x text-sm"></i>
+        </button>
+      </div>
+      <section class="personal-context space-y-3 bg-slate-50 p-4 rounded-[24px] border border-slate-100">
+        <h3 class="text-xs font-bold uppercase tracking-wide text-brand">Profile <span class="self-report-tag">Self-reported</span></h3>
+        <dl class="space-y-2 text-sm">
+          <div><dt class="text-slate-500 text-xs">Age &amp; sex</dt><dd class="font-bold text-slate-800">38 years · Male</dd></div>
+          <div><dt class="text-slate-500 text-xs">Pre-existing conditions</dt><dd class="font-bold text-slate-800">Arterial hypertension</dd></div>
+          <div><dt class="text-slate-500 text-xs">Allergies</dt><dd class="font-bold text-slate-800">None known</dd></div>
+        </dl>
+      </section>
+      <h3 class="text-xs font-bold uppercase tracking-wide text-brand pt-2">Your information</h3>
+      <div id="mobileSummaryContent" class="space-y-3 text-sm text-slate-600">
+        <p class="text-xs text-slate-400 italic bg-slate-50 p-3 rounded-[20px] border border-slate-100">No data recorded yet.</p>
+      </div>
+      <div class="pt-4 border-t border-slate-100">
+        <button onclick="exportPdf()" class="w-full py-3.5 px-4 rounded-[24px] bg-brand text-white font-bold shadow-md shadow-brand/20 flex items-center justify-center gap-2 mb-3 transition-transform hover:scale-[1.02]">
+          <i class="ph ph-file-pdf text-lg"></i> PDF Export
+        </button>
+        <button onclick="toggleSummaryModal()" class="w-full py-3.5 bg-slate-100 hover:bg-slate-200 text-sm text-slate-800 rounded-[24px] font-bold transition-colors">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- JAVASCRIPT -->
+  <script>
+    /*
+     * Design prototype only. Replies below are fixed demo texts.
+     * In the real app (apps/web), model output must NEVER be inserted via innerHTML
+     * unsanitised (XSS). Render as text or sanitised Markdown.
+     */
+    let isPhoneView = false;
+    let isSidebarCollapsedDesktop = false;
+    let hasConsent = false;
+    const MAX_FILE_BYTES = 10 * 1024 * 1024;
+
+    function togglePhoneView() {
+      const container = document.getElementById('appContainer');
+      const btn = document.getElementById('phoneToggleBtn');
+      const icon = document.getElementById('phoneToggleIcon');
+      const sidebar = document.getElementById('sidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      isPhoneView = !isPhoneView;
+      if (isPhoneView) {
+        container.classList.add('phone-mode');
+        btn.classList.add('bg-white/20');
+        icon.className = "ph ph-arrows-out-simple text-lg";
+        sidebar.classList.remove('is-open');
+        backdrop.classList.add('hidden');
+      } else {
+        container.classList.remove('phone-mode');
+        btn.classList.remove('bg-white/20');
+        icon.className = "ph ph-device-mobile text-lg";
+        sidebar.classList.remove('is-open');
+        backdrop.classList.add('hidden');
+        sidebar.classList.toggle('desktop-collapsed', isSidebarCollapsedDesktop);
+      }
+    }
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const isMobileContext = isPhoneView || window.innerWidth < 768;
+      if (isMobileContext) {
+        if (sidebar.classList.contains('is-open')) closeSidebar();
+        else openSidebar();
+      } else {
+        isSidebarCollapsedDesktop = !isSidebarCollapsedDesktop;
+        sidebar.classList.toggle('desktop-collapsed', isSidebarCollapsedDesktop);
+      }
+    }
+    function openSidebar() {
+      document.getElementById('sidebar').classList.add('is-open');
+      document.getElementById('sidebarBackdrop').classList.remove('hidden');
+      document.getElementById('sidebarBackdrop').classList.add('is-open');
+    }
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('is-open');
+      document.getElementById('sidebarBackdrop').classList.remove('is-open');
+      document.getElementById('sidebarBackdrop').classList.add('hidden');
+    }
+    function closeSidebarIfMobile() {
+      if (isPhoneView || window.innerWidth < 768) closeSidebar();
+    }
+
+    /* ---------- Consent (U027) ---------- */
+    function showConsentModal() { document.getElementById('consentModal').classList.remove('hidden'); }
+    function hideConsentModal() { document.getElementById('consentModal').classList.add('hidden'); }
+    function setInputEnabled(enabled) {
+      document.getElementById('messageInput').disabled = !enabled;
+      document.getElementById('sendButton').disabled = !enabled;
+      document.getElementById('attachButton').disabled = !enabled;
+      document.querySelectorAll('.topic-tile').forEach(b => b.disabled = !enabled);
+      document.getElementById('inputArea').classList.toggle('is-locked', !enabled);
+      document.getElementById('consentBlockedNote').classList.toggle('hidden', enabled);
+    }
+    function giveConsent() { hasConsent = true; hideConsentModal(); setInputEnabled(true); document.getElementById('messageInput').focus(); }
+    function declineConsent() { hasConsent = false; hideConsentModal(); setInputEnabled(false); }
+    function revokeConsent() {
+      hasConsent = false;
+      setInputEnabled(false);
+      document.getElementById('typingIndicator').classList.add('hidden');
+      pendingReply && clearTimeout(pendingReply); // late replies are discarded (T-U027-04)
+      toggleSettingsModal();
+    }
+    function openPrivacyNotice() { toggleSettingsModal(); showConsentModal(); }
+    function demoAction() { document.getElementById('settingsNote').classList.remove('hidden'); }
+
+    /* ---------- Attachments (U032) ---------- */
+    let currentAttachment = null;
+    function handleFileChange(event) {
+      const file = event.target.files[0];
+      const err = document.getElementById('fileError');
+      err.classList.add('hidden');
+      if (!file) return;
+      if (file.size > MAX_FILE_BYTES) {
+        err.textContent = currentLanguage === 'German' ? 'Die Datei ist größer als 10 MB.' : 'The file is larger than 10 MB.';
+        err.classList.remove('hidden');
+        event.target.value = '';
+        return;
+      }
+      currentAttachment = file.name;
+      document.getElementById('attachedFileName').textContent = file.name;
+      document.getElementById('attachedFileBadge').classList.remove('hidden');
+      document.getElementById('messageInput').focus();
+    }
+    function removeAttachment() {
+      currentAttachment = null;
+      document.getElementById('fileInput').value = '';
+      document.getElementById('attachedFileBadge').classList.add('hidden');
+    }
+
+    /* ---------- Language (German is the default) ---------- */
+    function toggleLanguageModal() { document.getElementById('languageModal').classList.toggle('hidden'); }
+    const translations = {
+      'Your AI Companion':'Dein KI-Begleiter','Chat history':'Chatverlauf','New':'Neu',
+      'Chest pressure':'Druck in der Brust','Headache':'Kopfschmerzen','Blood pressure readings':'Blutdruckwerte','Iron-rich foods':'Eisenreiche Lebensmittel',
+      'Max Mustermann':'Max Mustermann','Test account • Age 38':'Testkonto • 38 Jahre',
+      'Record symptoms':'Beschwerden festhalten',"Note symptoms with onset and duration, e.g. for a doctor's appointment":'Beschwerden mit Beginn und Dauer notieren, z. B. für den Arzttermin',
+      'General health question':'Allgemeine Gesundheitsfrage','Clear information from reviewed sources':'Verständliche Informationen aus geprüften Quellen',
+      'View my values':'Eigene Werte ansehen','Show values, trends and sources':'Werte, Verläufe und Quellen anzeigen',
+      'Who is responsible?':'Wer ist zuständig?','Which place for which concern: GP, specialist, 116117':'Welche Stelle für welches Anliegen: Hausarzt, Facharzt, 116117',
+      'Thinking':'Denke nach','Type a message...':'Nachricht eingeben...','Summary':'Zusammenfassung','Age & sex':'Alter und Geschlecht','38 years · Male':'38 Jahre · Männlich',
+      'Pre-existing conditions':'Vorerkrankungen','Arterial hypertension':'Bluthochdruck','Allergies':'Allergien','None known':'Keine bekannt','Self-reported':'Selbstauskunft',
+      'Your information':'Deine Angaben','No data recorded yet. Start a conversation.':'Noch keine Daten erfasst. Beginne ein Gespräch.','No data recorded yet.':'Noch keine Daten erfasst.',
+      'Export PDF':'PDF exportieren','PDF Export':'PDF exportieren','Close':'Schließen','Done':'Fertig','Language':'Sprache','Choose the language for the entire interface.':'Wähle die Sprache für die gesamte Benutzeroberfläche.',
+      'Settings':'Einstellungen','Privacy':'Datenschutz','Privacy notice':'Datenschutzhinweis','Export my data':'Meine Daten exportieren','Delete my data':'Meine Daten löschen','Withdraw consent':'Einwilligung widerrufen',
+      'Not connected in the prototype yet (U024, U033).':'Im Prototyp noch nicht angebunden (U024, U033).',
+      'Profile':'Profil','You':'Du','AI':'KI',
+      'AI assistant · not a substitute for medical advice':'KI-Assistent · kein Ersatz für ärztlichen Rat','AI · not a doctor':'KI · kein Arzt',
+      'VitaSync is an AI, not a doctor. No diagnoses. In an emergency call 112.':'VitaSync ist eine KI, kein Arzt. Keine Diagnosen. Im Notfall 112 anrufen.',
+      'Without your consent, VitaSync cannot process messages.':'Ohne deine Einwilligung kann VitaSync keine Nachrichten verarbeiten.','Review consent':'Einwilligung prüfen',
+      'Before you start':'Bevor du startest','VitaSync is a university prototype and not a medical device.':'VitaSync ist ein Hochschulprototyp und kein Medizinprodukt.',
+      'You are talking to an AI, not a doctor. VitaSync gives general health information. It does not make diagnoses and does not assess your values or your situation.':'Du sprichst mit einer KI, nicht mit einer Ärztin oder einem Arzt. VitaSync gibt allgemeine Gesundheitsinformationen. Es stellt keine Diagnosen und bewertet weder deine Werte noch deine Situation.',
+      'In an emergency, call 112. For non-urgent medical help outside office hours, call 116117.':'Im Notfall rufe 112 an. Für ärztliche Hilfe außerhalb der Praxiszeiten, wenn es nicht lebensbedrohlich ist: 116117.',
+      'Your messages are processed on a project computer. No transfer to third parties or outside the EU. Chats are deleted automatically after 30 days. Please use test data only, no real health data.':'Deine Nachrichten werden auf einem Rechner des Projekts verarbeitet. Keine Weitergabe an Dritte, keine Übermittlung außerhalb der EU. Chats werden nach 30 Tagen automatisch gelöscht. Bitte nur Testdaten verwenden, keine echten Gesundheitsdaten.',
+      'You can withdraw your consent at any time in the settings and export or delete your data.':'Du kannst deine Einwilligung jederzeit in den Einstellungen widerrufen und deine Daten exportieren oder löschen.',
+      'Privacy notice version 0.1 (draft)':'Datenschutzhinweis Version 0.1 (Entwurf)','Decline':'Ablehnen','I agree':'Ich stimme zu',
+      'Hello, how can I help you today?':'Hallo, wie kann ich dir heute helfen?',
+      'Choose a topic or describe your concern in the text field below.':'Wähle ein Thema oder beschreibe dein Anliegen im Textfeld unten.',
+      'Send':'Senden','Attach a document':'Dokument anhängen','Document attached':'Dokument angehängt','Remove attachment':'Anhang entfernen','Message':'Nachricht',
+      'Toggle sidebar':'Seitenleiste ein-/ausblenden','Go to home page':'Zur Startseite','Change language':'Sprache ändern','Current summary':'Aktuelle Zusammenfassung',
+      'Toggle phone preview':'Handyansicht umschalten','Start a new conversation':'Neues Gespräch starten','Open profile and context':'Profil und Kontext öffnen',
+      'Settings and privacy':'Einstellungen und Datenschutz','AI assistant, not a doctor. No diagnoses.':'KI-Assistent, kein Arzt. Keine Diagnosen.',
+      /* Emergency notice: fixed text, identical for everyone (D08). Content draft, review pending (D04). */
+      'General emergency notice':'Allgemeiner Notfallhinweis',
+      'You mentioned symptoms for which it is generally recommended to call the emergency number 112 immediately, for example strong pressure or pain in the chest, shortness of breath or signs of paralysis.':'Du hast Beschwerden genannt, bei denen allgemein empfohlen wird, sofort den Notruf 112 zu wählen, zum Beispiel starker Druck oder Schmerz in der Brust, Atemnot oder Lähmungserscheinungen.',
+      'VitaSync is an AI and cannot assess your situation.':'VitaSync ist eine KI und kann deine Situation nicht beurteilen.',
+      'If it is not an emergency: the on-call medical service is available at 116117.':'Wenn es kein Notfall ist: Der ärztliche Bereitschaftsdienst ist unter 116117 erreichbar.',
+      'Call 112':'112 anrufen','Call 116117':'116117 anrufen',
+      'AI-generated · fixed notice text · draft, medical review pending':'KI-System · fester Hinweistext · Entwurf, fachliche Prüfung ausstehend',
+      'AI-generated · demo answer':'KI-generiert · Demo-Antwort',
+      'Demo answer: in the prototype, VitaSync answers here with general information from reviewed sources. It does not assess your personal situation.':'Demo-Antwort: Im Prototyp antwortet VitaSync hier mit allgemeinen Informationen aus geprüften Quellen. Es bewertet nicht deine persönliche Situation.',
+      'Source: shown here once the content has been reviewed.':'Quelle: wird hier angezeigt, sobald der Inhalt geprüft ist.',
+      'Your blood pressure readings (synthetic test data):':'Deine Blutdruckwerte (synthetische Testdaten):',
+      'Date':'Datum','Value':'Wert','Source':'Quelle','Test data':'Testdaten',
+      'Average of 3 readings: 131/84 mmHg. Values are displayed, not assessed.':'Mittelwert aus 3 Messungen: 131/84 mmHg. Die Werte werden angezeigt, nicht bewertet.',
+      'Your statement':'Deine Angabe','Strong pressure in the chest for about 25 minutes, radiating to the left arm and jaw, nausea, cold sweat':'Starker Druck in der Brust seit ca. 25 Minuten, ausstrahlend in linken Arm und Kiefer, Übelkeit, kalter Schweiß',
+      'Displayed values':'Angezeigte Werte','Blood pressure, 3 readings, source: test data':'Blutdruck, 3 Messungen, Quelle: Testdaten',
+      'The file is larger than 10 MB.':'Die Datei ist größer als 10 MB.',
+      /* Demo prompts (tiles and history) */
+      'I have strong pressure in my chest and feel unwell.':'Ich habe starken Druck in der Brust und fühle mich unwohl.',
+      'Which foods contain a lot of iron?':'Welche Lebensmittel enthalten viel Eisen?',
+      'Show me my blood pressure readings.':'Zeig mir meine Blutdruckwerte.',
+      'Which doctor is responsible for skin problems?':'Welche Ärztin oder welcher Arzt ist für Hautprobleme zuständig?',
+      'I have had strong pressure in my chest for about 25 minutes. It radiates to my left arm and jaw. I also feel nauseated and have cold sweats.':'Ich habe seit etwa 25 Minuten starken Druck in der Brust. Er strahlt in den linken Arm und den Kiefer aus. Mir ist übel und ich habe kalten Schweiß.'
+    };
+    const originalLabels = new Map();
+    const originalAttrs = new WeakMap();
+    let currentLanguage = 'German';
+    function applyLanguage(lang) {
+      currentLanguage = lang;
+      const german = lang === 'German';
+      document.documentElement.lang = german ? 'de' : 'en';
+      document.title = german ? 'VitaSync — Dein KI-Begleiter' : 'VitaSync — Your AI Companion';
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      const nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
+      nodes.forEach(node => {
+        if (!originalLabels.has(node)) originalLabels.set(node, node.nodeValue);
+        const original = originalLabels.get(node).trim();
+        if (!original) return;
+        const translated = translations[original];
+        if (german && translated) node.nodeValue = originalLabels.get(node).replace(original, translated);
+        else node.nodeValue = originalLabels.get(node);
+      });
+      document.querySelectorAll('[placeholder],[title],[aria-label]').forEach(el => {
+        if (!originalAttrs.has(el)) {
+          const o = {}; ['placeholder','title','aria-label'].forEach(a => { if (el.hasAttribute(a)) o[a] = el.getAttribute(a); });
+          originalAttrs.set(el, o);
+        }
+        const o = originalAttrs.get(el);
+        Object.keys(o).forEach(a => el.setAttribute(a, german && translations[o[a]] ? translations[o[a]] : o[a]));
+      });
+      document.getElementById('englishCheck').classList.toggle('hidden', german);
+      document.getElementById('germanCheck').classList.toggle('hidden', !german);
+      document.getElementById('languageEnglishBtn').className = 'w-full text-left px-4 py-3 rounded-[20px] flex items-center justify-between ' + (!german ? 'bg-brand text-white shadow-md shadow-brand/20' : 'bg-slate-50 text-slate-800');
+      document.getElementById('languageGermanBtn').className = 'w-full text-left px-4 py-3 rounded-[20px] flex items-center justify-between ' + (german ? 'bg-brand text-white shadow-md shadow-brand/20' : 'bg-slate-50 text-slate-800');
+    }
+    function selectLanguage(lang) { applyLanguage(lang); document.getElementById('languageModal').classList.add('hidden'); }
+    function goHome() {
+      resetToWelcomeState();
+      closeSidebarIfMobile();
+      document.getElementById('centerScrollArea').scrollTo({ top: 0, behavior: 'smooth' });
+      if (hasConsent) document.getElementById('messageInput').focus();
+    }
+    function toggleSettingsModal() {
+      document.getElementById('settingsNote').classList.add('hidden');
+      document.getElementById('settingsModal').classList.toggle('hidden');
+    }
+    function toggleSummaryModal() { document.getElementById('mobileSummaryModal').classList.toggle('hidden'); }
+    function toggleContextModal() {
+      if (isPhoneView || window.innerWidth < 1024) document.getElementById('mobileSummaryModal').classList.remove('hidden');
+    }
+
+    /* ---------- Demo replies (fixed texts, no assessment, D08) ---------- */
+    const EMERGENCY_REPLY = `
+      <div class="space-y-3">
+        <div class="flex items-center gap-2 pb-2 border-b border-rose-100">
+          <i class="ph ph-first-aid text-rose-600 text-base"></i>
+          <span class="font-bold text-rose-700 uppercase text-[10px] tracking-wide">General emergency notice</span>
+        </div>
+        <p class="leading-relaxed font-medium">You mentioned symptoms for which it is generally recommended to call the emergency number 112 immediately, for example strong pressure or pain in the chest, shortness of breath or signs of paralysis.</p>
+        <p class="text-rose-900">VitaSync is an AI and cannot assess your situation.</p>
+        <p class="text-rose-900">If it is not an emergency: the on-call medical service is available at 116117.</p>
+        <div class="pt-2 flex flex-col sm:flex-row gap-2">
+          <a href="tel:112" class="inline-flex items-center justify-center gap-2 flex-1 px-4 py-2.5 rounded-[20px] bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm transition-transform hover:scale-[1.02] shadow-md shadow-rose-600/20">
+            <i class="ph ph-phone text-lg"></i> Call 112
+          </a>
+          <a href="tel:116117" class="inline-flex items-center justify-center gap-2 flex-1 px-4 py-2.5 rounded-[20px] bg-white border border-rose-200 text-rose-700 font-bold text-sm hover:bg-rose-50">
+            <i class="ph ph-phone text-lg"></i> Call 116117
+          </a>
+        </div>
+        <p class="ai-meta">AI-generated · fixed notice text · draft, medical review pending</p>
+      </div>`;
+    const GENERIC_REPLY = `
+      <p>Demo answer: in the prototype, VitaSync answers here with general information from reviewed sources. It does not assess your personal situation.</p>
+      <p class="ai-meta">Source: shown here once the content has been reviewed.</p>
+      <p class="ai-meta">AI-generated · demo answer</p>`;
+    const VALUES_REPLY = `
+      <p>Your blood pressure readings (synthetic test data):</p>
+      <table class="values-table">
+        <thead><tr><th>Date</th><th>Value</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td>01.10.2026</td><td>128/82 mmHg</td><td>Test data</td></tr>
+          <tr><td>06.10.2026</td><td>134/86 mmHg</td><td>Test data</td></tr>
+          <tr><td>12.10.2026</td><td>131/84 mmHg</td><td>Test data</td></tr>
+        </tbody>
+      </table>
+      <p class="mt-2">Average of 3 readings: 131/84 mmHg. Values are displayed, not assessed.</p>
+      <p class="ai-meta">AI-generated · demo answer</p>`;
+    // Demo only: real keyword list comes from knowledge/rules (reviewed); negation handled server-side.
+    const EMERGENCY_KEYWORDS = ['chest', 'brust', 'shortness of breath', 'atemnot', 'paralysis', 'lähmung'];
+    const historyData = {
+      chestpain: {
+        userMsg: "I have had strong pressure in my chest for about 25 minutes. It radiates to my left arm and jaw. I also feel nauseated and have cold sweats.",
+        kind: 'emergency',
+        summaryHtml: `<div><span class="text-[10px] font-bold text-slate-400 block uppercase mb-1">Your statement</span><p class="font-medium text-slate-700">Strong pressure in the chest for about 25 minutes, radiating to the left arm and jaw, nausea, cold sweat</p></div>`
+      },
+      bloodpressure: {
+        userMsg: "Show me my blood pressure readings.",
+        kind: 'values',
+        summaryHtml: `<div><span class="text-[10px] font-bold text-slate-400 block uppercase mb-1">Displayed values</span><p class="font-medium text-slate-700">Blood pressure, 3 readings, source: test data</p></div>`
+      },
+      iron: {
+        userMsg: "Which foods contain a lot of iron?",
+        kind: 'generic',
+        summaryHtml: ''
+      }
+    };
+    function classify(text) {
+      const t = text.toLowerCase();
+      if (EMERGENCY_KEYWORDS.some(k => t.includes(k))) return 'emergency';
+      if (t.includes('blood pressure') || t.includes('blutdruck')) return 'values';
+      return 'generic';
+    }
+    let isConversationStarted = false;
+    let pendingReply = null;
+    function activateChatView() {
+      if (!isConversationStarted) {
+        isConversationStarted = true;
+        document.getElementById('welcomeState').classList.add('hidden');
+        document.getElementById('chatMessagesContainer').classList.remove('hidden');
+      }
+    }
+    function handleTileClick(promptText) {
+      if (!hasConsent) { showConsentModal(); return; }
+      activateChatView();
+      appendUserBubble(promptText, currentAttachment);
+      removeAttachment();
+      simulateBotResponse(promptText);
+    }
+    function handleSend(e) {
+      if (e) e.preventDefault();
+      if (!hasConsent) { showConsentModal(); return; }
+      const input = document.getElementById('messageInput');
+      const text = input.value.trim();
+      if (!text && !currentAttachment) return;
+      activateChatView();
+      appendUserBubble(text || "Document attached", currentAttachment);
+      input.value = '';
+      removeAttachment();
+      simulateBotResponse(text);
+    }
+    function simulateBotResponse(text) {
+      const typing = document.getElementById('typingIndicator');
+      typing.classList.remove('hidden');
+      scrollChat();
+      const kind = classify(text || '');
+      pendingReply = setTimeout(() => {
+        pendingReply = null;
+        typing.classList.add('hidden');
+        if (!hasConsent) return; // consent withdrawn meanwhile: discard
+        appendBotReply(kind);
+        if (kind === 'emergency') setSummary(historyData.chestpain.summaryHtml);
+        if (kind === 'values') setSummary(historyData.bloodpressure.summaryHtml);
+        scrollChat();
+      }, 1200);
+    }
+    function appendUserBubble(text, attachmentName) {
+      const container = document.getElementById('dynamicMessages');
+      const bubble = document.createElement('div');
+      bubble.className = "flex items-start justify-end gap-3 max-w-xl ml-auto";
+      let attHtml = attachmentName ? `
+        <div class="flex items-center gap-1.5 px-3 py-1.5 mb-2 rounded-xl bg-black/10 text-[11.5px] font-medium text-white w-fit">
+          <i class="ph ph-paperclip"></i> <span class="truncate max-w-[180px]">${escapeHtml(attachmentName)}</span>
+        </div>` : "";
+      bubble.innerHTML = `
+        <div class="user-chat-bubble">${attHtml}<p class="font-medium">${escapeHtml(text)}</p></div>
+        <div class="user-avatar-badge">You</div>
+      `;
+      container.appendChild(bubble);
+      applyLanguage(currentLanguage);
+      scrollChat();
+    }
+    function appendBotReply(kind) {
+      const container = document.getElementById('dynamicMessages');
+      const reply = document.createElement('div');
+      reply.className = "flex items-start gap-3 max-w-xl";
+      // Machine-readable AI marking (AI Act Art. 50, T-U028-03)
+      reply.setAttribute('data-ai-generated', 'true');
+      const body = kind === 'emergency' ? EMERGENCY_REPLY : kind === 'values' ? VALUES_REPLY : GENERIC_REPLY;
+      const cls = kind === 'emergency' ? 'emergency-card' : 'bot-chat-bubble';
+      reply.innerHTML = `<div class="bot-avatar-badge">AI</div><div class="${cls} text-xs">${body}</div>`;
+      container.appendChild(reply);
+      applyLanguage(currentLanguage);
+      scrollChat();
+    }
+    function setSummary(html) {
+      const empty = `<p class="text-[11.5px] text-slate-400 italic bg-white p-3 rounded-[20px] border border-slate-100">No data recorded yet.</p>`;
+      document.getElementById('summaryContent').innerHTML = html || empty;
+      document.getElementById('mobileSummaryContent').innerHTML = html || empty;
+      applyLanguage(currentLanguage);
+    }
+    function loadHistoryChat(chatKey) {
+      const data = historyData[chatKey];
+      if (!data) return;
+      document.querySelectorAll('#chatHistoryList button').forEach(btn => btn.classList.remove('active-chat'));
+      const activeBtn = document.getElementById('chatItem-' + chatKey);
+      if (activeBtn) activeBtn.classList.add('active-chat');
+      activateChatView();
+      document.getElementById('dynamicMessages').innerHTML = '';
+      appendUserBubble(data.userMsg, null);
+      appendBotReply(data.kind);
+      setSummary(data.summaryHtml);
+      closeSidebarIfMobile();
+      scrollChat();
+    }
+    function resetToWelcomeState() {
+      isConversationStarted = false;
+      document.getElementById('dynamicMessages').innerHTML = '';
+      document.getElementById('messageInput').value = '';
+      removeAttachment();
+      document.getElementById('chatMessagesContainer').classList.add('hidden');
+      document.getElementById('welcomeState').classList.remove('hidden');
+      document.querySelectorAll('#chatHistoryList button').forEach(b => b.classList.remove('active-chat'));
+      setSummary('');
+    }
+    function scrollChat() {
+      const area = document.getElementById('centerScrollArea');
+      area.scrollTo({ top: area.scrollHeight, behavior: 'smooth' });
+    }
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s]));
+    }
+    function exportPdf() { window.print(); }
+    document.addEventListener('DOMContentLoaded', () => {
+      applyLanguage('German');
+      setInputEnabled(false);
+      showConsentModal();
+    });
+  </script>
+</body>
+</html>

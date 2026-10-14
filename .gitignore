@@ -1,0 +1,35 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.coverage
+
+# Node
+node_modules/
+dist/
+build/
+coverage/
+
+# Laufzeit
+*.log
+*.db
+*.sqlite
+*.sqlite3
+
+# Modelle
+*.gguf
+*.safetensors
+
+# Obsidian
+docs/.obsidian/workspace*.json
+docs/.obsidian/cache/
+docs/.trash/
+
+# Excel-Sperrdateien
+~$*.xlsx
