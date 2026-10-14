@@ -2,7 +2,7 @@
 
 Chat-Prototyp für allgemeine Gesundheitsinformationen und allgemeine Zuständigkeiten im Gesundheitswesen. Hochschulprojekt der FH Aachen. Arbeitet nur mit synthetischen Daten. Kein Medizinprodukt: keine Diagnosen, keine Bewertung eigener Werte, keine Dringlichkeitseinstufung ([D08](docs/decisions/D08-Zweckbestimmung.md)).
 
-**Stand:** Projektgerüst, noch kein Produktcode. Entscheidungen D01–D07 sind empfohlen, aber noch nicht bestätigt: [docs/decisions/](docs/decisions/README.md).
+**Stand:** Projektgerüst mit startbarer leerer API (Task F002). D01 (Stack) und D08 (Zweckbestimmung) sind bestätigt, D02–D07 und D09 noch nicht: [docs/decisions/](docs/decisions/README.md).
 
 ## Einstieg
 1. [AGENTS.md](AGENTS.md) – Regeln für alle (Menschen und KI), Ordnerkarte, Ablauf.

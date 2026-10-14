@@ -1,15 +1,15 @@
 ---
 id: D01
-status: empfohlen
-bestaetigt_von:
-bestaetigt_am:
+status: bestaetigt
+bestaetigt_von: Atakan (Teamzustimmung)
+bestaetigt_am: 2026-10-14
 ---
 
 # D01 – Technischer Stack und Repository
 
-**Status: Empfohlen, nicht bestätigt.** Das Team muss zustimmen und hier Name und Datum eintragen.
+**Status: Bestätigt am 14.10.2026 durch Atakan (Teamzustimmung).** Eine formale Einschätzung der Betreuung steht wie bei D08 noch aus.
 
-## Empfehlung
+## Beschluss
 
 | Teil | Wahl | Warum |
 | --- | --- | --- |
@@ -20,18 +20,24 @@ bestaetigt_am:
 | Datenbank | PostgreSQL (lokal per Docker) | Siehe D06. |
 | Tests | pytest (API), Vitest (Web), Playwright (Ende-zu-Ende) | Standardwerkzeuge der gewählten Sprachen. |
 | Importregeln | import-linter | Prüft die Abhängigkeitsregeln aus `docs/Architektur.md` automatisch. |
-| Lokale Dienste | Docker Compose in `infra/` | Ein Befehl startet DB, FHIR-Testserver und LLM-Laufzeit. |
+| Lokale Dienste | Docker Compose in `infra/`, nur PostgreSQL | Ein Befehl startet die Datenbank. Docker ist Voraussetzung, es gibt keinen Weg ohne. |
+| LLM-Laufzeit | Ollama nativ auf dem Host | Kein Container, damit die GPU ohne Durchreichen nutzbar bleibt. Siehe D03. |
+| FHIR-Testserver | noch nicht aufgenommen | Kommt mit der Umsetzung von D02 in einem eigenen Task. |
 | Repo | Ein Repository, `apps/web` + `apps/api` | Siehe `AGENTS.md`, Tabelle „Wo gehört was hin“. |
 
-## Alternativen
+## Verworfene Alternativen
 
-- **Java + Spring Boot** als Backend: passt zum FH-Hintergrund, aber LLM- und FHIR-Hilfswerkzeuge sind in Python einfacher. Sinnvoll, wenn die Mehrheit des Teams kein Python kann.
+- **Java + Spring Boot** als Backend: passt zum FH-Hintergrund, aber LLM- und FHIR-Hilfswerkzeuge sind in Python einfacher. Mit der Teamzustimmung zu Python nicht weiter verfolgt.
 - **Alles in TypeScript (Next.js)**: eine Sprache weniger, aber schwächeres Ökosystem für Datenanalyse (M4).
+
+## Geklärte Punkte
+
+- Teamumfrage Python/TypeScript: mit der Zustimmung vom 14.10.2026 erledigt, Java-Alternative entfällt.
+- Docker: ist Voraussetzung für die Entwicklung. Eine Startanleitung ohne Docker wird nicht gepflegt.
 
 ## Offene Punkte
 
-- Teamumfrage: Wer kann Python, wer TypeScript? Bei klarer Java-Mehrheit Alternative 1 neu bewerten.
-- Laufen alle Rechner mit Docker? Sonst Startanleitung ohne Docker ergänzen.
+- Formale Einschätzung der Betreuung zum bestätigten Stack noch einholen.
 
 ## Betroffen
 
