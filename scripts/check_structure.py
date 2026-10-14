@@ -38,7 +38,13 @@ REQUIRED_FILES = ["AGENTS.md", "CLAUDE.md", "README.md", "docs/Start.md",
                   "docs/decisions/README.md"]
 FORBIDDEN_ROOT_DIRS = ["src", "backend", "frontend", "utils"]
 KNOWLEDGE_DIRS = ["knowledge/topics", "knowledge/rules", "knowledge/care_paths"]
-KNOWLEDGE_FIELDS = ["id", "titel", "status", "quelle", "reviewer", "review_datum"]
+KNOWLEDGE_FIELDS = ["id", "titel", "status", "sprache", "version", "herausgeber",
+                    "quelle", "reviewer", "review_datum"]
+# 'testfreigabe' ist eine befristete Ausnahme aus D10 (Testlauf).
+KNOWLEDGE_STATUS = {"entwurf", "testfreigabe", "geprueft"}
+KNOWLEDGE_LANGUAGES = {"de", "en"}
+# Kategorien, ohne die weder Notfallhinweis noch Fallback funktionieren.
+KNOWLEDGE_REQUIRED_REVIEWED = {"knowledge/rules", "knowledge/care_paths"}
 DECISION_STATUS = {"offen", "empfohlen", "bestaetigt", "ersetzt"}
 
 
@@ -106,8 +112,9 @@ def check_links(problems):
                 problems.append(f"{rel}: missing link target {target}")
 
 
-def check_knowledge(problems):
+def check_knowledge(problems, warnings):
     for rel_dir in KNOWLEDGE_DIRS:
+        reviewed = 0
         for file in sorted((ROOT / rel_dir).glob("*.md")):
             rel = file.relative_to(ROOT)
             meta = frontmatter(file.read_text(encoding="utf-8"))
@@ -118,27 +125,79 @@ def check_knowledge(problems):
                 if field not in meta:
                     problems.append(f"{rel}: missing field '{field}'")
             status = meta.get("status")
-            if status not in {"entwurf", "geprueft"}:
-                problems.append(f"{rel}: status must be 'entwurf' or 'geprueft'")
+            if status not in KNOWLEDGE_STATUS:
+                allowed = " or ".join(repr(s) for s in sorted(KNOWLEDGE_STATUS))
+                problems.append(f"{rel}: status must be {allowed}")
             if status == "geprueft":
-                for field in ("quelle", "reviewer", "review_datum"):
+                reviewed += 1
+                for field in ("quelle", "herausgeber", "reviewer", "review_datum"):
                     if not meta.get(field) or meta[field].startswith("<"):
                         problems.append(f"{rel}: 'geprueft' requires '{field}'")
+            if status == "testfreigabe":
+                # D10: erlaubt, aber nicht fachlich geprueft - sichtbar halten.
+                warnings.append(f"{rel}: status 'testfreigabe' - not reviewed, "
+                                f"loaded only with APP_ENV=development (D10)")
+
+            language = meta.get("sprache")
+            if language not in KNOWLEDGE_LANGUAGES:
+                allowed = " or ".join(repr(s) for s in sorted(KNOWLEDGE_LANGUAGES))
+                problems.append(f"{rel}: 'sprache' must be {allowed}")
+            # Dateiname traegt die Sprache: <name>.<sprache>.md
+            suffixes = file.name.split(".")
+            if len(suffixes) != 3 or suffixes[-1] != "md":
+                problems.append(f"{rel}: file name must be '<name>.<sprache>.md'")
+            elif language and suffixes[1] != language:
+                problems.append(f"{rel}: file name says '{suffixes[1]}', "
+                                f"front matter says '{language}'")
+
+            version = meta.get("version", "")
+            if not re.fullmatch(r"[1-9]\d*", version or ""):
+                problems.append(f"{rel}: 'version' must be a whole number >= 1")
+
+        if not reviewed and rel_dir in KNOWLEDGE_REQUIRED_REVIEWED:
+            warnings.append(f"{rel_dir}: no entry with status 'geprueft' - "
+                            f"the category is not usable yet (TEST-001 B8)")
 
 
 def check_decisions(problems):
+    """Prueft Kopfdaten der Entscheidungen und den Abgleich mit der Statustabelle."""
+    listed = {}
+    index = ROOT / "docs/decisions/README.md"
+    if index.is_file():
+        for ident, status in re.findall(
+            r"\|\s*\[(D\d+)\]\([^)]+\)\s*\|[^|]*\|\s*([a-z]+)\s*\|",
+            index.read_text(encoding="utf-8"),
+        ):
+            listed[ident] = status
+
+    seen = set()
     for file in sorted((ROOT / "docs/decisions").glob("D[0-9]*.md")):
         rel = file.relative_to(ROOT)
         meta = frontmatter(file.read_text(encoding="utf-8")) or {}
-        if meta.get("status") not in DECISION_STATUS:
-            problems.append(f"{rel}: invalid status {meta.get('status')!r}")
-        if meta.get("status") == "bestaetigt" and not (meta.get("bestaetigt_von") and meta.get("bestaetigt_am")):
+        status = meta.get("status")
+        if status not in DECISION_STATUS:
+            problems.append(f"{rel}: invalid status {status!r}")
+        if status == "bestaetigt" and not (meta.get("bestaetigt_von") and meta.get("bestaetigt_am")):
             problems.append(f"{rel}: 'bestaetigt' requires bestaetigt_von and bestaetigt_am")
+
+        ident = meta.get("id") or file.name.split("-")[0]
+        seen.add(ident)
+        # TEST-001 B8: Tabelle und Kopfdaten duerfen nicht auseinanderlaufen.
+        if ident not in listed:
+            problems.append(f"{rel}: not listed in docs/decisions/README.md")
+        elif listed[ident] != status:
+            problems.append(f"{rel}: status {status!r} but README.md says "
+                            f"{listed[ident]!r}")
+
+    for ident in sorted(set(listed) - seen):
+        problems.append(f"docs/decisions/README.md: lists {ident}, but no such file")
 
 
 def check():
+    """Gibt (problems, warnings) zurueck. Nur problems setzen den Exit-Code."""
     fix = "--fix" in sys.argv
     problems = []
+    warnings = []
     for name in REQUIRED_FILES:
         if not (ROOT / name).is_file():
             problems.append(f"missing required file: {name}")
@@ -147,15 +206,20 @@ def check():
             problems.append(f"forbidden root folder: {name}/ (see AGENTS.md)")
     check_agent_files(problems, fix)
     check_links(problems)
-    check_knowledge(problems)
+    check_knowledge(problems, warnings)
     check_decisions(problems)
-    return problems
+    return problems, warnings
 
 
 if __name__ == "__main__":
-    findings = check()
+    findings, notes = check()
     for finding in findings:
-        print(finding)
+        print(f"FEHLER  {finding}")
+    for note in notes:
+        print(f"WARNUNG {note}")
     if findings:
         sys.exit(1)
-    print("PASS: structure, agent files, links, knowledge metadata, decisions.")
+    summary = "PASS: structure, agent files, links, knowledge metadata, decisions."
+    if notes:
+        summary += f" {len(notes)} Warnung(en), kein Fehler."
+    print(summary)
