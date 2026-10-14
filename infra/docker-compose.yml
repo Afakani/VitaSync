@@ -1,0 +1,40 @@
+# Lokale Entwicklungsdienste fuer VitaSync (Task F002, Beschluss D01).
+#
+# Enthaelt nur PostgreSQL. Die LLM-Laufzeit (Ollama) laeuft nativ auf dem
+# Host, ein FHIR-Testserver kommt erst mit der Umsetzung von D02.
+#
+# Die Vorlage der Variablen liegt im Repository-Wurzelverzeichnis
+# (.env.example). Compose sucht .env sonst neben dieser Datei, deshalb wird
+# die Env-Datei beim Aufruf ausdruecklich uebergeben:
+#
+#   docker compose --env-file .env -f infra/docker-compose.yml up -d db
+#
+# Niemals fuer Produktion verwenden. Nur synthetische Daten.
+
+services:
+  db:
+    image: postgres:16.15-alpine
+    container_name: vitasync-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-vitasync}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD fehlt - .env aus .env.example anlegen}
+      POSTGRES_DB: ${POSTGRES_DB:-vitasync}
+    # Bindung bewusst auf 127.0.0.1: ohne das Praefix veroeffentlicht Docker
+    # den Port auf allen Schnittstellen und die Entwicklungsdatenbank waere
+    # aus dem Netz erreichbar.
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - vitasync-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U ${POSTGRES_USER:-vitasync} -d ${POSTGRES_DB:-vitasync}
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  vitasync-db-data:

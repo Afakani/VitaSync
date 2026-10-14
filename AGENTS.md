@@ -12,16 +12,22 @@ Das lokale LLM erkennt Anfragen, liest Dokumente und formuliert freigegebene Inh
 
 ## Aktueller Stand
 
-- Noch kein Produktcode. Entscheidungen D01–D07 stehen in `docs/decisions/`. Vor der Arbeit Status prüfen: **„Empfohlen“ ist nicht „Bestätigt“.** Auf unbestätigten Entscheidungen nur bauen, wenn der Task es ausdrücklich sagt.
-- Befehle: noch keine. Werden mit Task F002 (Start) und F004 (Tests) hier eingetragen. Keine Befehle erfinden.
+- Entscheidungen D01–D09 stehen in `docs/decisions/`. Bestätigt sind **D01** (Stack) und **D08** (Zweckbestimmung); D02–D07 und D09 sind empfohlen. Vor der Arbeit Status prüfen: **„Empfohlen“ ist nicht „Bestätigt“.** Auf unbestätigten Entscheidungen nur bauen, wenn der Task es ausdrücklich sagt.
+- Produktcode: bisher nur das leere API-Gerüst aus F002 (`apps/api`, Endpunkt `/healthz`). Fachbereiche unter `features/` sind noch leer.
+- Web-Grundgerüst (`apps/web`) folgt mit F006, Testautomatisierung und CI mit F004. Keine Befehle erfinden.
+
+Alle Befehle vom Wurzelverzeichnis aus. Einrichtung und Erklärungen: `apps/api/README.md`.
 
 ```
-# Befehle (nach F002/F004 ausfüllen)
-# Start:       -
-# Tests API:   -
+# Befehle (Stand F002; Web-Befehle folgen mit F006, CI mit F004)
+# Datenbank:   docker compose --env-file .env -f infra/docker-compose.yml up -d db
+# Start API:   cd apps/api && .venv/Scripts/python.exe -m uvicorn vitasync.api.app:app --reload --host 127.0.0.1 --port 8000
+# Tests API:   cd apps/api && .venv/Scripts/python.exe -m pytest
 # Tests Web:   -
 # Strukturcheck: python scripts/check_structure.py
 ```
+
+Pfade mit `.venv/Scripts/` gelten für Windows; unter Linux und macOS `.venv/bin/` nutzen.
 
 ## Wo gehört was hin
 

@@ -1,6 +1,6 @@
 # Modul: Lokale Infrastruktur
 
-Zweck: Lokale Dienste für Entwicklung: Datenbank, FHIR-Testserver, LLM-Laufzeit (Docker Compose, Task F002).
+Zweck: Lokale Dienste für Entwicklung. Stand F002: nur PostgreSQL per Docker Compose (`docker-compose.yml`). Die LLM-Laufzeit (Ollama) läuft nativ auf dem Host, ein FHIR-Testserver kommt mit der Umsetzung von D02.
 Zuständig: <GitHub-Handle eintragen>
 
 ## Grenzen
@@ -15,3 +15,5 @@ Zuständig: <GitHub-Handle eintragen>
 
 ## Fallen
 - Modell-Dateien (`*.gguf`) nie einchecken.
+- Compose sucht `.env` neben der Compose-Datei. Die Vorlage liegt aber im Wurzelverzeichnis, deshalb immer mit `--env-file .env` vom Repo-Wurzelverzeichnis aufrufen.
+- Ports immer an `127.0.0.1` binden. Ohne Präfix veröffentlicht Docker auf allen Schnittstellen.

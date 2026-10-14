@@ -5,7 +5,7 @@ Bestätigen = `status: bestaetigt`, `bestaetigt_von`, `bestaetigt_am` ausfüllen
 
 | ID | Thema | Status |
 | --- | --- | --- |
-| [D01](D01-Stack.md) | Stack und Repository | empfohlen |
+| [D01](D01-Stack.md) | Stack und Repository | bestaetigt |
 | [D02](D02-FHIR.md) | FHIR-Version, Ressourcen, Messgrößen | empfohlen |
 | [D03](D03-Modell.md) | Lokales Modell und Laufzeit | empfohlen |
 | [D04](D04-Fachinhalte.md) | Fachinhalte, Quellen, Freigabe | empfohlen |
