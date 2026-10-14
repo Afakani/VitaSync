@@ -1,0 +1,11 @@
+# Direkte Werkzeuge fuer die Skripte in scripts/. Task F004, 15.10.2026.
+# Aufgeloeste Fassung inklusive transitiver Pakete: requirements.lock.
+# Installation: python -m venv .venv && python -m pip install -r scripts/requirements.lock
+#
+# Nicht Teil von apps/api: diese Werkzeuge gehoeren zur Werkzeugkette, nicht
+# zum Server. import-linter steht bewusst in apps/api, weil es das Paket
+# vitasync importiert.
+pyyaml==6.0.3            # OpenAPI-Entwuerfe lesen
+jsonschema==4.26.0       # Beispiele gegen die Komponenten-Schemas pruefen
+openpyxl==3.1.5          # Backlog-Datei lesen und schreiben
+pytest==9.1.1            # Selbsttests in scripts/tests

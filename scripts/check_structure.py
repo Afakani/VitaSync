@@ -31,6 +31,7 @@ REQUIRED_MODULES = [
     "evals",
     "data/synthetic",
     "infra",
+    "scripts",
 ]
 # Every direct subfolder of these directories is a module and needs AGENTS.md.
 MODULE_PARENTS = ["apps/api/src/vitasync/features"]
