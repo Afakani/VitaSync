@@ -52,3 +52,16 @@ KI-Systeme zur Triage von Notfallpatienten gelten nach AI Act als Hochrisiko-KI 
 ## Offene Punkte
 
 - Schriftliche Einschätzung der Betreuung einholen.
+- **Alters- und profilbezogene Anwendungsfälle: noch nicht entschieden.** Geplant sind spezifischere
+  Anwendungsfälle, etwa mit Altersgruppen. Zwei Lesarten liegen auf dem Tisch; die Entscheidung fällt vor
+  dem ersten solchen Anwendungsfall, nicht danach:
+  - *Vermutlich zulässig:* Die Nachricht nennt selbst eine Altersgruppe („mein Kind ist 3“). Das ist eine
+    Entität in der Anfrageerkennung, und ausgewählt wird ein eigener, für alle gleicher geprüfter Eintrag
+    (z. B. „Fieber bei Kleinkindern – allgemeine Information“). Es bleibt allgemeine Information, nur
+    feiner zugeschnitten.
+  - *Nicht gedeckt:* gespeichertes Profilalter oder andere Profilangaben in die Antwort einfließen lassen.
+    Das ist eine Anpassung an die Person und widerspricht dieser Entscheidung („Vorerkrankungen oder
+    Profilangaben zur Bewertung heranziehen“) sowie `features/guidance`.
+  - Die Grenze ist schmal: Sobald aus dem Alter folgt, *was für diese Person gilt*, ist es Bewertung.
+    Solange daraus nur folgt, *welcher allgemeine Text gezeigt wird*, ist es Auswahl.
+  - Ergebnis entweder hier ergänzen oder als eigene Entscheidung D11 festhalten.
