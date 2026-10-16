@@ -14,6 +14,7 @@ Zuständig: <GitHub-Handle eintragen>
   Tabelle in `api/draft/README.md`. Der Code liest sie nicht; verbindlich ist das generierte
   `api/openapi.json`.
 - `llm/*.schema.json` sind die Quelle; der Code lädt oder generiert daraus.
+- Das Ausgabeschema der Anfrageerkennung führt den **Katalog der Anfragearten** als Enum. Er ist damit versioniert und überprüfbar. Jeder Wert nennt im Schema die User Story, aus der er stammt; neue Anfragearten kommen über einen Task ins Backlog und erst dann hierher. Was hier nicht steht, ist keine gültige Anfrageart.
 - `fhir/examples/` nur synthetisch.
 
 ## Tests

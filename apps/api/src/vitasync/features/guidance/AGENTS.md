@@ -1,6 +1,6 @@
 # Modul: Allgemeine Information und Notfallhinweis
 
-Zweck: Wählt zur erkannten Anfrage freigegebene allgemeine Inhalte aus `knowledge/` (Gesundheitsinformation, Lifestyle, Vorsorge, Zuständigkeiten) und löst bei Warnzeichen-Stichworten den festen Notfallhinweis aus.
+Zweck: Wählt **zur erkannten Anfrageart** (aus `features/recognition`) freigegebene allgemeine Inhalte aus `knowledge/` (Gesundheitsinformation, Lifestyle, Vorsorge, Zuständigkeiten) und löst bei Warnzeichen-Stichworten den festen Notfallhinweis aus.
 Zuständig: <GitHub-Handle eintragen>
 
 ## Grenzen
@@ -8,6 +8,7 @@ Zuständig: <GitHub-Handle eintragen>
 - Darf nicht: Inhalte im Code festschreiben; Einträge mit anderem Status als `geprueft` verwenden (im Testlauf zusätzlich `testfreigabe`, nur bei `APP_ENV=development` und gekennzeichnet, siehe [D10](../../../../../../docs/decisions/D10-Testlauf.md)); Antworten an Werte, Profil oder Vorerkrankungen der Person anpassen; Dringlichkeitsstufen bilden; Diagnosen, Ursachen oder Medikamente nennen ([D08](../../../../../../docs/decisions/D08-Zweckbestimmung.md)).
 
 ## Verträge
+- Eingang ist die Anfrageart aus `features/recognition`, nicht die rohe Nachricht. Die Auswahl folgt dieser Anfrageart und sonst nichts – nie dem Profil, den Werten oder der Vorgeschichte der Person.
 - Öffentliche Funktionen nur über `__init__.py`.
 - Stories: U001 (Notfallhinweis, Zuständigkeiten), U008, U009, U029, U030
 

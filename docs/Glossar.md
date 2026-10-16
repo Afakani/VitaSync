@@ -13,6 +13,9 @@ tags: [vitasync]
 | Port | Schnittstelle in `core/ports.py`, die ein Adapter implementiert (LLM, FHIR, DB). |
 | Adapter | Code, der einen externen Dienst anbindet. |
 | Feature / Fachbereich | Ordner unter `features/`, der einen Teil der Fachlogik verantwortet. |
+| Anfrageart (Intent) | Was der Nutzer mit seiner Nachricht will, z. B. allgemeine Gesundheitsfrage, eigene Werte ansehen, Zuständigkeit erfragen. Bestimmt, welche Information zurückkommt. Katalog als Enum in `contracts/llm/`, Herkunft sind die Anwendungsfälle. Keine Bewertung der Person. |
+| Anwendungsfall (Use Case) | Eine User Story im Backlog (`U001`–`U033`). Quelle für die Anfragearten: Jede Anfrageart verweist auf ihren Anwendungsfall. |
+| Entität | Aus der Nachricht erkannter Einzelwert, z. B. Symptom, Messgröße, Zeitangabe, Altersgruppe. Eine Entität ist eine Beobachtung am Text, keine Aussage über die Person. |
 | Eval | Testfall mit Soll-Ergebnis für LLM-gestützte Funktionen. |
 | Consent | Einwilligung des Nutzers, pro Zweck gespeichert. |
 | Zuständigkeit | Allgemeine Information, welche Stelle wofür zuständig ist (Hausarzt, Facharzt, 116117, 112). Keine individuelle Empfehlung. |

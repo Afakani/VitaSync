@@ -9,6 +9,8 @@ Zuständig: <GitHub-Handle eintragen>
 
 ## Verträge
 - Format je Zeile: `id`, `input`, `expected`, `notiz`, `sprache` (`de` | `en`).
+- `recognition/` ist nach **Anfragearten** gegliedert, eine Datei je Anfrageart, benannt wie der Enum-Wert im Schema unter `contracts/llm/`. Kommt eine Anfrageart dazu, kommt ihr Testsatz im selben PR dazu.
+- Pflichtfälle je Anfrageart: ein klarer Treffer, eine Formulierung mit Verneinung, eine Abgrenzung zur nächstähnlichen Anfrageart. Dazu übergreifend: **unbekannte Anfrage** (muss Rückfrage ergeben, nicht die nächstbeste Anfrageart) und **fachfremde Frage** (U004).
 - Erwartete Werte für Fachinhalte nur nach D04-Freigabe.
 - **Testsätze in beiden Sprachen** (Deutsch und Englisch, [D07](../docs/decisions/D07-Optionaler-Umfang.md)). Jede Sprache hat eigene Fälle mit eigenen Erwartungswerten; Fälle werden nicht maschinell übersetzt, sonst prüft der Satz die Übersetzung statt das Verhalten.
 - Ein Fall deckt auch den Rückfall ab: gewählte Sprache `en`, geprüfter Inhalt nur auf Deutsch → deutsche Fassung mit Hinweis, keine Übersetzung (harte Regel 12).

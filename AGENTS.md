@@ -6,6 +6,18 @@ Gilt im ganzen Repository. Die `AGENTS.md` in Unterordnern ergänzen diese Datei
 
 Chat-Prototyp (FH Aachen, Interdisziplinäres Projekt). Nutzer stellen Gesundheitsfragen. Das System erkennt die Anfrage, gibt allgemeine Gesundheitsinformation aus geprüften Quellen, zeigt eigene (synthetische) Daten an und rechnet damit, ohne zu bewerten.
 
+### Kern: die Anfrage erkennen
+
+Die eigentliche Leistung des Prototyps ist die **Anfrageerkennung**: Aus der Nachricht bestimmt das System die **Anfrageart** – also was der Nutzer will – und daraus ergibt sich, **welche Information er zurückbekommt**. Jeder weitere Schritt hängt davon ab; `features/guidance` wählt erst aus, nachdem `features/recognition` entschieden hat.
+
+- Der **Katalog der Anfragearten kommt aus den Anwendungsfällen** (User Stories im Backlog), nicht aus Einfällen beim Programmieren. Jede Anfrageart nennt ihre Story.
+- Der Katalog ist versioniert: Enum im Ausgabeschema der Erkennung unter `contracts/llm/`. Eine Anfrageart, die dort nicht steht, gibt es nicht.
+- **Erkennen ist nicht bewerten.** Die Anfrageart sagt, *worum es geht*, nie *wie es um die Person steht* (Regel 7, [D08](docs/decisions/D08-Zweckbestimmung.md)).
+- **Unbekannte Anfrageart ist ein eigener Fall**, kein Rateversuch: Rückfrage oder freundliche Abweisung (U004). Fehlender Treffer ist nie eine Entwarnung.
+- Die Erkennung **wählt** den Inhalt aus, sie formuliert ihn nicht. Formuliert wird nur freigegebenes Material aus `knowledge/`.
+
+Spezifischere Anwendungsfälle kommen später hinzu. Solche, die Altersgruppen oder andere Personenmerkmale einbeziehen, sind **noch nicht entschieden** – siehe offener Punkt in [D08](docs/decisions/D08-Zweckbestimmung.md). Vor dem ersten solchen Anwendungsfall ist diese Frage zu klären, nicht danach.
+
 **VitaSync ist kein Medizinprodukt** ([D08](docs/decisions/D08-Zweckbestimmung.md)). Es macht keine Aussage über den Gesundheitszustand einer konkreten Person: keine Diagnose, keine Bewertung von Werten, keine Dringlichkeitseinstufung, keine Ursachen, keine Medikamente oder Therapien. Vor jeder Implementierung mit fachlichem Inhalt D08 lesen.
 
 Das lokale LLM erkennt Anfragen, liest Dokumente und formuliert freigegebene Inhalte. Rechnen, Regeln und Rechte entscheidet Code.
