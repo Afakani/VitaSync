@@ -35,7 +35,7 @@ Pfade mit `.venv/Scripts/` gelten für Windows; unter Linux und macOS `.venv/bin
 | Ordner | Inhalt |
 | --- | --- |
 | `apps/web/` | Website (Chat-Oberfläche). Spricht nur über die HTTP-API. |
-| `apps/api/` | Server: HTTP, Fachlogik, Adapter für LLM, FHIR, Datenbank. |
+| `apps/api/` | Server: HTTP, Fachlogik, Adapter für LLM, FHIR, OMOP, Datenbank. |
 | `apps/api/src/vitasync/features/<name>/` | Ein Fachbereich = ein Ordner. Neue Funktionalität gehört in den zuständigen Feature-Ordner. |
 | `contracts/` | Einzige Quelle für Schnittstellen: API-Schema, LLM-Ausgabeschemas, FHIR-Profile. |
 | `knowledge/` | Fachlich freigegebene Inhalte: Themen, Regeln, Anlaufstellen, Quellen. Kein Code. |
@@ -79,6 +79,7 @@ Diese Regeln gelten unabhängig vom Status der zitierten Entscheidungen. Eine En
 11. Jede KI-Antwort ist in der UI als KI-generiert gekennzeichnet und im API-Vertrag maschinenlesbar markiert (AI Act Art. 50, [D09](docs/decisions/D09-Datenschutz-EU.md)).
 12. Gesundheits-, Notfall- und Zuständigkeitstexte werden **nie zur Laufzeit übersetzt**. Übersetzt ist nicht mehr der fachlich freigegebene Wortlaut. Fehlt die geprüfte Fassung in der gewählten Sprache, erscheint die deutsche Fassung mit Hinweis. Welche Sprache ein Inhalt hat, steht im Kopfdatum `sprache` und im Vertrag als `content_language`.
 13. Neue Verarbeitung personenbezogener Daten (neues Feld, neue Tabelle, neuer Log-Eintrag) → im selben PR `docs/compliance/Verarbeitungsverzeichnis.md` und bei Bedarf `TOM.md` ergänzen. Passwörter nur gehasht. Keine Tracking- oder Analyse-Tools, keine externen KI-Dienste mit Nutzerdaten.
+14. **Medizinische Quelldaten nur lesen.** Daten, die VitaSync von außen bekommt (FHIR-Server, OMOP-Datenbank, importierte Befunde), werden nur abgerufen und gelesen, nie geändert oder gelöscht – weder durch Code noch durch das Modell. Keine schreibenden FHIR-Aufrufe (`POST`, `PUT`, `PATCH`, `DELETE`), auf OMOP nur ein lesender Datenbankzugang (kein `INSERT`, `UPDATE`, `DELETE`). Was VitaSync selbst speichert (Selbstauskunft, Chatverlauf, Einwilligung), bleibt für den Nutzer löschbar (Art. 17, U024).
 
 ## Arbeitsablauf
 
