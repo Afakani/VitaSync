@@ -16,6 +16,7 @@ bestaetigt_am: 2026-10-14
 | Backend | Python 3.12 + FastAPI | LLM-, FHIR- und Datenwerkzeuge sind in Python am besten verfügbar. FastAPI erzeugt das API-Schema (OpenAPI) automatisch. |
 | Validierung | Pydantic | Gleiche Modelle für API-Eingaben und LLM-Ausgabeschemas. |
 | Frontend | React + TypeScript + Vite | Verbreitet, viele Teammitglieder finden Hilfe, Typen fangen Vertragsfehler früh. |
+| Frontend (optional, nicht bestätigt) | PHP + JavaScript | Zugelassen als Alternative. PHP liefert nur Seiten aus und ruft die FastAPI über HTTP auf; keine Fachlogik, kein eigener Datenbank-, LLM- oder FHIR-Zugriff. Wahl und Bestätigung durch das Team stehen aus. |
 | API-Client im Frontend | aus OpenAPI generiert | Kein manuelles Abtippen des Vertrags. |
 | Datenbank | PostgreSQL (lokal per Docker) | Siehe D06. |
 | Tests | pytest (API), Vitest (Web), Playwright (Ende-zu-Ende) | Standardwerkzeuge der gewählten Sprachen. |
@@ -38,6 +39,7 @@ bestaetigt_am: 2026-10-14
 ## Offene Punkte
 
 - Formale Einschätzung der Betreuung zum bestätigten Stack noch einholen.
+- Optionales Frontend PHP + JavaScript (ergänzt 2026-10-21): Ob es statt oder neben React genutzt wird, entscheidet das Team. Bis dahin gilt React + TypeScript.
 
 ## Betroffen
 

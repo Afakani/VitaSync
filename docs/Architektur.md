@@ -21,6 +21,7 @@ flowchart LR
   REC --> LLM[adapters/llm]
   G --> K[(knowledge/ geprüft)]
   H --> F[adapters/fhir]
+  H --> O[adapters/omop]
   H --> DB[adapters/db]
   A --> H
   S --> DB
@@ -32,7 +33,7 @@ flowchart LR
 2. Route prüft Sitzung und Einwilligung (`security/`, nur lesend), ruft `features/chat` auf. Das Erteilen, Widerrufen und Löschen von Einwilligungen liegt in `features/consent` und läuft über eigene Routen, nicht über den Chat.
 3. `recognition` lässt das LLM die Anfrage klassifizieren; Ausgabe wird gegen `contracts/llm/` validiert.
 4. Enthält die Nachricht ein Warnzeichen-Stichwort, setzt `guidance` den festen Notfallhinweis an den Anfang.
-5. Fragt der Nutzer nach eigenen Daten und ist das freigegeben: `health_data` liefert Werte, `analysis` rechnet ohne Bewertung.
+5. Fragt der Nutzer nach eigenen Daten und ist das freigegeben: `health_data` liefert Werte (aus FHIR und OMOP, nur lesend, [[D02-FHIR]]), `analysis` rechnet ohne Bewertung.
 6. `guidance` wählt allgemeine geprüfte Inhalte aus `knowledge/`; das LLM formuliert nur ([[D08-Zweckbestimmung]]).
 7. Antwort mit KI-Kennzeichnung zurück an die Website.
 
