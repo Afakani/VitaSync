@@ -69,7 +69,7 @@ nicht regelt. Zu besprechen, bevor die betroffene Entscheidung bestätigt wird.
 | --- | --- | --- | --- | --- |
 | Antwortweg | RAG mit Embeddings und Vektordatenbank; Modell antwortet aus gefundenen Texten | R1, R4, R6, R9 | Erkennung wählt geprüfte Einträge aus `knowledge/`, Modell formuliert nur; keine Vektorsuche | [[Architektur]], harte Regel 6, [[D04-Fachinhalte]] (empfohlen) |
 | Werkzeugaufrufe | Modell ruft read-only FHIR-Abfragen auf; MCP-Schicht in Java | R1, R6, R7 | Keine Werkzeugaufrufe durch das Modell; Java verworfen | [[D03-Modell]] (empfohlen), [[D01-Stack]] (bestätigt) |
-| Datenmodell | OMOP CDM zusätzlich zu FHIR für Laborwerte | R7 | Nur FHIR (`Patient`, `Observation`) | [[D02-FHIR]] (empfohlen) |
+| Datenmodell | OMOP CDM zusätzlich zu FHIR für Laborwerte | R7 | **Übernommen** (Vorgabe Team 2026-10-21): FHIR und OMOP, beide nur lesend | [[D02-FHIR]] (empfohlen) |
 | Datenhaltung | Getrennter FHIR-Data-Lake, Pseudonym-Zuordnung in PostgreSQL | R3, R4, R9 | Nur PostgreSQL; FHIR-Daten gelesen, nicht dauerhaft kopiert | [[D06-Speicherung]] (empfohlen) |
 | Rechtsgrundlage | Forschungsausnahme Art. 9 Abs. 2 j mit Pseudonymisierung | R3, R9 | Nur Einwilligung, Art. 9 Abs. 2 a | [[D09-Datenschutz-EU]] (empfohlen), Verarbeitungsverzeichnis |
 | Verschlüsselung | TLS 1.3 überall (auch Backend → LLM), AES-256 im Ruhezustand – als umgesetzt dargestellt | R3, R9 | HTTPS außerhalb lokal; Speicherverschlüsselung „zu entscheiden“ (F018) | [[D09-Datenschutz-EU]] (empfohlen), `TOM.md` |
