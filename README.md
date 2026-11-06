@@ -1,30 +1,31 @@
-# VitaSync
+# VitaSync – Arbeitsrepo
 
-Chat-Prototyp für allgemeine Gesundheitsinformationen und allgemeine Zuständigkeiten im Gesundheitswesen. Hochschulprojekt der FH Aachen. Arbeitet nur mit synthetischen Daten. Kein Medizinprodukt: keine Diagnosen, keine Bewertung eigener Werte, keine Dringlichkeitseinstufung ([D08](docs/decisions/D08-Zweckbestimmung.md)).
+Arbeitsrepo für den VitaSync-Chatbot (Team VC, FH Aachen): Prototypen, Benchmarks, Experimente. Arbeitet nur mit synthetischen Daten. VitaSync ist ein Wellness- und Präventionsprodukt, kein Medizinprodukt: keine Diagnosen, keine Bewertung von Werten, keine Triage (Regeln R1–R6).
 
-**Stand:** Projektgerüst mit startbarer leerer API (Task F002). D01 (Stack) und D08 (Zweckbestimmung) sind bestätigt, D02–D07 und D09 noch nicht: [docs/decisions/](docs/decisions/README.md).
+**Maßgeblich sind Jira (Projekt VC) und Confluence (Space VC).** Das Team-Repo mit den Modulen M1–M9 entsteht separat (VC-74).
 
 ## Einstieg
-1. [AGENTS.md](AGENTS.md) – Regeln für alle (Menschen und KI), Ordnerkarte, Ablauf.
-2. [docs/Architektur.md](docs/Architektur.md) – Aufbau und Abhängigkeiten.
-3. [docs/Arbeitsablauf.md](docs/Arbeitsablauf.md) – Issues, Branches, Review.
+1. [AGENTS.md](AGENTS.md) – Regeln für alle (Menschen und KI), Quellen, Ordnerkarte, Ablauf.
+2. [docs/decisions/README.md](docs/decisions/README.md) – Wegweiser zu den Entscheidungen in Confluence.
+3. [docs/Architektur.md](docs/Architektur.md) – Pipeline M1–M9 und Aufbau des Prototyps.
 4. `python scripts/check_structure.py` – prüft Struktur, Links, Agenten-Dateien und Wissens-Kopfdaten.
 
 ## Ordner
 | Ordner | Inhalt |
 | --- | --- |
-| `apps/web/` | Website |
-| `apps/api/` | Server mit Fachbereichen unter `src/vitasync/features/` |
-| `contracts/` | API-, LLM- und FHIR-Schemas |
-| `knowledge/` | Fachlich freigegebene Inhalte |
-| `evals/` | Testsätze für LLM-Funktionen |
+| `apps/web/` | Prototyp-Oberfläche, Designentwürfe |
+| `apps/api/` | Prototyp-Server mit Fachbereichen unter `src/vitasync/features/` |
+| `benchmarks/` | Messwerkzeuge: Regelprüfung, Router-Vergleich |
+| `contracts/` | API-, LLM- und FHIR-Schemas (Entwürfe) |
+| `knowledge/` | Inhalte mit Status |
+| `evals/` | Testsätze |
 | `data/synthetic/` | Synthetische Testdaten |
 | `infra/` | Lokale Dienste |
-| `docs/` | Architektur und Entscheidungen (Obsidian-Vault) |
-| `planning/` | Backlog, Arbeitsaufträge, Übergaben |
+| `docs/` | Architektur, Ablauf, Wegweiser (Obsidian-Vault) |
+| `planning/` | Übergaben (Backlog ist Jira) |
 | `scripts/` | Werkzeuge |
 
-## Starten
+## Starten (Prototyp-API)
 
 Voraussetzungen: Python 3.12 und Docker. Vollständige Anleitung: [apps/api/README.md](apps/api/README.md).
 
@@ -38,4 +39,4 @@ cd apps/api && python -m venv .venv
 
 Prüfen: `curl http://127.0.0.1:8000/healthz`. Tests: `cd apps/api && .venv/Scripts/python.exe -m pytest`.
 
-Die Website (`apps/web`) folgt mit Task F006, CI und weitere Tests mit F004.
+Benchmark: [benchmarks/rule_check/README.md](benchmarks/rule_check/README.md).

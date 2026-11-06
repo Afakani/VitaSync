@@ -8,7 +8,7 @@ Zuständig: <GitHub-Handle eintragen>
 - Darf nicht: Schreiben in externe Akten; FHIR-Objekte an Features durchreichen.
 
 ## Verträge
-- Siehe [D02](../../../../../../docs/decisions/D02-FHIR.md).
+- Siehe [Datenquelle (I2, VC-64)](../../../../../../docs/decisions/README.md).
 
 ## Tests
 - Mit Beispielen aus `contracts/fhir/examples/` und `data/synthetic/`.

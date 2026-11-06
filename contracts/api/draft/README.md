@@ -1,5 +1,8 @@
 # Vertragsentwürfe
 
+> **Historisch.** Maßgeblich für die Chat-API ist I1 (Confluence „S3-03 Chat API (I1)“, VC-63). Dieser Entwurf
+> stammt aus dem alten Repo-Backlog (Task-IDs F003, F007, T-U…, DOC-001) und wird nicht weitergeführt.
+
 Dieser Ordner enthält **handgepflegte Vertragsentwürfe**. Die verbindliche Schnittstellenbeschreibung ist
 und bleibt `contracts/api/openapi.json`, erzeugt aus `apps/api` (siehe [AGENTS.md](../../AGENTS.md) des
 Moduls `contracts/`).
@@ -28,12 +31,12 @@ KI-Kennzeichnung.
 
 **Maximale Eingabelänge 2000 Zeichen** (bestätigt). Gezählt werden Unicode-Codepoints nach NFC-Normalisierung und nach
 Entfernen von führendem und folgendem Leerraum. 2000 reicht für eine ausführlich geschilderte Frage und
-bleibt für das lokale Modell ([D03](../../../docs/decisions/D03-Modell.md)) unkritisch. Die Prüfung läuft
+bleibt für das lokale Modell ([Modell (ADR Self-hosted LLM, VC-62)](../../../docs/decisions/README.md)) unkritisch. Die Prüfung läuft
 serverseitig; das Eingabefeld im Frontend darf zusätzlich begrenzen, ersetzt die Serverprüfung aber nicht.
 Zwei getrennte Fehlerfälle: `message_empty` (leer oder nur Leerraum) und `message_too_long`.
 
 **Keine Identität im Request.** `chat_id` bezeichnet den Chat, nicht den Nutzer. Wer fragt, steht
-ausschließlich in der serverseitigen Sitzung ([D05](../../../docs/decisions/D05-Identitaet-Einwilligung.md),
+ausschließlich in der serverseitigen Sitzung ([Identität und Einwilligung (I2/I3)](../../../docs/decisions/README.md),
 harte Regel 2). Felder wie `user_id` oder `patient_id` sind im Schema ausdrücklich verboten
 (`additionalProperties: false`), damit ein Client sie nicht einschmuggeln kann.
 
@@ -47,7 +50,7 @@ anlegen; der Client muss die Absicht ausdrücken.
 
 **Eine vollständige Antwort, kein Streaming.** Passt zu F007 (feste Antwort) und zur Design-Vorlage
 (Tippindikator, danach eine Blase) und hält Fehlerformat, KI-Kennzeichnung und Tests einfach. Für v1
-entschieden; Neubewertung nach der Latenzmessung zu [D03](../../../docs/decisions/D03-Modell.md). Streaming
+entschieden; Neubewertung nach der Latenzmessung zu [Modell (ADR Self-hosted LLM, VC-62)](../../../docs/decisions/README.md). Streaming
 wäre dann eine eigene Entscheidung mit eigenem Vertrag.
 
 **`client_message_id` für Idempotenz.** Wird dieselbe ID erneut gesendet, liefert der Server **dieselbe
@@ -61,7 +64,7 @@ leitet die Sprache auch nicht aus dem Nachrichtentext ab. Davon getrennt tragen 
 in `sources` ein eigenes `content_language`: die Sprache, in der der **freigegebene** Text wirklich
 vorliegt. Weicht sie von `language` ab, weist die Oberfläche darauf hin („Nur auf Deutsch verfügbar").
 Übersetzt wird nicht – eine maschinelle Übersetzung wäre nicht mehr der fachlich freigegebene Wortlaut
-([D04](../../../docs/decisions/D04-Fachinhalte.md)). Beispiel dafür:
+([fachliche Prüfung (R1–R6)](../../../docs/decisions/README.md)). Beispiel dafür:
 `examples/chat-response-general-en.json`.
 
 **KI-Kennzeichnung (T-U028-03).** Drei Felder statt eines:
@@ -72,7 +75,7 @@ vorliegt. Weicht sie von `language` ab, weist die Oberfläche darauf hin („Nur
   `fixed_text` ist der Wortlaut fachlich freigegeben und stammt nicht vom Modell, deshalb `false`
   (entschieden). Die Herkunft steht in `origin`.
 - `ai_disclosure` verweist versioniert auf den freigegebenen Transparenzhinweis, damit nachweisbar ist,
-  welcher Wortlaut angezeigt wurde (AI Act Art. 50, [D09](../../../docs/decisions/D09-Datenschutz-EU.md)).
+  welcher Wortlaut angezeigt wurde (AI Act Art. 50, [Datenschutz (DSGVO-Recherche)](../../../docs/decisions/README.md)).
 
 Wichtig: Die **dauerhafte** Kennzeichnung in der Oberfläche hängt an keinem dieser Felder. Sie ist immer
 sichtbar (U028, T-U028-02). `ai_generated: false` heißt „dieser Satz stammt nicht vom Modell", nicht
@@ -80,12 +83,12 @@ sichtbar (U028, T-U028-02). `ai_generated: false` heißt „dieser Satz stammt n
 
 **`notice` statt Dringlichkeit.** Der Notfallhinweis ist ein fester, für alle gleicher Text mit Verweis auf
 seinen Eintrag in `knowledge/`. Es gibt bewusst keine Stufe, keinen Score und keinen Zeitrahmen
-([D08](../../../docs/decisions/D08-Zweckbestimmung.md), harte Regel 8). Ein fehlender `notice` ist keine
+([R1–R6](../../../docs/decisions/README.md), harte Regel 8). Ein fehlender `notice` ist keine
 Entwarnung; das gehört in den UI-Text, nicht in ein Feld.
 
 **Quellen.** `sources` spiegelt die Kopfdaten aus `knowledge/`: `knowledge_id` ← `id`, `title` ← `titel`,
 `publisher` ← `herausgeber`, `url` ← `quelle`, `review_date` ← `review_datum`. Nur Einträge mit
-`status: geprueft` ([D04](../../../docs/decisions/D04-Fachinhalte.md)). Eine leere Liste ist erlaubt
+`status: geprueft` ([fachliche Prüfung (R1–R6)](../../../docs/decisions/README.md)). Eine leere Liste ist erlaubt
 (fester Text) und bedeutet nicht, dass keine Quelle nötig wäre.
 
 **Versionen sind Ganzzahlen.** `ai_disclosure.version` und `notice.version` verweisen auf das Kopfdatum
@@ -96,9 +99,9 @@ nicht wie groß die Änderung war.
 DOC-001 Pflichtkopfdaten; `sprache` ist die Quelle für `content_language`. F007 kann die Felder also
 befüllen.
 
-**Testinhalte kennzeichnen (D10).** Solange kein fachlicher Reviewer benannt ist, dürfen Einträge mit
+**Testinhalte kennzeichnen.** Solange kein fachlicher Reviewer benannt ist, dürfen Einträge mit
 `status: testfreigabe` verwendet werden – nur bei `APP_ENV=development` und nur gekennzeichnet
-([D10](../../../docs/decisions/D10-Testlauf.md)). Der Vertrag bildet das mit drei Stellen ab:
+([Testinhalt, nicht fachlich geprüft](../../../docs/decisions/README.md)). Der Vertrag bildet das mit drei Stellen ab:
 
 - `review_status` (`geprueft` | `testfreigabe`) an `notice` und an jeder Quelle – sagt, woher der einzelne
   Text kommt. `entwurf` erscheint nie, weil solche Einträge nicht geladen werden.
@@ -113,7 +116,7 @@ befüllen.
 
 **Was absichtlich fehlt.** Im Antwortobjekt sind `assessment`, `severity`, `urgency`, `triage_level`,
 `risk_score`, `diagnosis`, `suspected_condition`, `reference_range`, `recommended_action` und `confidence`
-verboten und im Schema als solche dokumentiert (D08, harte Regel 7). Für spätere Tasks reserviert, hier
+verboten und im Schema als solche dokumentiert (R1–R6, harte Regel 7). Für spätere Tasks reserviert, hier
 nicht spezifiziert: Darstellung eigener Werte und rein rechnerischer Auswertungen (U010, U013), Anhänge
 (U032), Endpunkte für Verlauf und Einwilligung.
 
@@ -142,7 +145,7 @@ echte Wortlaut kommt aus D04-Tasks.
 | 3 | Versionen | `knowledge/` bekommt `version` als Ganzzahl | `ai_disclosure.version` und `notice.version` sind `integer`, `minimum: 1` |
 | 4 | Sprache | `language` bleibt, Enum `["de", "en"]`, Auswahl in der UI, keine automatische Erkennung | neues `content_language` an `notice` und `sources`, englisches Beispielpaar |
 | 5 | `ai_generated` bei festem Text | `false`; `origin` kennzeichnet die Herkunft | unverändert, Begründung ergänzt |
-| 6 | Streaming | kein Streaming in v1, Neubewertung nach Latenzmessung D03 | Hinweis in der Endpunktbeschreibung |
+| 6 | Streaming | kein Streaming in v1, Neubewertung nach Latenzmessung (VC-76) | Hinweis in der Endpunktbeschreibung |
 | 7 | Wiederholte `client_message_id` | identische Antwort einschließlich Status `201` | Beschreibung von `client_message_id` präzisiert |
 | 8 | `rate_limited` | Fehlercode bleibt, keine Grenze festgelegt | unverändert, Grenze in eigenem Task |
 
@@ -161,6 +164,6 @@ Die Punkte 2 und 3 sind mit **DOC-001** in `knowledge/` umgesetzt.
 
 - PR-Review dieses Vertrags.
 - Grenze für `rate_limited` (eigener Task).
-- Fachliche Freigabe aller Inhalte, auf die der Vertrag verweist (D04). Bis dahin tragen alle Beispiele
+- Fachliche Freigabe aller Inhalte, auf die der Vertrag verweist (fachliche Prüfung). Bis dahin tragen alle Beispiele
   `review_status: testfreigabe`.
 - `ai_disclosure` verweist noch auf keinen existierenden Eintrag (T-U028-01).

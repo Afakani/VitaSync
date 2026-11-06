@@ -8,7 +8,7 @@ Zuständig: <GitHub-Handle eintragen>
 - Darf nicht: Fachentscheidungen treffen; Prompts mit echten Gesundheitsdaten als Beispiel.
 
 ## Verträge
-- Siehe [D03](../../../../../../docs/decisions/D03-Modell.md).
+- Siehe [Modell (ADR Self-hosted LLM, VC-62)](../../../../../../docs/decisions/README.md).
 - Prompts in `prompts/`, Dateiname mit Version (`recognition.v1.md`). Geänderter Prompt = neue Version, alte bleibt bis zur Umstellung.
 
 ## Tests

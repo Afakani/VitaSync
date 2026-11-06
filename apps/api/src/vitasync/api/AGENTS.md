@@ -8,7 +8,7 @@ Zuständig: <GitHub-Handle eintragen>
 - Darf nicht: Fachlogik, Datenbank- oder LLM-Zugriff direkt; Nutzer-ID aus Request-Body übernehmen.
 
 ## Verträge
-- Einheitliches Fehlerformat und Fehlercodes aus Task F003 (`contracts/api/`).
+- Einheitliches Fehlerformat und Fehlercodes nach dem Entwurf in `contracts/api/draft/` (maßgeblich: I1, VC-63).
 - Maximale Eingabelänge serverseitig prüfen.
 
 ## Tests

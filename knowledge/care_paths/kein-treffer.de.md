@@ -12,11 +12,11 @@ review_datum:
 
 # Kein passender geprüfter Inhalt
 
-**Testinhalt, nicht fachlich geprüft** ([D10](../../docs/decisions/D10-Testlauf.md)).
+**Testinhalt, nicht fachlich geprüft.**
 
 **Dieser Eintrag ist vollständig Platzhalter.** Die Design-Vorlage enthält für diesen Fall keinen Text, und
 er wird hier nicht erfunden. Der Wortlaut wird im Research-Task zu U004 erarbeitet und nach
-[D04](../../docs/decisions/D04-Fachinhalte.md) freigegeben.
+[fachliche Prüfung (R1–R6)](../../docs/decisions/README.md) freigegeben.
 
 ## Wann gilt dieser Eintrag
 
@@ -38,7 +38,7 @@ Platzhalter. Nur aus [`care-zustaendigkeiten`](zustaendigkeiten.de.md) übernehm
 
 ## Grenzen
 
-- Kein Treffer ist **keine** Entwarnung (harte Regel 8).
+- Kein Treffer ist **keine** Entwarnung (technische Regel 4 in der Root-AGENTS.md).
 - Keine Vermutung, worum es sich handeln könnte, und keine Weiterleitung an eine Facharztrichtung
-  ([D08](../../docs/decisions/D08-Zweckbestimmung.md)).
-- Solange dieser Eintrag Platzhalter ist, gilt harte Regel 6: blockieren und nachfragen.
+  ([R1–R6](../../docs/decisions/README.md)).
+- Solange dieser Eintrag Platzhalter ist, gilt: blockieren und nachfragen, nichts selbst formulieren.

@@ -12,7 +12,7 @@ review_datum:
 
 # Eisenmangel – allgemeine Information
 
-**Testinhalt, nicht fachlich geprüft** ([D10](../../docs/decisions/D10-Testlauf.md)). Platzhalter-Entwurf
+**Testinhalt, nicht fachlich geprüft.** Platzhalter-Entwurf
 als Beispiel für das Format. Inhalt wird im Research-Task erarbeitet und vom fachlichen Reviewer
 freigegeben.
 
@@ -27,4 +27,4 @@ Platzhalter. Wird aus `care_paths/` übernommen, sobald dort ein geprüfter Eint
 
 ## Grenzen
 Keine Ableitung aus eigenen Werten, keine Diagnose, keine Dosierungen
-([D08](../../docs/decisions/D08-Zweckbestimmung.md)).
+([R1–R6](../../docs/decisions/README.md)).

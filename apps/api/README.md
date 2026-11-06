@@ -1,13 +1,13 @@
 # Server
 
-Regeln und Aufbau: [AGENTS.md](AGENTS.md). Stack: [D01](../../docs/decisions/D01-Stack.md).
+Regeln und Aufbau: [AGENTS.md](AGENTS.md). Stack: [Stack (offen, VC-73)](../../docs/decisions/README.md).
 
-Stand F002: leere, startbare Anwendung mit dem Lebenszeichen-Endpunkt `/healthz`. Noch keine Fachlogik.
+Stand: leere, startbare Anwendung mit dem Lebenszeichen-Endpunkt `/healthz`. Noch keine Fachlogik.
 
 ## Voraussetzungen
 
 - Python 3.12
-- Docker (Pflicht, es gibt keinen Weg ohne; siehe D01)
+- Docker (Pflicht, es gibt keinen Weg ohne; siehe Stack)
 
 ## Einrichten
 

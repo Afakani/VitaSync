@@ -1,7 +1,7 @@
 """Aufbau der FastAPI-Anwendung.
 
 Enthaelt bewusst nur den Lebenszeichen-Endpunkt. Fachliche Routen entstehen
-in den jeweiligen Task-IDs, der Chat-Vertrag z. B. mit F003.
+erst auf Ansage; maßgeblich fuer den Chat ist I1 (VC-63).
 """
 from __future__ import annotations
 
@@ -54,7 +54,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         summary=(
             "Allgemeine Gesundheitsinformationen. Kein Medizinprodukt: "
             "keine Diagnose, keine Bewertung eigener Werte, keine "
-            "Dringlichkeitseinstufung (D08)."
+            "Dringlichkeitseinstufung (R1–R6)."
         ),
     )
 

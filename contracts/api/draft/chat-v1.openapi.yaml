@@ -12,7 +12,7 @@ info:
   summary: >-
     Eine Nutzernachricht hinein, eine vollstaendige Antwort heraus.
     Kein Medizinprodukt: keine Diagnose, keine Bewertung eigener Werte,
-    keine Dringlichkeitseinstufung (D08).
+    keine Dringlichkeitseinstufung (R1–R6).
   x-vitasync-status: Bestaetigt vorbehaltlich Review
   x-vitasync-task: F003
   x-vitasync-stand: 2026-10-14
@@ -36,10 +36,10 @@ paths:
       description: >-
         Nimmt eine Nutzernachricht an und liefert genau eine vollstaendige
         Antwort. Kein Streaming in v1; Neubewertung nach der Latenzmessung
-        zu D03.
+        zu Modell-ADR.
 
         Der Server leitet die Identitaet ausschliesslich aus der
-        serverseitigen Sitzung ab (D05). Vor jedem Datenzugriff und vor jedem
+        serverseitigen Sitzung ab (I2/I3). Vor jedem Datenzugriff und vor jedem
         Modellaufruf prueft er die Freigabe `chat_processing`; fehlt sie,
         antwortet er mit `consent_required`, ohne das Modell zu rufen.
 
@@ -202,10 +202,10 @@ components:
         Pruefstand des verwendeten Eintrags aus `knowledge/`, gespiegelt aus
         dessen Kopfdatum `status`.
 
-        `geprueft`: fachlich freigegeben (D04).
+        `geprueft`: fachlich freigegeben (fachliche Prüfung).
         `testfreigabe`: formal vollstaendig, **nicht fachlich geprueft**;
         nur bei `APP_ENV=development` geladen und in der Antwort als
-        Testinhalt gekennzeichnet (D10). Der Status `entwurf` erscheint hier
+        Testinhalt gekennzeichnet. Der Status `entwurf` erscheint hier
         nie, weil solche Eintraege nicht geladen werden.
 
     ContentLanguage:
@@ -218,7 +218,7 @@ components:
         Text nur in dieser Sprache vor. Die Oberflaeche weist darauf hin
         (z. B. "Nur auf Deutsch verfuegbar"). Der Inhalt wird nicht
         maschinell uebersetzt: eine Uebersetzung waere nicht mehr der
-        fachlich freigegebene Wortlaut (D04).
+        fachlich freigegebene Wortlaut (fachliche Prüfung).
 
     ChatMessageResponse:
       type: object
@@ -265,7 +265,7 @@ components:
       required: [message_id, created_at, origin, ai_generated, ai_disclosure, content, sources, contains_test_content]
       description: >-
         Bewusst nicht enthalten, weil VitaSync keine individuelle Bewertung
-        abgibt (D08, harte Regel 7): `assessment`, `severity`, `urgency`,
+        abgibt (R1–R6, harte Regel 7): `assessment`, `severity`, `urgency`,
         `triage_level`, `risk_score`, `diagnosis`, `suspected_condition`,
         `reference_range`, `recommended_action`, `confidence`.
 
@@ -294,7 +294,7 @@ components:
         ai_generated:
           type: boolean
           description: >-
-            Maschinenlesbare Kennzeichnung nach AI Act Art. 50 und D09.
+            Maschinenlesbare Kennzeichnung nach AI Act Art. 50 und DSGVO.
             `true` genau dann, wenn `origin` den Wert `model` hat, also der
             Wortlaut vom Modell stammt. Bei `fixed_text` ist der Wortlaut
             fachlich freigegeben und daher `false`. Die dauerhafte
@@ -328,8 +328,8 @@ components:
             $ref: '#/components/schemas/Source'
           description: >-
             Verwendete Eintraege aus `knowledge/`, nur mit
-            `status: geprueft` (D04) oder, im Testlauf, `testfreigabe`
-            (D10). Leere Liste ist erlaubt und bedeutet nicht, dass keine
+            `status: geprueft` (fachliche Prüfung) oder, im Testlauf, `testfreigabe`
+            Leere Liste ist erlaubt und bedeutet nicht, dass keine
             Quelle noetig waere.
         contains_test_content:
           type: boolean
@@ -337,7 +337,7 @@ components:
             `true`, wenn mindestens ein verwendeter Eintrag den
             `review_status` `testfreigabe` hat. Die Oberflaeche zeigt dann
             einmal den Hinweis "Testinhalt, nicht fachlich geprueft"
-            (D10), ohne jede Quelle einzeln pruefen zu muessen.
+            ohne jede Quelle einzeln pruefen zu muessen.
 
             Ausserhalb von `APP_ENV=development` ist das Feld immer
             `false`, weil dort keine Testinhalte geladen werden.
@@ -349,7 +349,7 @@ components:
       description: >-
         Verweis auf den freigegebenen Transparenzhinweis ("Du sprichst mit
         einer KI"). Versioniert, damit nachweisbar ist, welcher Wortlaut
-        angezeigt wurde (AI Act Art. 50, D09). Der Wortlaut kommt aus
+        angezeigt wurde (AI Act Art. 50, DSGVO). Der Wortlaut kommt aus
         T-U028-01.
       properties:
         text_id:
@@ -375,20 +375,20 @@ components:
       properties:
         name:
           type: string
-          description: Modellname, z. B. der in D03 gewaehlte.
+          description: Modellname, z. B. der in Modell-ADR gewaehlte.
         version:
           type: string
           description: Version oder Tag des Modells.
         runtime:
           type: string
           enum: [ollama]
-          description: Laufzeitumgebung nach D01.
+          description: Laufzeitumgebung nach Stack.
         local:
           type: boolean
           const: true
           description: >-
             Immer `true`. Es werden keine Nutzerdaten an externe KI-Dienste
-            gegeben (D09, harte Regel 12).
+            gegeben (DSGVO, harte Regel 12).
 
     Notice:
       type: object
@@ -396,7 +396,7 @@ components:
       required: [type, knowledge_id, version, content_language, review_status]
       description: >-
         Fester, fuer alle Nutzer gleicher Hinweis. Enthaelt bewusst keine
-        Stufe, keinen Zeitrahmen und keine Bewertung der Situation (D08).
+        Stufe, keinen Zeitrahmen und keine Bewertung der Situation (R1–R6).
       properties:
         type:
           type: string
@@ -438,7 +438,7 @@ components:
         publisher:
           type: [string, 'null']
           description: >-
-            Herausgebende Stelle, z. B. IQWiG oder BMG (D04). Kopfdatum
+            Herausgebende Stelle, z. B. IQWiG oder BMG (fachliche Prüfung). Kopfdatum
             `herausgeber`. `null` nur bei `review_status: testfreigabe` -
             ein Testinhalt hat noch keinen Herausgeber. Bei
             `review_status: geprueft` immer gesetzt.

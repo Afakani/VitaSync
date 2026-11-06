@@ -12,7 +12,7 @@ review_datum:
 
 # Allgemeiner Notfallhinweis
 
-**Testinhalt, nicht fachlich geprüft** ([D10](../../docs/decisions/D10-Testlauf.md)). Der Wortlaut unten
+**Testinhalt, nicht fachlich geprüft.** Der Wortlaut unten
 stammt wörtlich aus der Design-Vorlage `apps/web/design/vitasync-ui-v1.5.html` (deutsche Fassung,
 Zeilen 827–829). Er ist damit belegt, aber nicht fachlich freigegeben.
 
@@ -20,7 +20,7 @@ Zeilen 827–829). Er ist damit belegt, aber nicht fachlich freigegeben.
 
 **Platzhalter – die Liste der Warnzeichen-Stichworte fehlt und wird hier nicht erfunden.** Welche Wörter
 den Hinweis auslösen, legt der Research-Task zu U001 fest; die Freigabe läuft über
-[D04](../../docs/decisions/D04-Fachinhalte.md). Solange diese Liste fehlt, darf `features/guidance` den
+[fachliche Prüfung (R1–R6)](../../docs/decisions/README.md). Solange diese Liste fehlt, darf `features/guidance` den
 Hinweis nicht automatisch auslösen.
 
 ## Inhalt
@@ -41,7 +41,7 @@ Der Text wird unverändert und für alle Nutzer gleich ausgegeben:
 ## Grenzen
 
 - Keine Einstufung der Dringlichkeit, kein Zeitfenster, keine Aussage über die Lage der fragenden Person
-  ([D08](../../docs/decisions/D08-Zweckbestimmung.md)).
+  ([R1–R6](../../docs/decisions/README.md)).
 - Kein Treffer in der Stichwortliste ist **keine** Entwarnung, und es wird nie behauptet, alle Notfälle zu
-  erkennen (harte Regel 8).
+  erkennen (technische Regel 4 in der Root-AGENTS.md).
 - Keine Variante des Textes, keine Abschwächung, keine Personalisierung.

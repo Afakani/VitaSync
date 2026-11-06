@@ -1,122 +1,140 @@
 # VitaSync – Regeln für Menschen und KI-Agenten
 
-Gilt im ganzen Repository. Die `AGENTS.md` in Unterordnern ergänzen diese Datei für ihren Ordner. Bei Widerspruch gilt die strengere Regel; den Widerspruch im PR nennen.
+Gilt im ganzen Repository. Die `AGENTS.md` in Unterordnern ergänzen diese Datei für ihren Ordner. Bei Widerspruch gilt die strengere Regel.
 
 ## Was VitaSync ist
 
-Chat-Prototyp (FH Aachen, Interdisziplinäres Projekt). Nutzer stellen Gesundheitsfragen. Das System erkennt die Anfrage, gibt allgemeine Gesundheitsinformation aus geprüften Quellen, zeigt eigene (synthetische) Daten an und rechnet damit, ohne zu bewerten.
+Chatbot in der VitaSync-App (App: Johnny Bytes, Chatbot: Team VC, FH Aachen). Nutzer stellen Fragen zu eigenen Gesundheitsdaten, zu allgemeiner Prävention und zur App. Der Bot zeigt Daten, gibt allgemeine Lifestyle-Tipps und leitet medizinische Fragen an Menschen weiter (Apotheke, Hausarztpraxis, 116117, im Notfall 112).
 
-**VitaSync ist kein Medizinprodukt** ([D08](docs/decisions/D08-Zweckbestimmung.md)). Es macht keine Aussage über den Gesundheitszustand einer konkreten Person: keine Diagnose, keine Bewertung von Werten, keine Dringlichkeitseinstufung, keine Ursachen, keine Medikamente oder Therapien. Vor jeder Implementierung mit fachlichem Inhalt D08 lesen.
+**VitaSync ist ein Wellness- und Präventionsprodukt, kein Medizinprodukt.** Der Bot beurteilt nichts, diagnostiziert nichts und empfiehlt keine Behandlung. Im Zweifel gilt die konservativere, weniger „medizinische“ Option.
 
-Das lokale LLM erkennt Anfragen, liest Dokumente und formuliert freigegebene Inhalte. Rechnen, Regeln und Rechte entscheidet Code.
+## Quellen der Wahrheit
 
-## Aktueller Stand
+**Jira und Confluence sind maßgeblich, nicht dieses Repo.** Bei Widerspruch gilt Confluence bzw. Jira; das Repo verlinkt, es kopiert nichts Maßgebliches.
 
-- Entscheidungen D01–D10 stehen in `docs/decisions/`. Bestätigt sind **D01** (Stack), **D08** (Zweckbestimmung) und **D10** (Testlauf); D02–D07 und D09 sind empfohlen. Vor der Arbeit Status prüfen: **„Empfohlen“ ist nicht „Bestätigt“.** Auf unbestätigten Entscheidungen nur bauen, wenn der Task es ausdrücklich sagt.
-- Produktcode: bisher nur das leere API-Gerüst aus F002 (`apps/api`, Endpunkt `/healthz`). Fachbereiche unter `features/` sind noch leer.
-- Der Chat-API-Vertrag liegt als Entwurf in `contracts/api/draft/` (F003), Status „bestätigt vorbehaltlich Review“. Umgesetzt wird er mit F007; erst dann entsteht das generierte `contracts/api/openapi.json`.
-- Web-Grundgerüst (`apps/web`) folgt mit F006, Testautomatisierung und CI mit F004. Keine Befehle erfinden.
+| Was | Wo |
+| --- | --- |
+| Backlog, Sprints, Zuständigkeit | Jira, Projekt VC |
+| Regeln R1–R6 | Confluence VC: „The 6 rules (R1-R6)“ |
+| Erlaubt / nicht erlaubt, Beispieltabelle | Confluence VC: „What the bot is allowed and not allowed to do“, „Forbidden and allowed actions“ |
+| Use Cases CB-01 bis CB-35 | Confluence VC: „Chatbot use case master list“ |
+| Pipeline und Prüfpunkte | Confluence VC: „Ethical boundaries in the pipeline“ |
+| Entscheidungen, ADRs, Schnittstellen I1–I5 | Wegweiser: [docs/decisions/README.md](docs/decisions/README.md) |
 
-Alle Befehle vom Wurzelverzeichnis aus. Einrichtung und Erklärungen: `apps/api/README.md`.
+Jira und Confluence werden aus diesem Repo heraus **nur gelesen**. Schreiben nur nach ausdrücklicher Freigabe für die konkrete Aktion.
+
+## Rolle dieses Repos
+
+Eigenes **Arbeitsrepo**: Prototypen, Benchmarks, Experimente. Das Team-Repo mit den Modulen M1–M9 entsteht separat (VC-74). `apps/api` ist ein Prototyp-Gerüst (Endpunkt `/healthz`), kein Team-Code.
+
+Alle Befehle vom Wurzelverzeichnis aus. Einrichtung: `apps/api/README.md`.
 
 ```
-# Befehle (Stand F002; Web-Befehle folgen mit F006, CI mit F004)
-# Datenbank:   docker compose --env-file .env -f infra/docker-compose.yml up -d db
-# Start API:   cd apps/api && .venv/Scripts/python.exe -m uvicorn vitasync.api.app:app --reload --host 127.0.0.1 --port 8000
-# Tests API:   cd apps/api && .venv/Scripts/python.exe -m pytest
-# Tests Web:   -
+# Datenbank:     docker compose --env-file .env -f infra/docker-compose.yml up -d db
+# Start API:     cd apps/api && .venv/Scripts/python.exe -m uvicorn vitasync.api.app:app --reload --host 127.0.0.1 --port 8000
+# Tests API:     cd apps/api && .venv/Scripts/python.exe -m pytest
+# Benchmark:     cd benchmarks/rule_check && .venv/Scripts/python.exe -m pytest
 # Strukturcheck: python scripts/check_structure.py
 ```
 
 Pfade mit `.venv/Scripts/` gelten für Windows; unter Linux und macOS `.venv/bin/` nutzen.
 
+## Begriffe aus Jira
+
+| Begriff | Bedeutung |
+| --- | --- |
+| M1–M9 | Module des Chatbots: M1 Chat-API, M2 Klassifikator, M3 Safety-Router, M4 Orchestrator (Flows je Typ), M5 Rechenwerkzeuge, M6 RAG/Wissensbasis, M7 LLM-Gateway, M8 Output Guard, M9 Testrunner |
+| Routen | DATA_QUERY, HEALTH_QUESTION, COMBINED, APP_HELP, OUT_OF_SCOPE (+ Sub-Label), EMERGENCY, Krisenpfad, CLARIFY |
+| I1–I5 | Schnittstellen zur App: I1 Chat-API, I2 Kontext (Gesundheitsdaten), I3 Einwilligung, I5 Audit-Ereignisse |
+| CB-xx | Use Case aus der Masterliste |
+| R1–R6 | Die sechs Regeln (unten) |
+
+Mehr: [docs/Glossar.md](docs/Glossar.md).
+
 ## Wo gehört was hin
 
 | Ordner | Inhalt |
 | --- | --- |
-| `apps/web/` | Website (Chat-Oberfläche). Spricht nur über die HTTP-API. |
-| `apps/api/` | Server: HTTP, Fachlogik, Adapter für LLM, FHIR, OMOP, Datenbank. |
-| `apps/api/src/vitasync/features/<name>/` | Ein Fachbereich = ein Ordner. Neue Funktionalität gehört in den zuständigen Feature-Ordner. |
-| `contracts/` | Einzige Quelle für Schnittstellen: API-Schema, LLM-Ausgabeschemas, FHIR-Profile. |
-| `knowledge/` | Fachlich freigegebene Inhalte: Themen, Regeln, Anlaufstellen, Quellen. Kein Code. |
-| `evals/` | Versionierte Testsätze mit Soll-Ergebnis für Anfrageerkennung und Antworten. |
+| `apps/web/` | Prototyp-Oberfläche und Designentwürfe. Spricht nur über die HTTP-API. |
+| `apps/api/` | Prototyp-Server: HTTP, Fachlogik, Adapter für LLM, FHIR, Datenbank. |
+| `apps/api/src/vitasync/features/<name>/` | Ein Fachbereich = ein Ordner. |
+| `contracts/` | Schnittstellen im Repo: API-Entwürfe, LLM-Ausgabeschemas, FHIR-Beispiele. Maßgeblich sind I1–I5 in Confluence. |
+| `knowledge/` | Inhalte (Themen, Hinweise, Anlaufstellen) mit Status. Kein Code. |
+| `evals/` | Versionierte Testsätze mit Soll-Ergebnis. |
 | `data/synthetic/` | Synthetische Testpatienten und Fixtures. Niemals echte Daten. |
 | `infra/` | Lokale Dienste (Datenbank, FHIR-Testserver, LLM-Laufzeit). |
-| `docs/` | Architektur, Entscheidungen, Arbeitsablauf (Obsidian-Vault, normales Markdown). |
-| `docs/compliance/` | Datenschutz-Dokumente (Verzeichnis, TOM, Hinweis, Pannenablauf). |
-| `docs/nachweise/` | Nachweise zur Definition of Done je Meilenstein. |
-| `planning/` | Backlog (Excel), Arbeitsaufträge, Übergaben. |
+| `docs/` | Architektur, Ablauf, Glossar, Wegweiser zu den Entscheidungen (Obsidian-Vault, normales Markdown). |
+| `docs/compliance/` | Datenschutz-Arbeitsstand im Repo. |
+| `planning/` | Nur Übergaben. Backlog ist Jira. |
 | `scripts/` | Entwicklungswerkzeuge, u. a. Strukturcheck. |
+| `benchmarks/` | Eigenständige Messwerkzeuge für das Sprachmodell, z. B. `rule_check/` (Regelprüfung) und `router_compare/` (Router-Vergleiche). Kein Teil der Anwendung. |
 
 Keine zweiten Bäume daneben anlegen (`src/`, `backend/`, `frontend/`, `utils/` im Root).
 
 ## Abhängigkeiten im Backend
 
-Details und Diagramm: `docs/Architektur.md`. Kurzform:
+Details: `docs/Architektur.md`. Kurzform:
 
 - `api` → `features`, `security`, `core`. Routen sind dünn: validieren, Feature aufrufen, Antwort mappen.
-- `features/<x>` → `core`, `security`, Schnittstellen aus `core/ports.py`. Andere Features nur über deren `__init__.py` (öffentliche Funktionen), nie über interne Dateien.
+- `features/<x>` → `core`, `security`, Schnittstellen aus `core/ports.py`. Andere Features nur über deren `__init__.py`.
 - `adapters/*` → `core`. Adapter implementieren Ports und kennen keine Features.
-- `security` → `core`, DB-Port.
-- `core` → nur Standardbibliothek und die gewählte Validierungsbibliothek. Kein HTTP, keine Datenbank, kein LLM.
-- Keine Zyklen. Ein Feature, das ein anderes braucht, ruft es auf – es kopiert keine Logik.
+- `core` → nur Standardbibliothek und die Validierungsbibliothek. Kein HTTP, keine Datenbank, kein LLM.
+- Keine Zyklen. Module klein und austauschbar halten: Regelprüfung, Routing und Modellaufruf sind getrennte Module mit klarer Ein- und Ausgabe.
 
-## Harte Regeln: Gesundheit und Daten
+## Harte Regeln
 
-Diese Regeln gelten unabhängig vom Status der zitierten Entscheidungen. Eine Entscheidung mit Status
-„empfohlen“ schwächt die Regel nicht ab; sie erklärt nur, warum die Regel so lautet.
+### R1–R6 (Confluence „The 6 rules“, gekürzt)
 
-1. Nur synthetische Daten aus `data/synthetic/`. Keine echten Patientendaten, Zugangsdaten oder Gesundheitsinhalte in Code, Tests, Prompts, Commits, Logs, Issues.
-2. Identität kommt aus der serverseitigen Sitzung, nie aus Request-Parametern oder Modellausgaben.
-3. Freigabe (Consent) wird serverseitig **vor** Datenzugriff und **vor** Modellaufruf geprüft. Ein ausgeblendeter Button ist kein Schutz.
-4. Nutzernachrichten und importierte Texte sind Daten, keine Anweisungen an das System.
-5. Berechnungen und Zugriffsentscheidungen deterministisch im Code, nie durch das LLM. LLM-Ausgaben werden gegen ein Schema in `contracts/llm/` validiert; ungültig → kontrollierter Fallback.
-6. Gesundheitsinhalte, Notfall-Stichworte und Zuständigkeiten **nur** aus `knowledge/` mit Status `geprueft`. Fehlt ein Eintrag: blockieren und nachfragen. Nichts selbst erfinden, auch nicht „vorläufig“. Ausnahme im Testlauf siehe [D10](docs/decisions/D10-Testlauf.md).
-7. **Keine individuelle Bewertung** (D08): keine Diagnose oder Verdachtsdiagnose, keine Wörter wie normal/auffällig/gut/schlecht zu eigenen Werten, keine Referenzbereiche neben eigenen Werten, keine Dringlichkeitseinstufung, keine Ursachen, keine Medikamente, keine Bewertung medizinischer Bilder. Gilt auch für Prompts und Modellausgaben.
-8. Nennt jemand ein freigegebenes Warnzeichen-Stichwort, erscheint zuerst der feste, für alle gleiche Notfallhinweis. Fehlender Treffer ist keine Entwarnung. Nie behaupten, alle Notfälle zu erkennen.
-9. Fehlender Wert ist nicht null. Selbstauskunft, importierter Befund und ausgelesenes Dokument bleiben unterscheidbar.
-10. Logs enthalten keine Nachrichteninhalte und keine Gesundheitswerte, nur Request-ID, Zeiten, Fehlercodes.
-11. Jede KI-Antwort ist in der UI als KI-generiert gekennzeichnet und im API-Vertrag maschinenlesbar markiert (AI Act Art. 50, [D09](docs/decisions/D09-Datenschutz-EU.md)).
-12. Gesundheits-, Notfall- und Zuständigkeitstexte werden **nie zur Laufzeit übersetzt**. Übersetzt ist nicht mehr der fachlich freigegebene Wortlaut. Fehlt die geprüfte Fassung in der gewählten Sprache, erscheint die deutsche Fassung mit Hinweis. Welche Sprache ein Inhalt hat, steht im Kopfdatum `sprache` und im Vertrag als `content_language`.
-13. Neue Verarbeitung personenbezogener Daten (neues Feld, neue Tabelle, neuer Log-Eintrag) → im selben PR `docs/compliance/Verarbeitungsverzeichnis.md` und bei Bedarf `TOM.md` ergänzen. Passwörter nur gehasht. Keine Tracking- oder Analyse-Tools, keine externen KI-Dienste mit Nutzerdaten.
-14. **Medizinische Quelldaten nur lesen.** Daten, die VitaSync von außen bekommt (FHIR-Server, OMOP-Datenbank, importierte Befunde), werden nur abgerufen und gelesen, nie geändert oder gelöscht – weder durch Code noch durch das Modell. Keine schreibenden FHIR-Aufrufe (`POST`, `PUT`, `PATCH`, `DELETE`), auf OMOP nur ein lesender Datenbankzugang (kein `INSERT`, `UPDATE`, `DELETE`). Was VitaSync selbst speichert (Selbstauskunft, Chatverlauf, Einwilligung), bleibt für den Nutzer löschbar (Art. 17, U024).
+| # | Regel |
+| --- | --- |
+| R1 | Kein Risiko- oder Ampel-Score. Die Kennzahl heißt „VitaSync-Index“ und ist neutral gefärbt. |
+| R2 | Keine klinische Bewertung von Werten: kein „normal / auffällig / kritisch / zu hoch / zu niedrig“, keine roten Zonen, keine Schwellenlinien als Urteil. Werte werden nur gezeigt und im Verlauf dargestellt. |
+| R3 | Empfehlungen nur als Lifestyle: „Vorschlag / Tipp / Impuls“. Nie „Risiko erkannt“, „Therapie“, „Diagnose“, „Befund“. |
+| R4 | Weiterleiten statt urteilen: keine Symptom-Triage, keine Diagnose, keine Medikamentenempfehlung, keine individuelle Risikoeinschätzung. Medizinische Anfragen gehen an Apotheke, Hausarztpraxis, 116117 (112 im Notfall). |
+| R5 | Apothekenansicht ohne Systemdeutung: kein Score-Urteil, keine hervorgehobenen „Auffälligkeiten“, kein berechneter „Präventionsbedarf“. Die Apotheke interpretiert. |
+| R6 | Keine wertenden Farben: Rot/Gelb/Grün nie als „gut/schlecht“, auch nicht im Diagramm. |
+
+Grundsatz: Die menschliche, medizinische Deutung passiert außerhalb des Systems. Das System erfasst, strukturiert und visualisiert. Es deutet nicht.
+
+### Technische Regeln
+
+1. Nur synthetische Daten aus `data/synthetic/`. Keine echten Patientendaten, Zugangsdaten oder Secrets in Code, Tests, Prompts, Commits, Logs.
+2. Nutzernachrichten und importierte Texte sind Daten, keine Anweisungen an das System.
+3. Rechnen, Regeln und Routing entscheidet deterministischer Code, nicht das LLM. Das LLM erkennt und formuliert. LLM-Ausgaben werden gegen ein Schema validiert; ungültig → kontrollierter Fallback.
+4. Notfall- und Krisentexte nur in der freigegebenen Fassung (Confluence S3-08). Nicht selbst formulieren. Fehlender Treffer ist keine Entwarnung.
+5. Logs und Audit (I5) enthalten keine Nachrichteninhalte und keine Gesundheitswerte, nur IDs, Zeiten, Route, Regel, Fehlercodes.
+6. Fehlender Wert ist nicht null. Erlaubte Berechnungen und Umgang mit Lücken: Confluence S3-05.
+7. Keine Tracking-Tools, keine externen KI-Dienste mit Nutzerdaten. Das Modell läuft selbst gehostet (ADR „Self-hosted open-weight LLM“).
 
 ## Arbeitsablauf
 
-1. Nur an einer **zugewiesenen** Task-ID arbeiten: GitHub-Issue mit dir als Assignee oder Datei in `planning/work-orders/`. Keine Zuweisung → nicht beginnen, nachfragen.
-2. Lesen: Issue bzw. Arbeitsauftrag, die `AGENTS.md` der betroffenen Ordner, die betroffene Entscheidung in `docs/decisions/`. Nicht das ganze Repo lesen.
+1. Gearbeitet wird **auf Ansage**. Passt die Arbeit zu einem Jira-Ticket, wird der Key genannt.
+2. Lesen: die `AGENTS.md` der betroffenen Ordner und die betroffene Confluence-Seite. Nicht das ganze Repo lesen.
 3. `git status` prüfen. Fremde Änderungen nie zurücksetzen oder löschen.
-4. Branch `task/<TASK-ID>-<kurzname>`, z. B. `task/T-U004-02-intent-validator`.
+4. Branch: `vc-<nr>-<kurzname>` (mit Jira-Ticket) oder `work/<kurzname>`. Nie direkt auf `main` arbeiten.
 5. Kleinsten prüfbaren Schritt bauen, Tests dazu, `python scripts/check_structure.py`.
-6. Commit: `<TASK-ID>: <Imperativ auf Englisch>`, z. B. `T-U004-02: add intent output validator`.
-7. PR mit Vorlage öffnen. Status höchstens „Im Review“. Eine **andere** Person reviewt und merged. Nie direkt auf `main` pushen. Im Testlauf gilt [D10](docs/decisions/D10-Testlauf.md).
-8. Bei Unterbrechung oder Übergabe: `planning/handoffs/<TASK-ID>.md` nach Vorlage aktualisieren.
-9. Auch reine Prüf- und Doku-Aufträge laufen über Branch und PR. Ein Bericht direkt auf `main` ist kein zulässiger Weg.
-10. Jeder Task-PR aktualisiert **seine eigene** Zeile im Blatt `Tasks` des Backlogs auf „Im Review“. Nach der Freigabe folgt im selben PR ein letzter Commit mit Status „Erledigt“ und der PR-Nummer in der Spalte „Änderung“. Eine Beschränkung des Auftrags auf bestimmte Ordner gilt nie für die eigene Backlog-Zeile und die eigene Übergabe.
+6. Commit nur auf Ansage: `<VC-xx oder Bereich>: <Imperativ auf Englisch>`, z. B. `VC-87: add rule pipeline module`.
+7. Bei Unterbrechung: `planning/handoffs/<Jira-Key oder Kurzname>.md` nach Vorlage.
 
-Status: Offen → Bereit → In Bearbeitung → Im Review → Erledigt. „Blockiert“ immer mit konkretem Grund.
+## Grenzen jeder Arbeit
 
-## Grenzen jedes Auftrags
-
-- Nur den Umfang der Task-ID. Keine beiläufigen Refactorings, Dependency-Upgrades, Formatierungswellen oder Zusatzfeatures.
-- Zu groß? Schnitt vorschlagen und dokumentieren, nichts stillschweigend weglassen.
-- `contracts/` nur ändern, wenn der Task es verlangt; dann alle Verbraucher, Tests und Doku im selben PR anpassen.
-- Neues Modul: Ordner + `AGENTS.md` nach `docs/vorlagen/MODUL_AGENTS.md` + `python scripts/check_structure.py --fix` + Zeile in der Tabelle der Eltern-`AGENTS.md`. `--fix` legt fehlende `CLAUDE.md` an **und überschreibt vorhandene, die vom Stub `@AGENTS.md` abweichen**. Eigener Inhalt in einer Modul-`CLAUDE.md` geht dabei verloren; er gehört in die `AGENTS.md`.
+- Nur den angesagten Umfang. Keine beiläufigen Refactorings, Dependency-Upgrades oder Formatierungswellen.
+- Zu groß? Schnitt vorschlagen, nichts stillschweigend weglassen.
+- Neues Modul: Ordner + `AGENTS.md` nach `docs/vorlagen/MODUL_AGENTS.md` + `python scripts/check_structure.py --fix` + Zeile in der Tabelle der Eltern-`AGENTS.md`. `--fix` überschreibt Modul-`CLAUDE.md`, die vom Stub `@AGENTS.md` abweichen; eigener Inhalt gehört in die `AGENTS.md`.
 - Keine Secrets einchecken. Konfiguration über `.env` (nicht versioniert) und `.env.example`.
 - Kein Deployment, keine Änderungen an geteilten Diensten ohne ausdrücklichen Auftrag.
 
 ## Dokumentation
 
-- Die `AGENTS.md` eines Moduls **ist** seine Moduldoku (Zweck, Grenzen, Verträge, Tests). Bei geänderter Verantwortung oder Schnittstelle im selben PR anpassen.
+- Die `AGENTS.md` eines Moduls **ist** seine Moduldoku (Zweck, Grenzen, Verträge, Tests).
 - `README.md` nur dort, wo Menschen etwas einrichten oder starten müssen.
-- Öffentliche Funktionen: Docstring mit Zweck, Einheiten, Rückgabe, Fehlern. Kommentare erklären das Warum, nicht das Was.
-- Neue Architekturentscheidung: `docs/decisions/` nach Vorlage. Eine Datei pro Entscheidung.
-- Wiederkehrende Fehlerquelle entdeckt → eine Zeile unter „Fallen“ in der betroffenen Modul-`AGENTS.md`.
+- Öffentliche Funktionen: Docstring mit Zweck, Einheiten, Rückgabe, Fehlern. Kommentare erklären das Warum.
+- Wiederkehrende Fehlerquelle → eine Zeile unter „Fallen“ in der Modul-`AGENTS.md`.
 
 ## Sprache
 
-Code, Bezeichner, Commits: Englisch. Doku, Issues, PRs, Rückfragen, Übergaben: Deutsch. UI: Deutsch.
+Code, Bezeichner, Commits: Englisch. Doku, Rückfragen, Übergaben: Deutsch. UI: Deutsch.
 
 ## Abschlussbericht
 
-Task-ID und Status · was sich am Verhalten geändert hat · geänderte Dateien · tatsächlich ausgeführte Tests (Befehl + Ergebnis) · nicht geprüft · offene Punkte · ein nächster Schritt. Unterscheide: implementiert / getestet / fachlich geprüft / abgenommen.
+Was sich am Verhalten geändert hat · geänderte Dateien · tatsächlich ausgeführte Tests (Befehl + Ergebnis) · nicht geprüft · offene Punkte · ein nächster Schritt. Unterscheide: implementiert / getestet / fachlich geprüft.

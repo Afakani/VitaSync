@@ -6,12 +6,11 @@ tags: [vitasync]
 
 `docs/` ist ein Obsidian-Vault, aber normales Markdown. Keine Plugins nötig.
 
-Hier stehen nur übergreifende Dinge: Architektur, Entscheidungen, Ablauf. Moduldetails stehen in der `AGENTS.md` des jeweiligen Ordners.
+**Maßgeblich sind Jira (Projekt VC) und Confluence (Space VC).** Hier stehen nur übergreifende Dinge für dieses Arbeitsrepo. Moduldetails stehen in der `AGENTS.md` des jeweiligen Ordners.
 
-- [[Architektur]] – Aufbau, Ablauf einer Nachricht, Abhängigkeitsregeln
-- [[Sicherheit-und-Grenzen]] – was VitaSync darf und nicht darf, wo es umgesetzt ist
-- [[Arbeitsablauf]] – Issues, Branches, Review
+- [[Architektur]] – Pipeline des Teams (M1–M9) und Aufbau des Prototyps
+- [[Sicherheit-und-Grenzen]] – R1–R6 und wo sie umgesetzt werden
+- [[Arbeitsablauf]] – Arbeit auf Ansage, Branches, Jira-Bezug
 - [[Glossar]] – Begriffe
-- [[Compliance]] – Datenschutz und EU-Recht
-- [[Nachweise-M1]] – Nachweise zur Abnahme von Meilenstein 1
-- Entscheidungen: [[D01-Stack]] · [[D02-FHIR]] · [[D03-Modell]] · [[D04-Fachinhalte]] · [[D05-Identitaet-Einwilligung]] · [[D06-Speicherung]] · [[D07-Optionaler-Umfang]] · [[D08-Zweckbestimmung]] · [[D09-Datenschutz-EU]]
+- [[Compliance]] – Datenschutz-Arbeitsstand
+- Entscheidungen: Wegweiser in `docs/decisions/README.md` (verweist auf Confluence)

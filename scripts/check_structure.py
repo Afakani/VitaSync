@@ -40,12 +40,11 @@ FORBIDDEN_ROOT_DIRS = ["src", "backend", "frontend", "utils"]
 KNOWLEDGE_DIRS = ["knowledge/topics", "knowledge/rules", "knowledge/care_paths"]
 KNOWLEDGE_FIELDS = ["id", "titel", "status", "sprache", "version", "herausgeber",
                     "quelle", "reviewer", "review_datum"]
-# 'testfreigabe' ist eine befristete Ausnahme aus D10 (Testlauf).
+# 'testfreigabe': nicht fachlich geprueft, nur fuer lokale Entwicklung.
 KNOWLEDGE_STATUS = {"entwurf", "testfreigabe", "geprueft"}
 KNOWLEDGE_LANGUAGES = {"de", "en"}
 # Kategorien, ohne die weder Notfallhinweis noch Fallback funktionieren.
 KNOWLEDGE_REQUIRED_REVIEWED = {"knowledge/rules", "knowledge/care_paths"}
-DECISION_STATUS = {"offen", "empfohlen", "bestaetigt", "ersetzt"}
 
 
 def walk(pattern):
@@ -134,9 +133,9 @@ def check_knowledge(problems, warnings):
                     if not meta.get(field) or meta[field].startswith("<"):
                         problems.append(f"{rel}: 'geprueft' requires '{field}'")
             if status == "testfreigabe":
-                # D10: erlaubt, aber nicht fachlich geprueft - sichtbar halten.
+                # Erlaubt, aber nicht fachlich geprueft - sichtbar halten.
                 warnings.append(f"{rel}: status 'testfreigabe' - not reviewed, "
-                                f"loaded only with APP_ENV=development (D10)")
+                                f"loaded only with APP_ENV=development")
 
             language = meta.get("sprache")
             if language not in KNOWLEDGE_LANGUAGES:
@@ -156,41 +155,7 @@ def check_knowledge(problems, warnings):
 
         if not reviewed and rel_dir in KNOWLEDGE_REQUIRED_REVIEWED:
             warnings.append(f"{rel_dir}: no entry with status 'geprueft' - "
-                            f"the category is not usable yet (TEST-001 B8)")
-
-
-def check_decisions(problems):
-    """Prueft Kopfdaten der Entscheidungen und den Abgleich mit der Statustabelle."""
-    listed = {}
-    index = ROOT / "docs/decisions/README.md"
-    if index.is_file():
-        for ident, status in re.findall(
-            r"\|\s*\[(D\d+)\]\([^)]+\)\s*\|[^|]*\|\s*([a-z]+)\s*\|",
-            index.read_text(encoding="utf-8"),
-        ):
-            listed[ident] = status
-
-    seen = set()
-    for file in sorted((ROOT / "docs/decisions").glob("D[0-9]*.md")):
-        rel = file.relative_to(ROOT)
-        meta = frontmatter(file.read_text(encoding="utf-8")) or {}
-        status = meta.get("status")
-        if status not in DECISION_STATUS:
-            problems.append(f"{rel}: invalid status {status!r}")
-        if status == "bestaetigt" and not (meta.get("bestaetigt_von") and meta.get("bestaetigt_am")):
-            problems.append(f"{rel}: 'bestaetigt' requires bestaetigt_von and bestaetigt_am")
-
-        ident = meta.get("id") or file.name.split("-")[0]
-        seen.add(ident)
-        # TEST-001 B8: Tabelle und Kopfdaten duerfen nicht auseinanderlaufen.
-        if ident not in listed:
-            problems.append(f"{rel}: not listed in docs/decisions/README.md")
-        elif listed[ident] != status:
-            problems.append(f"{rel}: status {status!r} but README.md says "
-                            f"{listed[ident]!r}")
-
-    for ident in sorted(set(listed) - seen):
-        problems.append(f"docs/decisions/README.md: lists {ident}, but no such file")
+                            f"the category is not usable yet")
 
 
 def check():
@@ -207,7 +172,6 @@ def check():
     check_agent_files(problems, fix)
     check_links(problems)
     check_knowledge(problems, warnings)
-    check_decisions(problems)
     return problems, warnings
 
 
@@ -219,7 +183,7 @@ if __name__ == "__main__":
         print(f"WARNUNG {note}")
     if findings:
         sys.exit(1)
-    summary = "PASS: structure, agent files, links, knowledge metadata, decisions."
+    summary = "PASS: structure, agent files, links, knowledge metadata."
     if notes:
         summary += f" {len(notes)} Warnung(en), kein Fehler."
     print(summary)

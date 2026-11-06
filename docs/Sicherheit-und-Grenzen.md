@@ -4,24 +4,22 @@ tags: [vitasync, sicherheit]
 
 # Sicherheit und fachliche Grenzen
 
-Die verbindlichen Regeln stehen in der Root-`AGENTS.md` („Harte Regeln“). Diese Notiz erklärt, wo sie im Code umgesetzt werden.
+Verbindlich sind R1–R6 und die Seiten „What the bot is allowed and not allowed to do“ und „Forbidden and allowed actions“ in Confluence. Kurzfassung in der Root-`AGENTS.md`. Diese Notiz zeigt, wo sie im Prototyp und im Team-Modul umgesetzt werden.
 
-| Regel | Umgesetzt in |
-| --- | --- |
-| Identität nur aus Sitzung | `apps/api/src/vitasync/security/` |
-| Consent vor Datenzugriff und Modellaufruf | `security/` + Aufruf in `api/`-Routen |
-| Keine erfundenen Fachregeln | `knowledge/` mit Status `geprueft`, geladen von `features/guidance/` |
-| Rechnen nicht im LLM | `features/analysis/`, `core/` |
-| Modellausgabe validieren | `contracts/llm/`, `features/recognition/` |
-| Fester Notfallhinweis bei Stichwort, keine Einstufung | `features/guidance/`, `knowledge/rules/` |
-| Keine Bewertung eigener Werte | `features/analysis/`, `evals/answers/` |
-| Keine Inhalte in Logs | Logging-Konfiguration in `apps/api` |
-| KI-Kennzeichnung sichtbar und maschinenlesbar | `apps/web/src/features/chat/`, `contracts/api/` (T-U028-03) |
-| Datenschutz-Pflichten | [[Compliance]] |
+| Regel | Team-Modul | Prototyp |
+| --- | --- | --- |
+| Notfall, Krise, Injection vor dem Modell erkennen | Input Guard / CP1, M3 | `features/guidance`, `knowledge/rules` |
+| Weiterleiten statt urteilen (R4) | M3 Safety-Router | `features/guidance` |
+| Keine Bewertung von Werten (R2), kein Score (R1), keine wertenden Farben (R6) | M5, M8 | `features/analysis`, `apps/web` |
+| Nur Lifestyle-Formulierungen (R3) | M6, M8 | `knowledge/`, Prompts |
+| Keine Deutung für die Apotheke (R5) | M4, M8 | – |
+| Rechnen nicht im LLM | M5 | `features/analysis`, `core/` |
+| Modellausgabe validieren | M2, M7 | `contracts/llm/`, `features/recognition` |
+| Keine Inhalte in Logs | I5 | Logging-Konfiguration in `apps/api` |
+| Datenschutz | – | [[Compliance]] |
 
-## Was VitaSync darf und nicht darf
-Verbindlich in [[D08-Zweckbestimmung]]. Kurz: allgemeine Information, Zuständigkeiten, fester Notfallhinweis, eigene Daten anzeigen und rechnen, dokumentieren. Keine Aussage über den Gesundheitszustand einer konkreten Person.
+## Grundsatz
+Beobachten ist erlaubt: Werte zeigen, rechnen, mit eigenen früheren Werten vergleichen, exportieren. Deuten ist es nicht: niedrig/normal, Ursachen, Scores, wertende Farben, Auswahl „auffälliger“ Werte.
 
 ## Verknüpft
 - [[Architektur]]
-- [[D04-Fachinhalte]] · [[D05-Identitaet-Einwilligung]] · [[D08-Zweckbestimmung]]

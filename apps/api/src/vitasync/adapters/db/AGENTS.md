@@ -9,7 +9,7 @@ Zuständig: <GitHub-Handle eintragen>
 
 ## Verträge
 - Schema über `apps/api/migrations/`.
-- Siehe [D06](../../../../../../docs/decisions/D06-Speicherung.md).
+- Siehe [Speicherkonzept (VC-83)](../../../../../../docs/decisions/README.md).
 
 ## Tests
 - Integrationstests gegen Test-Datenbank aus `infra/`.

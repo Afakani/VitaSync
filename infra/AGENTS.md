@@ -1,6 +1,6 @@
 # Modul: Lokale Infrastruktur
 
-Zweck: Lokale Dienste für Entwicklung. Stand F002: nur PostgreSQL per Docker Compose (`docker-compose.yml`). Die LLM-Laufzeit (Ollama) läuft nativ auf dem Host, ein FHIR-Testserver kommt mit der Umsetzung von D02.
+Zweck: Lokale Dienste für Entwicklung. Stand: nur PostgreSQL per Docker Compose (`docker-compose.yml`). Die LLM-Laufzeit (Ollama) läuft nativ auf dem Host, ein FHIR-Testserver kommt mit der Umsetzung von I2.
 Zuständig: <GitHub-Handle eintragen>
 
 ## Grenzen
@@ -8,10 +8,10 @@ Zuständig: <GitHub-Handle eintragen>
 - Darf nicht: Secrets einchecken; Dienste für andere Projekte mitbenutzen; Produktion.
 
 ## Verträge
-- Siehe D01, D02, D03, D06.
+- Siehe Stack, I2, Modell-ADR, Speicherkonzept.
 
 ## Tests
-- Frischer Checkout + `.env` aus `.env.example` muss bei einer zweiten Person starten (Abnahme F002).
+- Frischer Checkout + `.env` aus `.env.example` muss bei einer zweiten Person starten.
 
 ## Fallen
 - Modell-Dateien (`*.gguf`) nie einchecken.

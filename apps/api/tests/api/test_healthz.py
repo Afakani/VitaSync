@@ -24,7 +24,7 @@ def test_healthz_gibt_nur_erwartete_felder(client: TestClient) -> None:
 
 
 def test_openapi_schema_ist_abrufbar(client: TestClient) -> None:
-    """F003 exportiert daraus `contracts/api/openapi.json`."""
+    """Daraus wird spaeter `contracts/api/openapi.json` exportiert."""
     schema = client.get("/openapi.json")
 
     assert schema.status_code == 200

@@ -20,4 +20,4 @@ Prüfung in `security`; sie wird hier nicht nachgebaut.
 - `apps/api/tests/features/consent/`. Verhalten testen, nicht Implementierung spiegeln.
 
 ## Fallen
-- Widerruf während laufender Anfrage: Antwort darf danach nicht mehr ausgeliefert werden (T-U027-04).
+- Widerruf während laufender Anfrage: Antwort darf danach nicht mehr ausgeliefert werden.

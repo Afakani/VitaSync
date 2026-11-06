@@ -4,38 +4,38 @@ tags: [vitasync, architektur]
 
 # Architektur
 
-Ein Repository, zwei Anwendungen: `apps/web` (Website) und `apps/api` (Server). Keine Microservices. Stack: [[D01-Stack]].
+## Pipeline des Teams (maßgeblich: Jira + Confluence)
 
-## Ablauf einer Chatnachricht
+Pipeline aus Confluence „Ethical boundaries in the pipeline“ (VC-60): Input Guard → Router → Datenpfad / Wissenspfad → Antwort-LLM → Output Guard.
+Die Umsetzung ist im Sprintplan in Module zerlegt:
 
-```mermaid
-flowchart LR
-  W[apps/web] -->|HTTP| R[api/ Routen]
-  R --> S[security/ Sitzung + Consent-Prüfung]
-  R --> CO[features/consent]
-  R --> C[features/chat]
-  C --> REC[features/recognition]
-  C --> G[features/guidance]
-  C --> H[features/health_data]
-  C --> A[features/analysis]
-  REC --> LLM[adapters/llm]
-  G --> K[(knowledge/ geprüft)]
-  H --> F[adapters/fhir]
-  H --> O[adapters/omop]
-  H --> DB[adapters/db]
-  A --> H
-  S --> DB
-  CO --> DB
-  C --> LLM
-```
+| Modul | Aufgabe | Jira |
+| --- | --- | --- |
+| M1 Chat-API | Endpunkt nach I1 (OpenAPI) | VC-86 |
+| M2 Klassifikator | Anfrage-Typ erkennen; v1 regelbasiert, v2 später | VC-87, VC-109 |
+| M3 Safety-Router | feste Antworten für Weiterleitung, Notfall, Krisenpfad; ohne Nutzerdaten, ohne LLM | VC-89 |
+| M4 Orchestrator | ein Flow je Typ (quantitativ, präventiv, FAQ …) | VC-88, VC-100, VC-108 |
+| M5 Rechenwerkzeuge | erlaubte Berechnungen nach S3-05 | VC-99 |
+| M6 RAG / Wissensbasis | FAQ und Impulse, Schema | VC-77, VC-97 |
+| M7 LLM-Gateway | Modellaufruf, selbst gehostet | VC-75 |
+| M8 Output Guard | Antwort gegen R1–R6 prüfen | VC-110 |
+| M9 Testrunner | Testsätze, Trefferquoten | VC-79 |
 
-1. Website sendet Nachricht an die API.
-2. Route prüft Sitzung und Einwilligung (`security/`, nur lesend), ruft `features/chat` auf. Das Erteilen, Widerrufen und Löschen von Einwilligungen liegt in `features/consent` und läuft über eigene Routen, nicht über den Chat.
-3. `recognition` lässt das LLM die Anfrage klassifizieren; Ausgabe wird gegen `contracts/llm/` validiert.
-4. Enthält die Nachricht ein Warnzeichen-Stichwort, setzt `guidance` den festen Notfallhinweis an den Anfang.
-5. Fragt der Nutzer nach eigenen Daten und ist das freigegeben: `health_data` liefert Werte (aus FHIR und OMOP, nur lesend, [[D02-FHIR]]), `analysis` rechnet ohne Bewertung.
-6. `guidance` wählt allgemeine geprüfte Inhalte aus `knowledge/`; das LLM formuliert nur ([[D08-Zweckbestimmung]]).
-7. Antwort mit KI-Kennzeichnung zurück an die Website.
+Schnittstellen zur App von Johnny Bytes: I1 Chat-API, I2 Kontext (Gesundheitsdaten kommen von der App), I3 Einwilligung, I5 Audit-Ereignisse.
+
+## Prototyp in diesem Repo
+
+Ein Repository, `apps/api` (Server) und `apps/web` (Oberfläche, Entwürfe). Keine Microservices. Der Stack des Teams ist noch offen (VC-73).
+
+| Prototyp-Ordner | entspricht etwa |
+| --- | --- |
+| `api/` | M1 |
+| `features/recognition` | M2 |
+| `features/guidance` | M3, M6 |
+| `features/chat` | M4 |
+| `features/analysis` | M5 |
+| `adapters/llm` | M7 |
+| `evals/`, `benchmarks/` | M9 |
 
 ## Abhängigkeitsregeln
 
@@ -47,15 +47,14 @@ flowchart LR
 | `security` | `core`, DB-Port |
 | `core` | nichts aus dem Projekt |
 
-Keine Zyklen. Wird mit import-linter automatisch geprüft, sobald F004 umgesetzt ist.
+Keine Zyklen.
 
 ## Warum so
 
-- **Fachbereiche als Ordner:** Eine Story betrifft meist einen Fachbereich. Weniger Merge-Konflikte, klare Zuständigkeit.
-- **Ports in `core`:** LLM, FHIR und Datenbank sind austauschbar und in Tests durch Fakes ersetzbar.
-- **Wissen getrennt vom Code:** Fachliche Reviewer prüfen `knowledge/`, ohne Code lesen zu müssen.
+- **Kleine Module mit klarer Ein- und Ausgabe:** Regelprüfung, Routing und Modellaufruf sind getrennt und einzeln testbar und austauschbar.
+- **Ports in `core`:** LLM, Datenquellen und Datenbank sind austauschbar und in Tests durch Fakes ersetzbar.
+- **Inhalte getrennt vom Code:** `knowledge/` lässt sich prüfen, ohne Code zu lesen.
 
 ## Verknüpft
 - [[Sicherheit-und-Grenzen]]
 - [[Arbeitsablauf]]
-- [[D02-FHIR]] · [[D03-Modell]] · [[D04-Fachinhalte]] · [[D05-Identitaet-Einwilligung]] · [[D06-Speicherung]]

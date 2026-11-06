@@ -14,7 +14,7 @@ status: entwurf
 | Nr. | Verarbeitung | Zweck | Daten | Betroffene | Rechtsgrundlage | Speicherdauer | Empfänger |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | V1 | Konto und Anmeldung | Zugang zum Prototyp | Benutzername, Passwort-Hash, Sitzungs-ID | Tester | Art. 6 Abs. 1 a (Einwilligung) | bis Projektende oder Löschung | keine |
-| V2 | Chat-Verarbeitung | Beantwortung von Gesundheitsfragen | Nachrichten, Antworten, Kontext im Chat | Tester | Art. 9 Abs. 2 a (ausdrückliche Einwilligung, U027) | 30 Tage (D06), sofort bei Löschung | keine; Modell lokal |
+| V2 | Chat-Verarbeitung | Beantwortung von Gesundheitsfragen | Nachrichten, Antworten, Kontext im Chat | Tester | Art. 9 Abs. 2 a (ausdrückliche Einwilligung, U027) | 30 Tage (Speicherkonzept), sofort bei Löschung | keine; Modell lokal |
 | V3 | Eigene Gesundheitsdaten | Anzeige und Berechnung | Messwerte, Einheiten, Zeitpunkte, Quelle | Tester (synthetische Daten) | Art. 9 Abs. 2 a, je Quelle (U023) | bis Widerruf oder Löschung | keine |
 | V4 | Einwilligungsnachweis | Nachweis nach Art. 7 | Zweck, Textversion, Zeitpunkt, Status | Tester | Art. 6 Abs. 1 c (Nachweispflicht) | Dauer der Verarbeitung + Nachweisfrist <klären> | keine |
 | V5 | Feedback | Fehleranalyse | Bewertung, Kommentar, Antwort-ID | Tester | Art. 6 Abs. 1 a | bis Projektende | Projektteam |
@@ -25,4 +25,4 @@ status: entwurf
 Siehe [[TOM]].
 
 ## Verknüpft
-- [[D09-Datenschutz-EU]] · [[D05-Identitaet-Einwilligung]] · [[D06-Speicherung]]
+- Datenschutz (DSGVO-Recherche) · Identität und Einwilligung (I2/I3) · Speicherkonzept (VC-83)

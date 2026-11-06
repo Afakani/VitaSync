@@ -5,7 +5,7 @@ Zuständig: <GitHub-Handle eintragen>
 
 ## Grenzen
 - Darf nutzen: `health_data` (öffentlich), `core/`.
-- Darf nicht: LLM für Berechnungen; Werte bewerten (normal, auffällig, gut, schlecht); Referenzbereiche verwenden; Ursachen oder Zusammenhänge behaupten ([D08](../../../../../../docs/decisions/D08-Zweckbestimmung.md)).
+- Darf nicht: LLM für Berechnungen; Werte bewerten (normal, auffällig, gut, schlecht); Referenzbereiche verwenden; Ursachen oder Zusammenhänge behaupten ([R1–R6](../../../../../../docs/decisions/README.md)).
 
 ## Verträge
 - Öffentliche Funktionen nur über `__init__.py`.

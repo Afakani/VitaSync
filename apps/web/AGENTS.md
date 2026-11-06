@@ -12,7 +12,7 @@ Zuständig: <GitHub-Handle eintragen>
 
 ## Tests
 - Komponententests neben der Datei (`*.test.tsx`), Ende-zu-Ende in `apps/web/e2e/`.
-- Befehl nach F004 hier eintragen. Bis dahin keinen erfinden.
+- Noch kein Build- oder Testbefehl. Keinen erfinden.
 
 ## Aufbau
 - `src/features/<name>/`: ein Ordner pro Fachbereich (chat, consent, health-data). Feature-Ordner importieren sich nicht gegenseitig intern.
@@ -21,12 +21,12 @@ Zuständig: <GitHub-Handle eintragen>
 
 ## Design
 - Verbindliche Vorlage: `design/vitasync-ui-v1.5.html` (Änderungen in `design/README.md`). Verbindlich sind **Layout, Farben, Abstände, Rundungen und UI-Rahmentexte** (Schaltflächen, Beschriftungen, Menüpunkte, Platzhalter, Fehlermeldungen der Oberfläche).
-- **Nicht verbindlich sind die fachlichen Texte der Vorlage.** Gesundheits-, Notfall-, Zuständigkeits- und Datenschutztexte stehen dort nur als Platzhalter für die Darstellung. Im Produkt kommen sie zur Laufzeit aus `knowledge/` (Gesundheit, Notfall, Zuständigkeiten) bzw. `docs/compliance/` (Datenschutz) und werden nie aus der Vorlage abgeschrieben (harte Regel 6, [D08](../../docs/decisions/D08-Zweckbestimmung.md)).
+- **Nicht verbindlich sind die fachlichen Texte der Vorlage.** Gesundheits-, Notfall-, Zuständigkeits- und Datenschutztexte stehen dort nur als Platzhalter für die Darstellung. Im Produkt kommen sie zur Laufzeit aus `knowledge/` (Gesundheit, Notfall, Zuständigkeiten) bzw. `docs/compliance/` (Datenschutz) und werden nie aus der Vorlage abgeschrieben ([R1–R6](../../docs/decisions/README.md)).
 - Design nicht eigenmächtig ändern. Abweichung nur mit Task und Freigabe; dann neue Version der Vorlage anlegen (v1.6 …), alte bleibt.
-- Keine externen CDNs, Fonts oder Skripte (D09). Alles lokal ausliefern.
+- Keine externen CDNs, Fonts oder Skripte (DSGVO). Alles lokal ausliefern.
 
 ## Fallen
 - Modellantworten nie ungefiltert per `innerHTML` einsetzen. Als Text oder bereinigtes Markdown rendern (XSS).
-- Keine Ampelfarben, Dringlichkeitslabels oder Diagnose-Titel in der UI (D08).
+- Keine Ampelfarben, Dringlichkeitslabels oder Diagnose-Titel in der UI (R1–R6).
 - Zustände immer vollständig: laden, Fehler, leer, Timeout, Wiederholen ohne Doppelversand.
 - Barrierefreiheit: Fokus, Tastaturbedienung, Kontrast.

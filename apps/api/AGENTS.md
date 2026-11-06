@@ -15,7 +15,7 @@ Zuständig: <GitHub-Handle eintragen>
 - Unit-Tests nutzen den Fake-LLM-Adapter, nie das echte Modell.
 - Integrationstests gegen Test-Datenbank aus `infra/`.
 - Befehl: `cd apps/api && .venv/Scripts/python.exe -m pytest` (Windows; sonst `.venv/bin/python`). Konfiguration in `pyproject.toml` unter `[tool.pytest.ini_options]`.
-- Stand F002 nur ein Rauchtest für `/healthz`. Abdeckung, CI und import-linter kommen mit F004.
+- Bisher nur ein Rauchtest für `/healthz`. Abdeckung, CI und import-linter fehlen noch.
 
 ## Aufbau
 | Ordner | Inhalt |

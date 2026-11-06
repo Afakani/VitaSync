@@ -4,7 +4,7 @@ Zweck: Versionierte Schemaänderungen der eigenen Datenbank.
 Zuständig: <GitHub-Handle eintragen>
 
 ## Grenzen
-- Darf nutzen: Migrationswerkzeug aus D01.
+- Darf nutzen: Migrationswerkzeug aus Stack.
 - Darf nicht: Bestehende Migrationen nachträglich ändern; Testdaten hier einfügen (gehören nach `data/synthetic/`).
 
 ## Verträge

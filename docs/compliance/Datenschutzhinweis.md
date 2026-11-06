@@ -30,4 +30,4 @@ Version: 0.1 (Entwurf)
 ---
 
 ## Verknüpft
-- [[D09-Datenschutz-EU]] · [[Verarbeitungsverzeichnis]]
+- Datenschutz (DSGVO-Recherche) · [[Verarbeitungsverzeichnis]]

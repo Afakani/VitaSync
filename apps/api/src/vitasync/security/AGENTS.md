@@ -13,7 +13,7 @@ und löscht keine Einwilligungen – das macht ausschließlich `features/consent
 - Darf nicht: Identität aus Request-Parametern oder Modellausgaben ableiten; Prüfungen in Features duplizieren; Einwilligungen schreiben, ändern oder löschen (das macht `features/consent`).
 
 ## Verträge
-- Siehe [D05](../../../../../docs/decisions/D05-Identitaet-Einwilligung.md).
+- Siehe [Identität und Einwilligung (I2/I3)](../../../../../docs/decisions/README.md).
 
 ## Tests
 - Pflichtfälle: nicht angemeldet, fremde Ressource, fehlende Einwilligung, widerrufene Einwilligung.

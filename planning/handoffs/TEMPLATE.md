@@ -1,7 +1,8 @@
-# Übergabe <TASK-ID>
+# Übergabe <Jira-Key oder Kurzname>
 
-- Stand (Datum, Status):
-- Branch / letzter Commit / PR:
+- Stand (Datum):
+- Jira-Ticket (falls vorhanden):
+- Branch / letzter Commit:
 - Erledigt:
 - Tatsächlich ausgeführte Tests (Befehl + Ergebnis):
 - Nicht geprüft:

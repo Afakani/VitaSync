@@ -1,28 +1,19 @@
 # Planung
 
-| Datei / Ordner | Zweck |
+**Backlog und Status stehen in Jira**, Projekt VC:
+`https://vitasync-marketing-project-seminar-wise26.atlassian.net/browse/VC-1`
+(Sprintplan „VitaSync Chatbot Sprint Plan“, Sprints S3 bis S11, Module M1–M9).
+
+Im Repo gibt es keinen zweiten Backlog und keine lokalen Task-IDs.
+
+| Ordner | Zweck |
 | --- | --- |
-| `VitaSync_Coding_Backlog.xlsx` | Plan **und Statusquelle**: Stories, Tasks, Briefings, DoD. |
-| `work-orders/` | Ausformulierte Aufträge für Claude/Codex, wenn das Issue nicht reicht. |
-| `handoffs/` | Übergaben bei Unterbrechung, eine Datei pro Task-ID. |
+| `handoffs/` | Übergaben bei Unterbrechung. Dateiname = Jira-Key (`VC-87.md`) oder Kurzname der Arbeit (`router-umbau.md`). Vorlage: `handoffs/TEMPLATE.md`. |
 
-## Statusquelle
+## Arbeitsweise in diesem Repo
 
-Der Status eines Tasks steht in der Spalte **Status** im Blatt **Tasks**. Es gibt keine zweite Quelle.
+Das Repo ist ein **eigenes Arbeitsrepo** (Prototypen, Benchmarks, Experimente). Das Team-Repo entsteht separat
+mit VC-74. Gearbeitet wird auf Ansage. Passt die Arbeit zu einem Jira-Ticket, steht der Key im Branch und im
+Commit. Jira und Confluence werden aus diesem Repo heraus nur gelesen.
 
-- Wer umsetzt, setzt die eigene Zeile im selben PR auf **„Im Review“**.
-- Nach der Freigabe durch die reviewende Person folgt im selben PR ein **letzter Commit** mit Status
-  **„Erledigt“** und der PR-Nummer in der Spalte „Änderung“. Danach wird gemergt.
-- Ein eigener PR nur für eine Statusänderung ist nicht vorgesehen.
-- GitHub Issues sind optional. Werden sie genutzt, sind sie Diskussionsort, nicht Statusquelle.
-
-Ablauf und Rollen: [docs/Arbeitsablauf.md](../docs/Arbeitsablauf.md).
-
-## Auftrag an Claude/Codex (Kopiervorlage)
-
-```
-Bearbeite genau Task <TASK-ID>. Auftrag: <Issue-Link oder planning/work-orders/<TASK-ID>.md>.
-Lies vorher die AGENTS.md der betroffenen Ordner und die betroffene Entscheidung in docs/decisions/.
-Fehlt eine Entscheidung oder fachliche Regel: frag nach, erfinde nichts.
-Branch task/<TASK-ID>-<kurzname>. Ende: PR nach Vorlage, Status "Im Review".
-```
+Ablauf: [docs/Arbeitsablauf.md](../docs/Arbeitsablauf.md).

@@ -5,7 +5,7 @@ Zuständig: <GitHub-Handle eintragen>
 
 ## Grenzen
 - Darf nutzen: `recognition`, `guidance`, `health_data`, `consent` (je öffentliche Funktionen), `core/ports.py`.
-- Darf nicht: Selbst Gesundheitsinhalte formulieren; Profil- oder Messdaten zur Bewertung in den Prompt geben (D08).
+- Darf nicht: Selbst Gesundheitsinhalte formulieren; Profil- oder Messdaten zur Bewertung in den Prompt geben (R1–R6).
 
 ## Verträge
 - Öffentliche Funktionen nur über `__init__.py`.

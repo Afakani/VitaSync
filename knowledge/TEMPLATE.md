@@ -33,6 +33,6 @@ Hinweise zu den Kopfdaten (nicht mitkopieren):
 - version: Ganzzahl ab 1, bei jeder inhaltlichen Änderung erhöhen
 - status: entwurf | testfreigabe | geprueft
   - geprueft verlangt herausgeber, quelle, reviewer und review_datum
-  - testfreigabe nur im Testlauf, siehe docs/decisions/D10-Testlauf.md
+  - testfreigabe: nicht fachlich geprüft, nur bei APP_ENV=development
 - Eine KI setzt niemals status: geprueft.
 -->

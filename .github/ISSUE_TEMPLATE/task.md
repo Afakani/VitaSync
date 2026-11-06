@@ -1,19 +1,16 @@
 ---
-name: Task
-about: Ein Task aus dem Backlog (eine Task-ID pro Issue)
-title: "<TASK-ID>: <Titel>"
+name: Arbeit
+about: Eine angesagte Arbeit im Arbeitsrepo (Backlog und Status stehen in Jira)
+title: "<VC-xx oder Bereich>: <Titel>"
 labels: task
 ---
 
-- Task-ID / Story / Meilenstein:
+- Jira-Ticket (falls vorhanden): VC-
 - Betroffene Module (Ordner):
-- Voraussetzungen: <Task-IDs>
-- Entscheidungen: <Dxx, Status>
-- Verantwortlich (Mensch):
+- Maßgebliche Confluence-Seite(n):
 - Bearbeiter: Mensch / Claude / Codex
 
 ## Auftrag
-<aus Spalte „Konkreter Auftrag“ im Backlog>
 
 ## Abnahmekriterien
 - [ ]

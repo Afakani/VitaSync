@@ -17,7 +17,7 @@ Zuständig: <GitHub-Handle eintragen>
 - `fhir/examples/` nur synthetisch.
 
 ## Tests
-- Beispiele müssen gegen ihr Schema valide sein (Check folgt mit F004).
+- Beispiele müssen gegen ihr Schema valide sein (automatischer Check fehlt noch).
 
 ## Fallen
 - Vertragsänderung bricht Verbraucher: alle im selben PR anpassen und im PR auflisten.

@@ -14,4 +14,4 @@ jobs:
         with:
           python-version: "3.12"
       - run: python scripts/check_structure.py
-  # Tests für apps/api und apps/web werden mit Task F004 ergänzt.
+  # Tests für apps/api und apps/web fehlen in CI noch.

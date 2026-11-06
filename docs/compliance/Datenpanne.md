@@ -23,4 +23,4 @@ status: entwurf
 | **Ergebnis** | DSFA voraussichtlich nicht erforderlich; Begründung dokumentieren | DSFA voraussichtlich erforderlich |
 
 ## Verknüpft
-- [[D09-Datenschutz-EU]] · [[TOM]]
+- Datenschutz (DSGVO-Recherche) · [[TOM]]

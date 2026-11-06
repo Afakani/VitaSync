@@ -1,7 +1,7 @@
-# Lokale Entwicklungsdienste fuer VitaSync (Task F002, Beschluss D01).
+# Lokale Entwicklungsdienste fuer VitaSync (Prototyp-Geruest).
 #
 # Enthaelt nur PostgreSQL. Die LLM-Laufzeit (Ollama) laeuft nativ auf dem
-# Host, ein FHIR-Testserver kommt erst mit der Umsetzung von D02.
+# Host, ein FHIR-Testserver kommt erst mit der Umsetzung von I2.
 #
 # Die Vorlage der Variablen liegt im Repository-Wurzelverzeichnis
 # (.env.example). Compose sucht .env sonst neben dieser Datei, deshalb wird

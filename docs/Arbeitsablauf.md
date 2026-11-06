@@ -2,43 +2,28 @@
 tags: [vitasync, prozess]
 ---
 
-# Arbeitsablauf im Team
+# Arbeitsablauf
 
 ## Wo steht was
-- **Plan:** `planning/VitaSync_Coding_Backlog.xlsx` (Stories, Tasks, Briefings). Wird selten geändert.
-- **Status:** Spalte „Status“ im Blatt **Tasks** des Backlogs. Genau eine Statusquelle. GitHub Issues sind optional und dienen der Diskussion, nicht der Statusführung.
-- **Auftrag an Claude/Codex:** Issue-Text oder `planning/work-orders/<TASK-ID>.md`.
-- **Übergabe bei Unterbrechung:** `planning/handoffs/<TASK-ID>.md`.
+- **Backlog, Sprints, Status:** Jira, Projekt VC. Kein zweiter Backlog im Repo.
+- **Fachliche Regeln und Entscheidungen:** Confluence, Space VC. Wegweiser: `docs/decisions/README.md`.
+- **Übergabe bei Unterbrechung:** `planning/handoffs/<Jira-Key oder Kurzname>.md`.
 
-## Ablauf pro Task
-1. Task ist „Bereit“: Voraussetzungen erledigt, nötige Entscheidungen bestätigt.
-2. Mensch weist sich (oder Claude/Codex mit sich als Verantwortlichem) im Issue zu.
-3. Branch `task/<TASK-ID>-<kurzname>`, Arbeit, Tests.
-4. PR mit Vorlage. Im selben PR die eigene Zeile im Blatt Tasks auf „Im Review“ setzen.
-5. Andere Person reviewt. CODEOWNERS fordert automatisch den Modulverantwortlichen an.
-6. Nach der Freigabe im selben PR ein letzter Commit: Status „Erledigt“, PR-Nummer in die Spalte „Änderung“. Danach mergen. Kein eigener PR nur für die Statusänderung.
+Jira und Confluence werden aus dem Repo heraus nur gelesen.
 
-## Testlauf
+## Rolle des Repos
+Dieses Repo ist ein **eigenes Arbeitsrepo** für Prototypen, Benchmarks und Experimente. Das Team-Repo mit M1–M9 entsteht separat (VC-74). Ergebnisse von hier fließen über das Team (Jira/Confluence) ein, nicht durch Kopieren.
 
-Solange [[D10-Testlauf]] gilt, übernimmt **eine Person alle Rollen**: Umsetzung, Review und Merge.
+## Ablauf
+1. Arbeit wird angesagt. Gibt es ein passendes Jira-Ticket, wird der Key genannt.
+2. Branch `vc-<nr>-<kurzname>` oder `work/<kurzname>`. Nie direkt auf `main`.
+3. Kleine Schritte, Tests dazu, `python scripts/check_structure.py`.
+4. Commit nur auf Ansage, Nachricht `<VC-xx oder Bereich>: <Imperativ auf Englisch>`.
+5. Merge nach Durchsicht des Diffs.
 
-- **Review heißt dann: die eigene Durchsicht des Diffs im PR vor dem Merge.** Nicht übersprungen, nur von
-  derselben Person. Was auffällt, wird vor dem Merge behoben oder im PR als offener Punkt benannt.
-- **Branch und PR bleiben Pflicht**, auch für reine Doku- und Prüfaufträge. Der PR ist der Ort, an dem der
-  Diff am Stück lesbar ist; ohne ihn gibt es keine Durchsicht.
-- **Branch-Schutz wird erst mit CI eingerichtet** (F004). Vorher würde er nur den einzigen Weg blockieren,
-  ohne etwas zu prüfen.
-- Fachliche Inhalte mit `status: testfreigabe` sind **nicht** fachlich geprüft. Sie werden nur bei
-  `APP_ENV=development` geladen und in der Antwort gekennzeichnet. Die Durchsicht durch eine Person
-  ersetzt keine fachliche Freigabe nach [[D04-Fachinhalte]].
-
-Sobald eine fachliche Reviewerin oder ein fachlicher Reviewer benannt ist, endet der Testlauf und dieser
-Abschnitt entfällt.
-
-## Parallel arbeiten
-Tasks in verschiedenen Fachbereichen (`features/<x>`) können parallel laufen. Tasks im selben Fachbereich oder mit Änderungen an `contracts/` oder `core/` vorher im Team abstimmen.
+## Läufe auf der GPU
+Benchmark- und Modellläufe nur auf Ansage und nie parallel zu einem anderen GPU-Lauf. Zeitmessungen gelten nur bei freier GPU.
 
 ## Verknüpft
 - [[Architektur]]
 - [[Start]]
-- [[D10-Testlauf]]

@@ -12,7 +12,7 @@ review_datum:
 
 # Welche Stelle für welches Anliegen
 
-**Testinhalt, nicht fachlich geprüft** ([D10](../../docs/decisions/D10-Testlauf.md)). Belegt sind nur die
+**Testinhalt, nicht fachlich geprüft.** Belegt sind nur die
 zwei Sätze unten; sie stammen wörtlich aus der Design-Vorlage
 `apps/web/design/vitasync-ui-v1.5.html` (deutsche Fassung, Zeilen 802 und 815).
 
@@ -30,7 +30,7 @@ dort gilt zuerst [`rule-notfallhinweis`](../rules/notfallhinweis.de.md).
 
 **Platzhalter für den Rest.** Welche Facharztrichtung für welches Anliegen zuständig ist, steht hier
 bewusst nicht. Diese Zuordnung wird im Research-Task zu U001 erarbeitet und nach
-[D04](../../docs/decisions/D04-Fachinhalte.md) freigegeben; eine Quelle wie 116117.de wird dort benannt.
+[fachliche Prüfung (R1–R6)](../../docs/decisions/README.md) freigegeben; eine Quelle wie 116117.de wird dort benannt.
 
 ## Anlaufstelle
 
@@ -39,7 +39,7 @@ Hausarztpraxis, Facharztpraxis, 116117, im Notfall 112.
 ## Grenzen
 
 - Keine Empfehlung, wann jemand hingehen soll, und keine Einstufung der Dringlichkeit
-  ([D08](../../docs/decisions/D08-Zweckbestimmung.md)).
+  ([R1–R6](../../docs/decisions/README.md)).
 - Keine Auswahl einer Facharztrichtung anhand geschilderter Beschwerden – das wäre eine Zuordnung von
   Symptom zu Fachgebiet und damit eine Bewertung.
 - Keine Namen oder Adressen einzelner Praxen.

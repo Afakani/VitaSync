@@ -5,10 +5,10 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "vitasync"
 version = "0.1.0"
-description = "VitaSync API - Chat-Prototyp fuer allgemeine Gesundheitsinformationen. Kein Medizinprodukt (D08)."
+description = "VitaSync API - Chat-Prototyp fuer allgemeine Gesundheitsinformationen. Kein Medizinprodukt (R1–R6)."
 requires-python = ">=3.12"
 
-# Exakte Versionen nach D01. Aufgeloest am 14.10.2026, Task F002.
+# Exakte Versionen, aufgeloest am 14.10.2026 (Prototyp-Geruest).
 # Transitive Abhaengigkeiten stehen in requirements.lock.
 dependencies = [
     "fastapi==0.143.1",

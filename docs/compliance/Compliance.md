@@ -4,7 +4,7 @@ tags: [vitasync, datenschutz]
 
 # Compliance-Übersicht
 
-Grundlage: [[D08-Zweckbestimmung]] (kein Medizinprodukt) und [[D09-Datenschutz-EU]] (DSGVO, AI Act, TDDDG).
+Grundlage: R1–R6 (kein Medizinprodukt) und Confluence „GDPR and privacy research (Sprint 2)“ (DSGVO, AI Act, TDDDG). Maßgeblich ist der Stand in Confluence.
 
 | Dokument | Zweck | Stand |
 | --- | --- | --- |
@@ -16,4 +16,4 @@ Grundlage: [[D08-Zweckbestimmung]] (kein Medizinprodukt) und [[D09-Datenschutz-E
 Regel: Neue Verarbeitung personenbezogener Daten → im selben PR Verarbeitungsverzeichnis und, falls betroffen, TOM ergänzen.
 
 ## Verknüpft
-- [[Start]] · [[Nachweise-M1]] · [[Sicherheit-und-Grenzen]]
+- [[Start]] · [[Sicherheit-und-Grenzen]]
