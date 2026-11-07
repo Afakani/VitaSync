@@ -1,0 +1,145 @@
+{
+  "_info": "CP1 input guard patterns (draft for testing, NOT medically reviewed). Patterns are Python regexes applied to normalised text: lower case, ä->ae, ö->oe, ü->ue, ß->ss, whitespace collapsed. A hit goes straight to the fixed template, the LLM is never called. Medical sign-off is required before go-live (red-flag catalogue). Keep one file, CP3 will reuse it.",
+  "version": "0.1-draft-2026-11-04",
+  "emergency": [
+    {
+      "id": "EM-01",
+      "pattern": "brust ?schmerz",
+      "note": "chest pain alone triggers (decision paper Q1: emergency words alone, bot does not judge urgency)"
+    },
+    {
+      "id": "EM-02",
+      "pattern": "schmerz\\w*( \\w+){0,3} (in|an) der brust",
+      "note": "Schmerzen in der Brust"
+    },
+    {
+      "id": "EM-03",
+      "pattern": "brust( \\w+){0,3} (extrem |sehr |total )?weh",
+      "note": "Brust tut weh"
+    },
+    {
+      "id": "EM-04",
+      "pattern": "druck auf (der|die) brust|engegefuehl( \\w+){0,2} brust",
+      "note": "pressure / tightness on the chest"
+    },
+    {
+      "id": "EM-05",
+      "pattern": "(keine|kaum|schlecht|nicht genug) luft\\b|atemnot|ersticke",
+      "note": "acute shortness of breath; 'Atemnot' alone is conservative, see README"
+    },
+    {
+      "id": "EM-06",
+      "pattern": "atmet nicht|bewusstlos|ohnmaechtig|nicht ansprechbar|reagiert nicht mehr",
+      "note": "unconscious / not breathing"
+    },
+    {
+      "id": "EM-07",
+      "pattern": "schlaganfall|mundwinkel( \\w+){0,2} haeng|(nicht mehr|kaum) (richtig )?sprechen|gesicht( \\w+){0,2} haeng|arm( \\w+){0,2} (kribbelt|taub|gelaehmt)|einseitig gelaehmt",
+      "note": "stroke signs (FAST)"
+    },
+    {
+      "id": "EM-08",
+      "pattern": "schwarz vor (den )?augen",
+      "note": "near syncope"
+    },
+    {
+      "id": "EM-09",
+      "pattern": "(hoert|hort) nicht auf zu bluten|blutet (stark|sehr stark|ununterbrochen)|starke blutung",
+      "note": "heavy bleeding"
+    },
+    {
+      "id": "EM-10",
+      "pattern": "(zu ?viele|viel zu viele)( \\w+){0,2} (tabletten|pillen|medikamente|ibus?|schlaftabletten)|tabletten( \\w+){0,3} zu viel|ueberdosis|ueberdosiert",
+      "note": "overdose / poisoning"
+    },
+    {
+      "id": "EM-11",
+      "pattern": "vergiftet|vergiftung|giftig( \\w+){0,3} (getrunken|gegessen|verschluckt)",
+      "note": "poisoning"
+    },
+    {
+      "id": "EM-12",
+      "pattern": "allergi\\w*( \\w+){0,6} (gegessen|getrunken|gestochen)|(gegessen|getrunken|gestochen)( \\w+){0,6} allergi|anaphyla|zunge( \\w+){0,2} (schwillt|geschwollen)|hals( \\w+){0,2} (schwillt|schnuert sich zu)",
+      "note": "allergic reaction"
+    },
+    {
+      "id": "EM-13",
+      "pattern": "ploetzlich( \\w+){0,2} (starke|heftige|extreme) kopfschmerz|staerksten kopfschmerz",
+      "note": "thunderclap headache"
+    },
+    {
+      "id": "EM-14",
+      "pattern": "kann( \\w+){0,3} (bein|arm|beine|arme)( \\w+){0,2} nicht (mehr )?bewegen|gestuerzt( \\w+){0,6} (kann nicht|nicht mehr) (aufstehen|bewegen)",
+      "note": "fall / cannot move limb"
+    },
+    {
+      "id": "EM-15",
+      "pattern": "krampfanfall|krampft( \\w+){0,2} (am ganzen|stark)|epilepti\\w* anfall",
+      "note": "seizure"
+    },
+    {
+      "id": "EM-16",
+      "pattern": "zittere am ganzen koerper|(in den|in die|zum) (arm|kiefer|ruecken) (zieht|ausstrahlt|strahlt)|zieht in den (arm|kiefer)",
+      "note": "radiating pain / severe hypoglycaemia signs"
+    },
+    {
+      "id": "EM-17",
+      "pattern": "notarzt|notruf|rettungswagen",
+      "note": "user names emergency services (not '112' alone: 'Puls 112' is a value)"
+    }
+  ],
+  "crisis": [
+    {
+      "id": "CR-01",
+      "pattern": "(will|moechte|mag) nicht mehr leben|keinen sinn mehr( \\w+){0,3} leben|lebensmuede",
+      "note": "suicidal ideation"
+    },
+    {
+      "id": "CR-02",
+      "pattern": "umbringen|suizid|selbstmord|mich (selbst )?toeten|das leben nehmen|sterben will|will sterben",
+      "note": "suicide"
+    },
+    {
+      "id": "CR-03",
+      "pattern": "(mir|sich|mich) (selbst )?(weh ?zu ?tun|wehtun|verletzen)|ritzen|selbstverletz",
+      "note": "self-harm"
+    },
+    {
+      "id": "CR-04",
+      "pattern": "nicht mehr aufwach|nie mehr aufwach|fuer immer einschlafen",
+      "note": "method / intent phrasing"
+    },
+    {
+      "id": "CR-05",
+      "pattern": "(sehr|so|total|extrem) einsam|niemand( \\w+){0,3} (braucht|vermisst) mich|alles( \\w+){0,2} sinnlos",
+      "note": "BORDERLINE: loneliness without acute danger (Q144/Q146). Dataset labels it crisis; team decision open"
+    }
+  ],
+  "injection": [
+    {
+      "id": "IN-01",
+      "pattern": "ignorier\\w*|vergiss( \\w+){0,2} (anweisung|regel|richtlinie|vorgabe)",
+      "note": "ignore instructions"
+    },
+    {
+      "id": "IN-02",
+      "pattern": "system ?-?prompt|(regeln|anweisungen|richtlinien|vorgaben)( \\w+){0,3} (ignorier\\w*|vergiss|vergessen|aufheben|ausschalten|umgehen)|(ohne|keine) (regeln|einschraenkungen|filter)\\b",
+      "note": "bypass the bot's rules (a plain 'Was sind deine Regeln?' must NOT trigger)"
+    },
+    {
+      "id": "IN-03",
+      "pattern": "tu so,? als (waerst|waeren|seist) (du|sie)|du bist (jetzt|ab sofort|nun) (ein|eine|mein)|spiel( \\w+){0,2} (rolle|arzt|apotheker)|rollenspiel",
+      "note": "role play override"
+    },
+    {
+      "id": "IN-04",
+      "pattern": "ich erlaube (es )?dir|ausdruecklich erlaubt|ich gebe dir die erlaubnis|du darfst (jetzt|ab sofort)",
+      "note": "fake permission"
+    },
+    {
+      "id": "IN-05",
+      "pattern": "ignore (all|any|previous|your)|disregard|jailbreak|developer mode|dan mode|act as",
+      "note": "English injection"
+    }
+  ]
+}

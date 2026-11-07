@@ -13,7 +13,7 @@ Zuständig: <GitHub-Handle eintragen>
   (`Vorschlag` | `bestätigt vorbehaltlich Review` | `bestätigt`) in `info.x-vitasync-status` und in der
   Tabelle in `api/draft/README.md`. Der Code liest sie nicht; verbindlich ist das generierte
   `api/openapi.json`.
-- `llm/*.schema.json` sind die Quelle; der Code lädt oder generiert daraus.
+- `llm/*.schema.json` sind die Quelle; der Code lädt sie (Adapter) oder prüft gegen sie. `llm/intent_flags.v1.schema.json`: Ausgabe der Anfrageerkennung (17 Flags, Vorschlag, Confidence); ein Test hält Code und Datei gleich.
 - `fhir/examples/` nur synthetisch.
 
 ## Tests

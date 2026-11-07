@@ -1,0 +1,15 @@
+{
+  "provider": "ollama",
+  "base_url": "http://localhost:11434",
+  "model": "qwen3:8b",
+  "timeout_seconds": 120,
+  "temperature": 0,
+  "think": false,
+  "warmup": true,
+  "prompt_variant": "ausgang",
+  "request_understood": false,
+  "router": true,
+  "router_layout": "vor_regeln_klein",
+  "cp1_patterns": "data/cp1_muster.json",
+  "num_ctx": 8192
+}

@@ -9,7 +9,9 @@ Zuständig: <GitHub-Handle eintragen>
 
 ## Verträge
 - Siehe [Modell (ADR Self-hosted LLM, VC-62)](../../../../../../docs/decisions/README.md).
-- Prompts in `prompts/`, Dateiname mit Version (`recognition.v1.md`). Geänderter Prompt = neue Version, alte bleibt bis zur Umstellung.
+- `OllamaIntentExtractor` implementiert `IntentExtractorPort` (nur Rohausgabe; geprüft wird in `features/recognition`). `FakeIntentExtractor` + `flags_json` für Tests.
+- Prompt `prompts/intent_flags.v1.md` (wortgleich aus dem Team-Router), Schema `contracts/llm/intent_flags.v1.schema.json`.
+- Prompts in `prompts/`, Dateiname mit Version (`intent_flags.v1.md`). Geänderter Prompt = neue Version, alte bleibt bis zur Umstellung.
 
 ## Tests
 - Fake-Adapter für Unit-Tests. Prompt-Änderungen gegen `evals/` prüfen und Ergebnis im PR nennen.

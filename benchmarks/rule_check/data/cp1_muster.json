@@ -1,0 +1,14 @@
+{
+  "status": "ungeprueft",
+  "hinweis": "Nur Benchmark-Prototyp für CP1 (feste Notfall- und Krisenerkennung vor dem Modell). Nicht medizinisch geprüft, nicht für die Anwendung (AGENTS.md Regel 6: Notfall-Stichworte nur aus knowledge/ mit Status geprueft). Kategorien nach R01 (rules.json) und Entscheidungspapier ADR-0004 Frage 1; Wortlaute vom Autor, in Kenntnis von S3-10 v1 geschrieben, daher dort zu optimistisch. Kein Treffer ist keine Entwarnung.",
+  "muster": {
+    "brust": "(brust|herz)\\w*\\s*(schmerz|druck|stech|enge)|(schmerz|druck|stechen)\\w*\\s+(in|auf|an)\\s+der\\s+brust",
+    "atemnot": "atemnot|keine\\s+luft|kaum\\s+luft|schlecht\\s+luft|ersticke",
+    "laehmung_sprache": "gelähmt|lähmung|kann\\s+\\w+\\s+(arm|bein|hand)\\w*\\s+(nicht|kaum)\\s+(mehr\\s+)?bewegen|mundwinkel\\s+häng|gesicht\\s+häng|nicht\\s+mehr\\s+(richtig\\s+)?sprechen",
+    "bewusstsein": "bewusstlos|ohnmächtig|nicht\\s+(mehr\\s+)?ansprechbar|schwarz\\s+vor\\s+(den\\s+)?augen",
+    "blutung": "nicht\\s+auf\\s+zu\\s+bluten|starke\\s+blutung|blutet\\s+stark",
+    "vergiftung": "zu\\s+viele\\s+tabletten|überdosis|vergiftet|vergiftung",
+    "allergie": "(stark|schwer)\\w*\\s+allergisch|allergischer\\s+schock|anaphylax|zunge\\s+schwillt|hals\\s+schwillt",
+    "krise": "nicht\\s+mehr\\s+leben|umbringen|suizid|selbstmord|mir\\s+(etwas|was)\\s+an(zu)?tun|mich\\s+selbst\\s+verletz|selbst\\s+wehzutun|nicht\\s+mehr\\s+aufwach"
+  }
+}

@@ -14,7 +14,7 @@ Zuständig: Atakan Cubukcu. Im Team gehört Testen zu Modul M9 (Testrunner, VC-7
 ## Verträge
 - `rule_check/`: Antwortvertrag in `src/vitasync_benchmark/schemas.py`, Ein- und Ausgabeformat in `rule_check/README.md`.
 - `router_compare/`: Eingaben über `common.load_questions` (`.tsv`, `.csv`, `prompts.xlsx`); Ergebnis-CSV-Spalten in `run_team.py`.
-- Nicht eingecheckt: `outputs/`, `results/`, `bert_model/`, `.team_router/`, lokale `config.json` und `configs/`.
+- Nicht eingecheckt: `bert_model/` (über 400 MB, zu groß für GitHub), `.team_router/` (Team-Code, nur lokal), lokale `config.json`. Läufe (`outputs/`, `results/`), `configs/` und `backups/` sind eingecheckt.
 
 ## Tests
 - `cd benchmarks/rule_check && .venv/Scripts/python.exe -m pytest` (ohne Modellserver, mit simuliertem Client; Stand 06.11.2026: 76 grün)

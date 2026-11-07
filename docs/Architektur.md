@@ -30,12 +30,26 @@ Ein Repository, `apps/api` (Server) und `apps/web` (Oberfläche, Entwürfe). Kei
 | Prototyp-Ordner | entspricht etwa |
 | --- | --- |
 | `api/` | M1 |
+| `features/input_guard` | Input Guard (CP1) |
 | `features/recognition` | M2 |
-| `features/guidance` | M3, M6 |
+| `features/rule_pipeline`, `features/routing` | M3 (Entscheidung) |
+| `features/guidance` | M3 (Texte), M6 |
 | `features/chat` | M4 |
 | `features/analysis` | M5 |
 | `adapters/llm` | M7 |
 | `evals/`, `benchmarks/` | M9 |
+
+## Ablauf einer Nachricht bis zur Route (umgesetzt)
+
+```
+Nutzertext
+  -> features/input_guard   CP1-Muster: Notfall/Krise -> feste Route, kein LLM; Injection merken
+  -> features/recognition   LLM (über adapters/llm) setzt 17 Flags; Schema contracts/llm/intent_flags.v1
+  -> features/rule_pipeline Flags -> Regelergebnis (crisis | emergency | block + R1-R6 | allow | unclear)
+  -> features/routing       Regelergebnis + LLM-Vorschlag (nur verschärfend) + Confidence + Injection -> Route
+```
+
+Zusammengesetzt in `features/chat.route_message`. Logik aus dem Team-Router (`vitasync-router.zip`), aufgeteilt in Regeln und Routing; Gleichheit auf 1000 aufgezeichneten Fällen geprüft.
 
 ## Abhängigkeitsregeln
 

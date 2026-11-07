@@ -34,3 +34,8 @@ docs/.trash/
 
 # Excel-Sperrdateien
 ~$*.xlsx
+
+# Team- und interne Unterlagen: nur lokal (Repo ist oeffentlich)
+VitaSync-Vault-Team*.zip
+vitasync-router.zip
+research/

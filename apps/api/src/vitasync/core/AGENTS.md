@@ -8,7 +8,9 @@ Zuständig: <GitHub-Handle eintragen>
 - Darf nicht: HTTP, Datenbank, LLM, FHIR-Bibliotheken importieren.
 
 ## Verträge
-- `ports.py` definiert die Schnittstellen, die `adapters/` implementieren.
+- `ports.py` definiert die Schnittstellen, die `adapters/` implementieren (`IntentExtractorPort`, `RawModelOutput`, `ExtractionError`).
+- `intent.py`: gemeinsame Typen der Nachrichtenannahme (Routen, Sub-Labels mit Regel R1–R6, Flags, `Extraction`, `GuardResult`, `RuleResult`, `RouteDecision`, `Policy`). Keine Logik der Module.
+- `config.py`: Einstellungen aus der Umgebung, u. a. `LLM_*`, `CP1_PATTERNS`, `ROUTER_POLICY`.
 
 ## Tests
 - Reine Unit-Tests ohne Infrastruktur.

@@ -1,0 +1,9 @@
+{
+  "provider": "ollama",
+  "base_url": "http://localhost:11434",
+  "model": "<MODELLNAME-SETZEN>",
+  "timeout_seconds": 120,
+  "temperature": 0,
+  "think": false,
+  "warmup": true
+}

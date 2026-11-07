@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vitasync-benchmark"
+version = "0.1.0"
+description = "Benchmark: LLM-Regelpruefung von Testprompts mit Excel-Auswertung. Kein Medizinprodukt, keine Beratung."
+requires-python = ">=3.12"
+
+# Exakte Versionen, im frischen venv per pip install bestaetigt (28.10.2026, Python 3.12.10).
+dependencies = [
+    "openpyxl==3.1.5",
+    "pydantic==2.14.1",
+    "ollama==0.6.3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest==9.2.0"]
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

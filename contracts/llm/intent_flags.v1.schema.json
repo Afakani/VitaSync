@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "intent_flags.v1",
+  "type": "object",
+  "properties": {
+    "symptom_mentioned": {
+      "type": "boolean"
+    },
+    "asks_cause_or_diagnosis": {
+      "type": "boolean"
+    },
+    "asks_value_evaluation": {
+      "type": "boolean"
+    },
+    "asks_score_or_rating": {
+      "type": "boolean"
+    },
+    "asks_color_coding": {
+      "type": "boolean"
+    },
+    "asks_medication_advice": {
+      "type": "boolean"
+    },
+    "asks_pharmacy_interpretation": {
+      "type": "boolean"
+    },
+    "asks_own_data": {
+      "type": "boolean"
+    },
+    "asks_symptom_logging": {
+      "type": "boolean"
+    },
+    "asks_compilation_for_appointment": {
+      "type": "boolean"
+    },
+    "asks_general_knowledge": {
+      "type": "boolean"
+    },
+    "asks_lifestyle_tip": {
+      "type": "boolean"
+    },
+    "asks_app_help": {
+      "type": "boolean"
+    },
+    "own_condition_named": {
+      "type": "boolean"
+    },
+    "acute_danger_signs": {
+      "type": "boolean"
+    },
+    "self_harm_or_crisis": {
+      "type": "boolean"
+    },
+    "message_unclear": {
+      "type": "boolean"
+    },
+    "suggested_intent": {
+      "type": "string",
+      "enum": [
+        "DATA_QUERY",
+        "HEALTH_QUESTION",
+        "COMBINED",
+        "APP_HELP",
+        "OUT_OF_SCOPE",
+        "EMERGENCY"
+      ]
+    },
+    "suggested_sub_label": {
+      "type": "string",
+      "enum": [
+        "SCORE_REQUEST",
+        "VALUE_EVALUATION",
+        "MEDICATION",
+        "DIAGNOSIS_TRIAGE",
+        "PHARMACY_SUMMARY",
+        "COLOR_REQUEST",
+        "NONE"
+      ]
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    }
+  },
+  "required": [
+    "symptom_mentioned",
+    "asks_cause_or_diagnosis",
+    "asks_value_evaluation",
+    "asks_score_or_rating",
+    "asks_color_coding",
+    "asks_medication_advice",
+    "asks_pharmacy_interpretation",
+    "asks_own_data",
+    "asks_symptom_logging",
+    "asks_compilation_for_appointment",
+    "asks_general_knowledge",
+    "asks_lifestyle_tip",
+    "asks_app_help",
+    "own_condition_named",
+    "acute_danger_signs",
+    "self_harm_or_crisis",
+    "message_unclear",
+    "suggested_intent",
+    "suggested_sub_label",
+    "confidence"
+  ],
+  "additionalProperties": false
+}
