@@ -5,10 +5,11 @@ Ein Ordner = ein Fachbereich mit eigenem Verantwortlichen.
 | Ordner | Inhalt |
 | --- | --- |
 | `chat/` | M4: Orchestrierung einer Nachricht (`route_message`: CP1 → Erkennung → Regeln → Routing), Kontext, Rückfragen |
-| `recognition/` | M2: Flags vom LLM, streng gegen Schema geprüft |
+| `recognition/` | M2: Flags vom SLM (Embedding + Klassifikator, Standard) oder vom LLM |
 | `input_guard/` | CP1: feste Muster für Notfall, Krise, Injection vor dem Modell |
 | `rule_pipeline/` | Flags → Regelergebnis (Regel-JSON, R1–R6) |
 | `routing/` | Regelergebnis → Route (Entscheidung des Safety-Routers M3) |
+| `safety_net/` | CP2: feste Wortmuster nach dem Routing, können nur sperren |
 | `guidance/` | Allgemeine Information, Zuständigkeiten, fester Notfallhinweis |
 | `consent/` | Einwilligung, Widerruf, Löschung |
 | `health_data/` | Eigene Daten abrufen und normalisieren |

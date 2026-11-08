@@ -19,7 +19,9 @@ Zuständig: <GitHub-Handle eintragen>
 - Siehe [fachliche Prüfung (R1–R6)](../docs/decisions/README.md).
 
 ## CP1-Muster
-- `rules/cp1_patterns.json`: Muster für Notfall, Krise und Injection, die `features/input_guard` vor dem Modell prüft. Teamentwurf aus `vitasync-router.zip` (Version im Feld `version`), **nicht medizinisch geprüft**. Änderungen nur mit Quelle und neuer Version.
+- `rules/cp1_patterns.json`: Muster für Notfall, Krise und Injection, die `features/input_guard` vor dem Modell prüft. Teamentwurf aus dem Team-Router v0.5 (Version im Feld `version`), **nicht medizinisch geprüft**.
+- `rules/cp2_patterns.json`: Wortmuster für das Sicherheitsnetz nach dem Routing (`features/safety_net`), Team-Router v0.5.
+- Änderungen an beiden nur mit Quelle und neuer Version.
 
 ## Übersetzungen
 - Nicht zur Laufzeit übersetzen. Eine Übersetzung ist ein eigener Eintrag mit eigener Datei, eigener Prüfung und gleicher `id`.

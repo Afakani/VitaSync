@@ -20,3 +20,4 @@ Zuständig: <GitHub-Handle eintragen>
 - Timeout und ungültiges JSON sind Normalfälle, keine Ausnahmen.
 - Modellname, Endpunkt und Grenzen nur aus der Konfiguration (`.env`), nie im Code. Modellwechsel = Konfiguration ändern + Evals laufen lassen.
 - Kein Feature darf Eigenheiten eines bestimmten Modells voraussetzen (Sonderformate, Tags). Solche Anpassungen bleiben in diesem Adapter.
+- Unter Windows nie `localhost` als Ollama-Adresse: "localhost" wird zuerst als IPv6 `::1` aufgelöst, Ollama hört nur auf IPv4, jeder Aufruf wartet ~2,1 s. Immer `http://127.0.0.1:11434` (gemessen 08.11.2026: 2.123 ms gegenüber 82 ms je Embedding).

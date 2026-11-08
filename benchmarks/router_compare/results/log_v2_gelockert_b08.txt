@@ -1,0 +1,7 @@
+Embeddings: ollama, Modell qwen3-embedding:8b
+Erkenner slm, Policy min_confidence=0.5, symptom_with_data=allow, CP2 an
+[50/250]
+[100/250]
+[150/250]
+[200/250]
+[250/250]

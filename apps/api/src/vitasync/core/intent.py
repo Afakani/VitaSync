@@ -221,6 +221,7 @@ class Policy:
         min_confidence: below this, an allowed route becomes CLARIFY.
         clarify_enabled: off -> CLARIFY becomes OUT_OF_SCOPE.
         injection_fail_closed: CP1 injection hit + allowed route -> OUT_OF_SCOPE.
+        safety_net: CP2 word patterns after routing may move an allowed route or CLARIFY to OUT_OF_SCOPE.
     """
 
     symptom_with_data: Literal["route", "allow"] = "route"
@@ -230,6 +231,7 @@ class Policy:
     min_confidence: float = 0.6
     clarify_enabled: bool = True
     injection_fail_closed: bool = True
+    safety_net: bool = True
 
     @classmethod
     def from_string(cls, spec: str) -> "Policy":

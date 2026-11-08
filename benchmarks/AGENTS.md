@@ -26,3 +26,4 @@ Zuständig: Atakan Cubukcu. Im Team gehört Testen zu Modul M9 (Testrunner, VC-7
 - Läufe nie parallel und nie neben anderer GPU-Last: Zeiten werden wertlos.
 - Fragetexte der ChatGPT-Batches nicht lesen oder ausgeben, nur IDs und Zahlen; Batch 4–6 sind für eine Schlussmessung zurückgehalten.
 - `hinweis`-Texte in `rules.json` und `data/cp1_muster.json` nicht ändern: Ihr SHA-256 steht in jedem Lauf.
+- Unter Windows nie `localhost` als Ollama-Adresse: "localhost" wird zuerst als IPv6 `::1` aufgelöst, Ollama hört nur auf IPv4, jeder Aufruf wartet ~2,1 s. Immer `http://127.0.0.1:11434` (gemessen 08.11.2026: 2.123 ms gegenüber 82 ms je Embedding).

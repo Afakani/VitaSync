@@ -1,6 +1,6 @@
 {
   "_info": "CP1 input guard patterns (draft for testing, NOT medically reviewed). Patterns are Python regexes applied to normalised text: lower case, ä->ae, ö->oe, ü->ue, ß->ss, whitespace collapsed. A hit goes straight to the fixed template, the LLM is never called. Medical sign-off is required before go-live (red-flag catalogue). Keep one file, CP3 will reuse it.",
-  "version": "0.1-draft-2026-11-04",
+  "version": "0.2-draft-2026-11-07",
   "emergency": [
     {
       "id": "EM-01",
@@ -86,6 +86,11 @@
       "id": "EM-17",
       "pattern": "notarzt|notruf|rettungswagen",
       "note": "user names emergency services (not '112' alone: 'Puls 112' is a value)"
+    },
+    {
+      "id": "EM-18",
+      "pattern": "^(?=.*\\b(alarm|warnt|warnung|meldet|schlaegt an))(?=.*(arrhythmi|vorhofflimmern|herzrhythmus|herzrasen|unregelmaessig\\w* (herz|puls)))(?=.*\\b(uebel|schwindel\\w*|brust|luft|ohnmaecht\\w*|schwarz vor|umkipp\\w*|kollabier\\w*))",
+      "note": "Geraete-Alarm wegen Herzrhythmus PLUS Beschwerde (Uebelkeit, Schwindel, Brust, Luftnot, Ohnmacht). Alarm allein loest NICHT aus."
     }
   ],
   "crisis": [

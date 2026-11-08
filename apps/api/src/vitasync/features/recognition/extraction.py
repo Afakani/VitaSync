@@ -90,3 +90,16 @@ def extract_flags(text: str, extractor: IntentExtractorPort, retries: int = 1) -
             last = e
     assert last is not None
     raise last
+
+
+class LlmRecognizer:
+    """Text -> Extraction via a generative LLM (prompt + JSON schema), with retry. Same interface as SlmRecognizer."""
+
+    def __init__(self, extractor: IntentExtractorPort, retries: int = 1):
+        self.extractor = extractor
+        self.retries = retries
+        self.model = getattr(extractor, "model", None)
+
+    def __call__(self, text: str) -> Extraction:
+        """Raises ExtractionError (invalid after retries) or ConnectionError."""
+        return extract_flags(text, self.extractor, retries=self.retries)

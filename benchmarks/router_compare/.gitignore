@@ -1,3 +1,4 @@
 .team_router/
 bert_model/
 __pycache__/
+emb_cache/

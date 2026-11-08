@@ -1,0 +1,75 @@
+{
+  "version": "0.1-draft-2026-11-07",
+  "description": "CP2 Sicherheitsnetz: deterministische Muster NACH der Modell-Extraktion. Trifft ein Muster, wird eine erlaubte Route (oder Rückfrage) auf OUT_OF_SCOPE/<sub_label> gesetzt. Es kann nur blockieren, nie freigeben. Text ist normalisiert (klein, ae/oe/ue/ss, ohne Satzzeichen). 'unless' = Ausnahme-Muster.",
+  "rules": [
+    {
+      "id": "CP2-V1",
+      "sub_label": "VALUE_EVALUATION",
+      "pattern": "(\\b(ist|sind|war|waren|liegt|liegen|bin|klingt|wirkt|sieht)\\b.{0,60}|\\bob\\b.{0,60})\\b(zu hoch|zu niedrig|zu viel|zu wenig|zu schnell|zu langsam|normal|okay|ok|in ordnung|gut oder schlecht|gut genug|ausreichend|genug|bedenklich|gefaehrlich|besorgniserregend|kritisch|schlimm|gesund|ungesund|krank|fit|im (gruenen|normalen|gesunden|guten) bereich|normalbereich)\\b",
+      "requires": "\\b(mein|meine|meinen|meinem|meiner|meins|mir|mich|ich|das|der wert|die werte|dieser wert|diese werte)\\b|\\b\\d+\\b",
+      "unless": "^(was|wie|warum|wieso) (ist|sind) (ein|eine|der|die|das) (normale|normaler|normal)\\b|\\b(fit|gesund) (werden|bleiben|halten)\\b",
+      "note": "Wertbewertung zum eigenen Wert (R2)"
+    },
+    {
+      "id": "CP2-V2",
+      "sub_label": "VALUE_EVALUATION",
+      "pattern": "\\b(verbessert|verschlechtert|besser geworden|schlechter geworden|besser als|schlechter als|besser oder schlechter|fitter (als|geworden)|gesuender geworden|positiv oder negativ|eher gut|eher schlecht|sorgen machen|grund zur sorge)\\b",
+      "requires": "\\b(mein|meine|meinen|meinem|meiner|mir|mich|ich)\\b",
+      "note": "Verbesserung/Verschlechterung des eigenen Verlaufs (CB-04: nur neutrale Trendwoerter erlaubt)"
+    },
+    {
+      "id": "CP2-V3",
+      "sub_label": "VALUE_EVALUATION",
+      "pattern": "\\b(was (sagt|sagen|bedeutet|bedeuten|heisst)|sagt das).{0,60}\\b(ueber (meine|meinen|mein) (gesundheit|fitness|zustand|gesundheitszustand)|fuer (meine|mich) (gesundheit)?)\\b",
+      "note": "Bedeutung eigener Werte fuer die eigene Gesundheit"
+    },
+    {
+      "id": "CP2-V4",
+      "sub_label": "VALUE_EVALUATION",
+      "pattern": "\\b(schaetz\\w*|rechne\\w* aus|auffuell\\w*|fuell\\w* .{0,30}auf|erfinde\\w*)\\b.{0,60}\\b(fehlend\\w*|luecke\\w*|wert\\w*)\\b",
+      "note": "Fehlende Werte schaetzen oder auffuellen (CB-03)"
+    },
+    {
+      "id": "CP2-V5",
+      "sub_label": "VALUE_EVALUATION",
+      "pattern": "\\b(referenzbereich\\w*|referenzwert\\w*|grenzwert\\w*|normwert\\w*|zielwert\\w*|zielbereich\\w*)\\b",
+      "requires": "\\b(mein|meine|meinen|mir|mich|ich|ob)\\b",
+      "note": "Referenzbereiche fuer die eigene Einordnung (CB-12: erreichen den Nutzer nie)"
+    },
+    {
+      "id": "CP2-S1",
+      "sub_label": "SCORE_REQUEST",
+      "pattern": "\\b(note|schulnote|punktzahl|punkte|score|skala|sterne|ranking|rangliste|bewerte|bewerten|beurteile|in (einer|eine) zahl|in prozent|von 1 bis|von eins bis)\\b",
+      "unless": "\\b(ohne|keine|kein) (jegliche |jede |medizinische |eine )*(bewertung|note|punktzahl|score)\\b|\\bwarum (gibt|zeigt)\\b|\\bdarfst du\\b|\\b(kannst|darfst|koennen|duerfen) (du|sie)\\b",
+      "note": "Score/Note/Rating (R1)"
+    },
+    {
+      "id": "CP2-S2",
+      "sub_label": "SCORE_REQUEST",
+      "pattern": "\\b(risiko|wahrscheinlichkeit|chance)\\b.{0,60}\\b(fuer|auf|einen|eine|ein|zu)\\b",
+      "requires": "\\b(mein|meine|meinen|mir|mich|ich|bei mir|fuer mich)\\b|^wie (hoch|gross|ist|wahrscheinlich)\\b",
+      "note": "Persoenliches Risiko / Wahrscheinlichkeit"
+    },
+    {
+      "id": "CP2-K1",
+      "sub_label": "COLOR_REQUEST",
+      "pattern": "\\b(rot|rote|roten|gruen|gruene|gruenen|gelb|ampel\\w*)\\b",
+      "requires": "\\b(mark\\w*|faerb\\w*|hinterleg\\w*|mach\\w*|zeig\\w*|darstell\\w*|stell\\w*|hebe?\\w* .{0,20}hervor)\\b",
+      "unless": "^(warum|wieso|weshalb)\\b|\\bkeine (rote|gruene|rot|gruen)\\b",
+      "note": "Ampel-/Farbbewertung (CB-09, CB-26)"
+    },
+    {
+      "id": "CP2-D1",
+      "sub_label": "DIAGNOSIS_TRIAGE",
+      "pattern": "\\b(ist das|sind das|gibt es|steckt|erkennst du|siehst du)\\b.{0,40}\\b(muster|zusammenhang|zusammenhaenge|ursache|anzeichen|hinweis auf)\\b",
+      "unless": "\\bohne (einen |jeden |jeglichen )?zusammenhang\\b",
+      "note": "Muster/Ursache in eigenen Symptomen oder Werten deuten (CB-27: nur zaehlen, nicht deuten)"
+    },
+    {
+      "id": "CP2-D2",
+      "sub_label": "DIAGNOSIS_TRIAGE",
+      "pattern": "\\b(welche|welcher|welches|welchen)\\b.{0,30}\\b(uhr|uhren|geraet|geraete|tracker|armband|messgeraet|sensor|smartwatch)\\w*\\b.{0,60}\\b(diagnose|diagnostiz\\w*|vorhofflimmern|herzkrankheit|herzrhythmusstoerung\\w*|schlafapnoe|erkennen|feststellen)\\b",
+      "note": "Geraet fuer eine eigene Diagnose auswaehlen (Diagnose ueber Umweg)"
+    }
+  ]
+}

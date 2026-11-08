@@ -31,6 +31,20 @@ class RawModelOutput:
     output_tokens: int | None = None
 
 
+class EmbedderPort(Protocol):
+    """Turns texts into embedding vectors (one list of floats per text, same order)."""
+
+    model: str
+
+    def embed(self, texts: list[str]) -> list[list[float]]:
+        """Return one vector per text.
+
+        Raises:
+            ConnectionError: embedding service not reachable or answered with an error.
+        """
+        ...
+
+
 class IntentExtractorPort(Protocol):
     """Asks the model for the intent flags of one message (prompt and schema live in the adapter)."""
 
