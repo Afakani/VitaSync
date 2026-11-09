@@ -48,7 +48,7 @@ Nutzertext
                             (oder LLM über adapters/llm, Schema contracts/llm/intent_flags.v1)
   -> features/rule_pipeline Flags -> Regelergebnis (crisis | emergency | block + R1-R6 | allow | unclear)
   -> features/routing       Regelergebnis + Modell-Vorschlag (nur verschärfend) + Confidence + Injection -> Route
-  -> features/safety_net    CP2-Wortmuster: erlaubte Route -> Weiterleitung bei Treffer (nur sperren)
+  -> features/safety_net    Router-Sicherheitsnetz (Wortmuster): erlaubte Route -> Weiterleitung bei Treffer (nur sperren)
 ```
 
 Zusammengesetzt in `features/chat.route_message`. Logik aus dem Team-Router (v0.1, dann v0.5 von Tolga), aufgeteilt in Regeln und Routing; Gleichheit mit v0.1 auf 1000 aufgezeichneten Fällen und mit v0.5 auf Batch 1 (250/250) geprüft.

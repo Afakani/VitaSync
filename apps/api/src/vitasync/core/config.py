@@ -34,7 +34,7 @@ class Settings(BaseModel):
             nur fuer Tests mit synthetischen Daten und nur auf ausdruecklichen Wunsch).
         embed_model: Name des Embedding-Modells in diesem Backend, lokal `qwen3-embedding:8b`.
         embed_api_base: Adresse der API, nur bei `embed_backend=api`.
-        cp2_patterns: Pfad zur CP2-Musterdatei (Sicherheitsnetz nach dem Routing).
+        cp2_patterns: Pfad zur Musterdatei des Router-Sicherheitsnetzes (Name „cp2“ aus Team-Router v0.5, nicht die Einwilligungsprüfung CP2).
 
     Der API-Schluessel steht nie hier: er wird nur beim Aufbau des Adapters aus
     `VITASYNC_API_KEY` gelesen und nirgends ausgegeben.

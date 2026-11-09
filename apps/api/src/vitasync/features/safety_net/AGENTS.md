@@ -1,4 +1,4 @@
-# Modul: Sicherheitsnetz (CP2)
+# Modul: Router-Sicherheitsnetz
 
 Zweck: Prüft nach dem Routing den Text mit festen Wortmustern auf Bewertungs-, Score-, Farb- und Diagnosefragen. Ein Treffer macht aus einer erlaubten Route oder CLARIFY eine Weiterleitung (OUT_OF_SCOPE mit Sub-Label). Kann nur sperren, nie freigeben.
 Zuständig: Atakan Cubukcu
@@ -18,3 +18,4 @@ Zuständig: Atakan Cubukcu
 ## Fallen
 - Die Muster sind ein Teamentwurf (Version 0.1-draft-2026-11-07) und wachsen mit jedem Test: Gefahr, an die Testdaten anzupassen. Neue Muster nur mit Beispiel und neuer Version.
 - Kein Treffer heißt nicht „erlaubt“; entschieden haben vorher Regeln und Routing.
+- Name: Im Code, in der Musterdatei und in den Ergebnis-Gründen heißt das Netz „cp2“ (Team-Router v0.5, Muster-IDs `CP2-…`). Das ist nicht „CP2“ aus den Flowcharts (Einwilligungsprüfung). In Texten „Router-Sicherheitsnetz“ schreiben; Code-Namen erst zusammen mit Tolga ändern, sonst passen alte Läufe und künftige v0.x nicht mehr.

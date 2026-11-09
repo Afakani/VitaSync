@@ -9,7 +9,7 @@ Zuständig: <GitHub-Handle eintragen>
 
 ## Verträge
 - Öffentliche Funktionen nur über `__init__.py`.
-- `route_message(text, guard, recognize, policy, net)`: CP1 → Erkennung (SLM oder LLM) → Regel-Pipeline → Routing → CP2 → `RouteDecision`. Bei CP1-Treffer kein Modellaufruf; ungültige LLM-Ausgabe → SAFE_DEFAULT. Reihenfolge wie Team-Router v0.5.
+- `route_message(text, guard, recognize, policy, net)`: CP1 → Erkennung (SLM oder LLM) → Regel-Pipeline → Routing → Router-Sicherheitsnetz → `RouteDecision`. Bei CP1-Treffer kein Modellaufruf; ungültige LLM-Ausgabe → SAFE_DEFAULT. Reihenfolge wie Team-Router v0.5.
 
 ## Tests
 - `apps/api/tests/features/chat/`. Verhalten testen, nicht Implementierung spiegeln.
